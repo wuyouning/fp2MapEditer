@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冰汽时代2地图编辑器</title>
+    <style>
+        canvas {
+            border: 1px solid blue;
+            display: block;
+            margin: auto;
+            height: auto;
+            z-index: 1;
+        }
+        body {
+            background-color: #7d8391;
+        }
+        #labelCanvas {
+            position: absolute;
+            border: 1px solid green;
+            top: 0;
+            left: 0;
+            width: auto;
+            height: auto;
+            z-index: 2; 
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: relative;">
+        <canvas id="hexCanvas" ></canvas>
+        <canvas id="labelCanvas"></canvas>
+    </div>
+    <!-- <canvas id="hexCanvas"></canvas> -->
+    <script src="FP2MapEditer0.0.3.js"></script>
+    <!-- 测试用的信息框 按鼠标中键触发 -->
+    <div id="hexInfoBox" style="display:none; position: fixed; background: #fff; border: 1px solid #000; padding: 10px;"></div>
+</body>
+
+</html>
