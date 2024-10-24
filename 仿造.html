@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+
+
+<head>
+    <meta charset="utf-8" />
+    <title>冰汽时代2-地图编辑器</title>
+    <!-- 主样式 -->
+    <!-- <style>
+        body {
+            touch-action: none;
+            -ms-touch-action: none;
+            /* Direct all pointer events to JavaScript code. */
+            -ms-user-select: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+            /* avoid flash on Android http://stackoverflow.com/questions/5210481/*/
+            color: #666666;
+            font-size: 14px;
+            font-family: sans-serif;
+            margin: 0px;
+            padding: 0px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <style>
+        :root {
+            --ggb-primary-color: #6557D2;
+            --ggb-primary-variant-color: #F3F0FF;
+            --ggb-dark-color: #5145A8;
+            --ggb-light-color: #F3F0FF;
+            --ggb-selection-color: rgba(101, 87, 210, 0.2)
+        }
+        /* 可能是头部 */
+        .GeoGebraHeader {
+            display: flex;
+            border-bottom: 1px solid #dcdcdc;
+            background-color: #fff;
+            padding: 4px;
+            -ms-user-select: none;
+            -moz-user-select: none;
+            -webkit-use-select: none;
+            user-select: none;
+            height: 24px;
+            display: block;
+            height: 64px;
+            padding: 0px;
+            border: 0px;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12), 0 3px 1px -2px rgba(0, 0, 0, .2);
+            z-index: 500;
+            position: relative;
+            width: 100%
+        }
+        .GeoGebraFrame.GeoGebraHeader.suiteHeader .upperHeader {
+            display: flex
+        }
+
+        .GeoGebraFrame.GeoGebraHeader.suiteHeader.compact .upperHeader,
+        .GeoGebraFrame.GeoGebraHeader.suiteHeader.smallScreen .upperHeader {
+            height: 44px
+        }
+
+        .GeoGebraFrame .headerStyle {
+            display: inline-flex
+        }
+
+        .GeoGebraHeader .appName {
+            font-size: 24px;
+            font-weight: normal;
+            margin: 21px 24px 19px 0px;
+            width: fit-content;
+            height: 24px;
+            line-height: 24px;
+            font-family: sans-serif;
+            letter-spacing: .43px;
+            color: rgba(0, 0, 0, .6);
+            white-space: nowrap
+        }
+    </style> -->
+    <style>
+        /* 全局设置 */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 4; /* 设置最高的层次 */
+        }
+
+        /* 左侧工具栏 */
+        .sidebar {
+            position: fixed;
+            top: 60px; /* 顶部导航栏的高度 */
+            left: 0;
+            width: 200px;
+            height: calc(100% - 60px);
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            z-index: 3; /* 第二高的层次 */
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            margin-left: 200px; /* 左侧工具栏的宽度 */
+            margin-top: 60px; /* 顶部导航栏的高度 */
+            height: calc(100% - 60px);
+            position: relative;
+            z-index: 1; /* 最底层 */
+            background: #fafafa;
+        }
+
+        /* 工具面板 */
+        .tools-panel {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2; /* 设置在主内容和工具栏之上，但低于导航栏 */
+        }
+    </style>
+</head>
+<body>
+    <nav class="GeoGebraFrame GeoGebraHeader graphingHeader">
+        <div class="upperHeader">
+            <h1 class="appName" data-trans-key="GraphingCalculator">冰汽时代2-地图编辑器</h1>
+        </div>
+    </nav>
+    <div class="navbar"> <!-- 第一层，顶部导航栏 -->
+        <div class="logo">GeoGebra</div>
+        <div class="title">图形计算器</div>
+        <div class="buttons">
+            <button>分享</button>
+            <button>登录</button>
+        </div>
+    </div>
+    
+    <div class="sidebar"> <!-- 第二层，左侧工具栏 -->
+        <ul>
+            <li>基本工具</li>
+            <li>编辑</li>
+            <li>媒体</li>
+            <li>点</li>
+            <li>直线</li>
+            <li>其它</li>
+        </ul>
+    </div>
+    
+    <div class="main-content"> <!-- 第三层，主要图形区域 -->
+        <div id="graph"></div>
+    </div>
+    
+    <div class="tools-panel"> <!-- 第四层，右下角工具面板 -->
+        <button>放大</button>
+        <button>缩小</button>
+        <button>重置</button>
+    </div>
+</body>
+</html>

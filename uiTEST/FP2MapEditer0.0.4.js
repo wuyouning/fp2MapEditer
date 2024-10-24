@@ -623,7 +623,7 @@ class Point {
 }
 
 class HexGrid {
-    constructor(hexSize = 30, maxRadius = 6, showID = true) {
+    constructor(hexSize = 45, maxRadius = 6, showID = true) {
         this.hexes = []; //新建后的格子存储
         this.regions = []; //存储区域
         this.hubs = []; //存储枢纽
@@ -1417,11 +1417,18 @@ function computeConvexHull(points) {
 // 更新工具栏视图
 function updateToolbarView(isExpanded = true) {
     let toolbarContainer = document.getElementById('toolbarContainer');
+    const parentToolbar = document.getElementById('toolbar1');
     if (!toolbarContainer) {
       toolbarContainer = document.createElement('div');
       toolbarContainer.id = 'toolbarContainer';
-      toolbarContainer.style.zIndex = '999';
-      document.body.appendChild(toolbarContainer);
+    }
+
+    // 将工具栏容器插入到 toolbar1 中
+    if (parentToolbar) {
+        parentToolbar.appendChild(toolbarContainer);
+    } else {
+        console.error('Parent toolbar element with id "toolbar1" not found');
+        return;
     }
   
     // 设置工具栏容器的样式
@@ -1633,16 +1640,14 @@ function updateToolbarView(isExpanded = true) {
 // 设置工具栏容器的样式
 function setToolbarStyle(toolbarContainer) {
     toolbarContainer.style.position = 'fixed';
-    toolbarContainer.style.top = '1%';
-    toolbarContainer.style.left = '1%';
     toolbarContainer.style.display = 'flex';
     toolbarContainer.style.flexDirection = 'column'; // 工具栏列排列
     toolbarContainer.style.gap = '20px'; // 控制行间距
     toolbarContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.85)'; // 设置白色背景
     toolbarContainer.style.padding = '10px'; // 添加内边距
-    toolbarContainer.style.border = '2px solid #ccc'; // 添加一个浅色边框
+    // toolbarContainer.style.border = '2px solid #ccc'; // 添加一个浅色边框
     toolbarContainer.style.borderRadius = '8px'; // 让边角圆润一些
-    toolbarContainer.style.boxShadow = '0px 4px 10px rgba(0, 0, 0, 0.1)'; // 添加阴影效果
+    // toolbarContainer.style.boxShadow = '0px 4px 10px rgba(0, 0, 0, 0.1)'; // 添加阴影效果
 }
 
 // 阈值指示区域
@@ -1681,6 +1686,7 @@ function updateDetectedHexListView() {
 
 // 区域信息显示
 function updateRegionCards() {
+    const parentToolbar = document.getElementById('toolbar2');
     let regionContainer = document.getElementById('regionContainer');
     let toggleButton = document.getElementById('toggleButton');
 
@@ -1708,7 +1714,7 @@ function updateRegionCards() {
         regionContainer.style.alignItems = 'flex-start';  // 卡片相对于容器顶部对齐 
         regionContainer.style.boxShadow = '0px 8px 15px rgba(0, 0, 0, 0.2)'; // 增加阴影效果
         regionContainer.style.zIndex = '999';
-        document.body.appendChild(regionContainer); 
+        parentToolbar.appendChild(regionContainer); 
     }
 
     // 创建或获取切换按钮
@@ -1737,7 +1743,7 @@ function updateRegionCards() {
                 toggleButton.style.bottom = '5%';
             }
         };
-        document.body.appendChild(toggleButton);
+        parentToolbar.appendChild(toggleButton);
     }
 
     // 封装一个用于创建垂直区域列表的函数
@@ -2044,10 +2050,12 @@ function toggleCustomPrompt(show = true, textContent = '是否执行操作？', 
 
 // 调整画布
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    labelCanvas.width = window.innerWidth;
-    labelCanvas.height = window.innerHeight;
+    canvas.width = window.innerWidth * 2;
+    canvas.height = window.innerHeight * 2;
+    labelCanvas.width = window.innerWidth * 2;
+    labelCanvas.height = window.innerHeight * 2;
+    tipsCanvas.width = window.innerWidth * 2;
+    tipsCanvas.height = window.innerHeight * 2;
         // 更新原点位置为画布中心
     hexGrid.layout.origin = new Point(canvas.width / 2, canvas.height / 2);
     // 将视窗滚动到画布的中心
@@ -2121,59 +2129,63 @@ class RightClickDragScroller {
 }
 
 // 按下中键就显示信息，测试用
-class HexInfoDisplay {
-    constructor(canvasId, hexgrid, infoBoxId) {
-        this.canvas = document.getElementById(canvasId);
-        this.hexgrid = hexgrid;
-        this.infoBox = document.getElementById(infoBoxId);
-        this.initEventListeners();
-    }
+// class HexInfoDisplay {
+//     constructor(canvasId, hexgrid, infoBoxId) {
+//         this.canvas = document.getElementById(canvasId);
+//         this.hexgrid = hexgrid;
+//         this.infoBox = document.getElementById(infoBoxId);
+//         this.initEventListeners();
+//     }
 
-    initEventListeners() {
-        this.canvas.addEventListener('mousedown', (event) => this.handleMouseDown(event));
-        this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
-    }
+//     initEventListeners() {
+//         this.canvas.addEventListener('mousedown', (event) => this.handleMouseDown(event));
+//         this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
+//     }
 
-    handleMouseDown(event) {
-        if (event.button === 1) { // Check if middle mouse button is clicked
-            const rect = this.canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
+//     handleMouseDown(event) {
+//         if (event.button === 1) { // Check if middle mouse button is clicked
+//             const rect = this.canvas.getBoundingClientRect();
+//             const mouseX = event.clientX - rect.left;
+//             const mouseY = event.clientY - rect.top;
 
-            const hex = this.getHexInfoFromMouse(mouseX, mouseY);
-            if (hex) {
-                this.displayHexInfo(hex, event.clientX, event.clientY);
-            }
-        }
-    }
+//             const hex = this.getHexInfoFromMouse(mouseX, mouseY);
+//             if (hex) {
+//                 this.displayHexInfo(hex, event.clientX, event.clientY);
+//             }
+//         }
+//     }
 
-    handleMouseMove(event) {
-        if (this.infoBox.style.display === 'block') {
-            this.infoBox.style.left = `${event.clientX + 10}px`;
-            this.infoBox.style.top = `${event.clientY + 10}px`;
-        }
-    }
+//     handleMouseMove(event) {
+//         if (this.infoBox.style.display === 'block') {
+//             this.infoBox.style.left = `${event.clientX + 10}px`;
+//             this.infoBox.style.top = `${event.clientY + 10}px`;
+//         }
+//     }
 
-    getHexInfoFromMouse(mouseX, mouseY) {
-        const hexId = this.hexgrid.getHexIdFromMouse(mouseX, mouseY);
-        return this.hexgrid.getHexById(hexId);
-    }
+//     getHexInfoFromMouse(mouseX, mouseY) {
+//         const hexId = this.hexgrid.getHexIdFromMouse(mouseX, mouseY);
+//         return this.hexgrid.getHexById(hexId);
+//     }
 
-    displayHexInfo(hex, clientX, clientY) {
-        const infoText = `Hex ID: ${hex.id}\nBrush: ${hex.brush}\nType: ${hex.type}\nRegion: ${hex.region}`;
-        this.infoBox.innerText = infoText;
-        this.infoBox.style.display = 'block';
-        this.infoBox.style.left = `${clientX + 10}px`;
-        this.infoBox.style.top = `${clientY + 10}px`;
-    }
-}
+//     displayHexInfo(hex, clientX, clientY) {
+//         const infoText = `Hex ID: ${hex.id}\nBrush: ${hex.brush}\nType: ${hex.type}\nRegion: ${hex.region}`;
+//         this.infoBox.innerText = infoText;
+//         this.infoBox.style.display = 'block';
+//         this.infoBox.style.left = `${clientX + 10}px`;
+//         this.infoBox.style.top = `${clientY + 10}px`;
+//     }
+// }
 
 
 
 const canvas = document.getElementById('hexCanvas');
 const ctx = canvas.getContext('2d');
+
 const labelCanvas = document.getElementById('labelCanvas');
 const labelCtx = labelCanvas.getContext('2d');
+
+const tipsCanvas = document.getElementById('tipsCanvas');
+const tipsCtx = tipsCanvas.getContext('2d');
 
 canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
@@ -2204,9 +2216,6 @@ canvas.addEventListener('click', (event) => {
     }
 });
 
-//鼠标位置显示格子颜色
-let previousHoveredHexId = null;
-
 // 鼠标移动事件监听器
 canvas.addEventListener('mousemove', (event) => {
     const rect = canvas.getBoundingClientRect();
@@ -2214,40 +2223,19 @@ canvas.addEventListener('mousemove', (event) => {
     const mouseY = event.clientY - rect.top;
     const hexId = hexGrid.getHexIdFromMouse(mouseX, mouseY);
 
-    // 如果鼠标悬停在不同的格子上
-    if (hexId !== previousHoveredHexId) {
-        // 清除上一个高亮格子的高亮效果
-        if (previousHoveredHexId !== null) {
-            const previousHex = hexGrid.getHexById(previousHoveredHexId);
-            if (previousHex) {
-                // 重绘上一个格子以恢复其原始状态（根据 hexGrid.showID 决定是否显示 ID）
-                previousHex.drawHex(ctx, hexGrid.layout, hexGrid.showID);
-            }
-        }
-
-        // 更新当前悬停的格子
-        const hoveredHex = hexGrid.getHexById(hexId);
-        if (hoveredHex) {
-            // 绘制新的高亮效果（如果 showID 为 false，则悬停时显示 ID）
-            const showHoverId = !hexGrid.showID; // 悬停时如果 showID 为 false 则显示 ID
-            hoveredHex.drawHoverHex(ctx, hexGrid.layout, '#EEFFB3', 0.5, showHoverId);
-        }
-
-        // 更新记录的悬停格子 ID
-        previousHoveredHexId = hexId;
+    // 更新当前悬停的格子
+    const hoveredHex = hexGrid.getHexById(hexId);
+    if (hoveredHex) {
+        // 绘制新的高亮效果（如果 showID 为 false，则悬停时显示 ID）
+        const showHoverId = !hexGrid.showID; // 悬停时如果 showID 为 false 则显示 ID
+        tipsCtx.clearRect(0, 0, canvas.width, canvas.height); // 清除高亮层
+        hoveredHex.drawHoverHex(tipsCtx, hexGrid.layout, '#EEFFB3', 0.5, showHoverId);
     }
 });
 
 // 鼠标离开画布时清除高亮
 canvas.addEventListener('mouseleave', () => {
-    if (previousHoveredHexId !== null) {
-        const previousHex = hexGrid.getHexById(previousHoveredHexId);
-        if (previousHex) {
-            // 重绘上一个格子以恢复其原始状态（根据 hexGrid.showID 决定是否显示 ID）
-            previousHex.drawHex(ctx, hexGrid.layout, hexGrid.showID);
-        }
-        previousHoveredHexId = null;
-    }
+    tipsCtx.clearRect(0, 0, canvas.width, canvas.height); // 清除高亮层
 });
 
 hexGrid = new HexGrid();
@@ -2260,9 +2248,10 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 hexGrid.drawHexagons();
 updateToolbarView();
+
 // 创建一个 RightClickDragScroller 实例来启用功能
 const rightClickDragScroller = new RightClickDragScroller();
-window.onload = function() {
-    const hexInfoDisplay = new HexInfoDisplay('hexCanvas', hexGrid, 'hexInfoBox');
-};
+// window.onload = function() {
+//     const hexInfoDisplay = new HexInfoDisplay('hexCanvas', hexGrid, 'hexInfoBox');
+// };
 

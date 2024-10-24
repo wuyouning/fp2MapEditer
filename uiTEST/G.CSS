@@ -1,0 +1,140 @@
+/* 初始隐藏状态，设置负的 left 值隐藏侧边栏 */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* 顶部导航栏 */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 6; /* 设置最高的层次 */
+}
+.sidebar {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    top: 0;
+    left: 0px;
+    width: 120px;
+    height: 100%;
+    background-color: #ffffff;
+    border-right: 1px solid #ddd;
+    z-index: 5;
+}
+
+
+
+.button-container {
+    max-height: 300px;
+    /* overflow-y: auto; */
+    width: 120px;
+    margin: 60px 0px 0px 0px;
+}
+
+.button-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    filter: grayscale(100%);
+}
+
+.button-text {
+    margin-left: 0px;
+    margin-top: 5px;
+    font-size: small;
+}
+
+
+
+.toggle-button {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px;
+    background-color: rgba(240, 120, 20, 0.1);
+    border-color: aqua;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    color: grey;
+}
+
+.toggle-button:hover {
+    background-color: #e2e6ea;
+}
+
+.toggle-button.active {
+    color: black; /* 激活时文字为彩色 */
+}
+.toggle-button.active .button-icon {
+    filter: none; /* 激活时图标为彩色 */
+}
+.toolbar {
+    position: fixed;
+    top: 0;
+    left: -350px; /* 初始位置在屏幕外 */
+    width: 350px;
+    height: 100%;
+    margin-top: 60px;
+    transition: left 0.3s ease; /* 使侧边栏滑动有动画效果 */
+    z-index: 4; /* 第二高的层次 */
+    border: '2px solid #ccc';
+    position: fixed;
+    display: flex;
+    flex-direction: column; /* 工具栏列排列 */
+    gap: 30px; /* 控制行间距 */
+    background-color: rgba(255, 255, 255, 0.75); /* 设置白色背景 */
+    padding: 10px; /* 添加内边距 */
+    border: 2px solid #ccc; /* 添加一个浅色边框 */
+    border-radius: 8px; /* 让边角圆润一些 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+    align-items: center;
+}
+
+/* 当侧边栏打开时的样式 */
+.toolbar.open {
+    left: 120px; /* 显示在屏幕内 */
+
+}
+
+/* 主内容区域 */
+.main-content {
+    margin-left: 200px; /* 左侧工具栏的宽度 */
+    margin-top: 60px; /* 顶部导航栏的高度 */
+    height: calc(100% - 60px);
+    position: relative;
+
+    background: #fafafa;
+    z-index: 3;
+}
+#labelCanvas {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+#tipsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+#hexCanvas {
+    z-index: 0;
+}
