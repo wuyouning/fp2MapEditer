@@ -20,6 +20,10 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 6; /* 设置最高的层次 */
 }
+.title {
+    font-size: 30px;
+    letter-spacing: 4px;
+}
 .sidebar {
     position: fixed;
     display: flex;
@@ -78,7 +82,7 @@ body {
 }
 
 .toggle-button.active {
-    color: black; /* 激活时文字为彩色 */
+    color: rgb(165, 26, 105); /* 激活时文字为彩色 */
 }
 .toggle-button.active .button-icon {
     filter: none; /* 激活时图标为彩色 */
@@ -88,27 +92,53 @@ body {
     top: 0;
     left: -350px; /* 初始位置在屏幕外 */
     width: 350px;
-    height: 100%;
+    height: calc(100% - 60px);
     margin-top: 60px;
     transition: left 0.3s ease; /* 使侧边栏滑动有动画效果 */
     z-index: 4; /* 第二高的层次 */
-    border: '2px solid #ccc';
     position: fixed;
     display: flex;
     flex-direction: column; /* 工具栏列排列 */
-    gap: 30px; /* 控制行间距 */
+
     background-color: rgba(255, 255, 255, 0.75); /* 设置白色背景 */
     padding: 10px; /* 添加内边距 */
-    border: 2px solid #ccc; /* 添加一个浅色边框 */
+    border-right: 2px solid #ccc; /* 添加一个浅色边框 */
     border-radius: 8px; /* 让边角圆润一些 */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
     align-items: center;
+    overflow-x: hidden;
 }
+
+
 
 /* 当侧边栏打开时的样式 */
 .toolbar.open {
-    left: 120px; /* 显示在屏幕内 */
+    left: 120px; /* 显示在屏幕内 sidebar的尺寸 */
+}
+.toolbar1 {
+    gap: 30px; /* 控制行间距 */
+}
 
+.toolbar2 {
+    overflow-y: auto;
+    gap: 10px;
+    min-width: 370px;
+    max-width: 380px;
+    padding-right: 20px;
+    padding-left: 20px;
+    box-sizing: border-box;
+}
+
+/* 卡片区域 */
+.region-card {
+    flex: 0 0 auto; 
+    width: 300px;
+    margin: 15px 15px 0px 15px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9c5; /* 默认的背景颜色 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 主内容区域 */
@@ -137,4 +167,119 @@ body {
 }
 #hexCanvas {
     z-index: 0;
+}
+
+/* 卡片类的样式 */
+  
+.region-card .region-title {
+    font-size: 24px;
+    color: rgb(210, 105, 30);
+    margin: 8px 0;
+}
+
+.region-card .region-info {
+    font-size: 14px;
+    color: gray;
+    margin: 5px 0;
+}
+
+.region-card .effect-title {
+    font-size: 18px;
+    color: rgb(22, 62, 113);
+    margin: 8px 0;
+}
+
+.region-card .stat-title {
+    font-size: 14px;
+    color: rgb(22, 62, 113);
+    margin: 10px 0;
+}
+
+.region-card ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.region-card h4 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+/* 第三个toolbar的样式 */
+.content-section {
+    margin-bottom: 0px;
+}
+
+.content-section h2 {
+    font-size: 20px;
+    color: #2c3e50;
+    /* margin-bottom: 10px; */
+}
+
+.content-section p {
+    font-size: 14px;
+    color: #34495e;
+    line-height: 1.6;
+}
+
+#linkStyle a {
+    font-size: 10px;
+    color: #2980b9;
+    text-decoration: none;
+}
+
+#linkStyle a:hover {
+    text-decoration: underline;
+    color: #1a5276;
+}
+
+.image-section {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    max-width: 300px;
+    margin: 0 auto;
+    gap: 10px;
+
+}
+  
+.support-image {
+    display: flex;
+    max-width: 40%;
+    height: auto;
+    flex: 1;
+    border: 2px solid #bdc3c7;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.support-image:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.link-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    margin-top: 15px;
+}
+.linkStyle {
+    margin: 0 0px;
+    width: 28%;
+    height: auto;
+}
+
+.linkStyle img {
+    display: flex;
+    margin: 0 auto;
+    width: 28%;
+    height: auto;
+    flex: 1;
+}
+
+.linkStyle p {
+    font-size: 8px;
 }

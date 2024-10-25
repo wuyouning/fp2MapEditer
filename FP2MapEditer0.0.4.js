@@ -401,10 +401,10 @@ class Hex {
     drawId(ctx, layout, corners) {
         const center = this.hexToPixel(layout);
         ctx.fillStyle = "#adbdcd";
-        ctx.font = `${Math.max(8, this.size / 2.5)}px Arial`; // 根据 size 调整字体大小
+        ctx.font = `${(this.size / 2.5)}px Arial`; // 根据 size 调整字体大小
 
         // 计算偏移量，确保文本在格子内部且与中心点距离合适
-        const offset = this.size / 3.5;
+        const offset = Math.min(this.size / 3.5, 8);
         if (layout.orientation.name === 'pointy') {
             ctx.textAlign = "center";
             ctx.textBaseline = "bottom";
@@ -623,7 +623,7 @@ class Point {
 }
 
 class HexGrid {
-    constructor(hexSize = 30, maxRadius = 6, showID = true) {
+    constructor(hexSize = 45, maxRadius = 6, showID = true) {
         this.hexes = []; //新建后的格子存储
         this.regions = []; //存储区域
         this.hubs = []; //存储枢纽
@@ -1417,11 +1417,18 @@ function computeConvexHull(points) {
 // 更新工具栏视图
 function updateToolbarView(isExpanded = true) {
     let toolbarContainer = document.getElementById('toolbarContainer');
+    const parentToolbar = document.getElementById('toolbar1');
     if (!toolbarContainer) {
       toolbarContainer = document.createElement('div');
       toolbarContainer.id = 'toolbarContainer';
-      toolbarContainer.style.zIndex = '999';
-      document.body.appendChild(toolbarContainer);
+    }
+
+    // 将工具栏容器插入到 toolbar1 中
+    if (parentToolbar) {
+        parentToolbar.appendChild(toolbarContainer);
+    } else {
+        console.error('Parent toolbar element with id "toolbar1" not found');
+        return;
     }
   
     // 设置工具栏容器的样式
@@ -1551,7 +1558,7 @@ function updateToolbarView(isExpanded = true) {
             hexSizeSlider.innerHTML = `
             <label for="hexSizeSlider">格子尺寸:</label>
             <input type="range" id="hexSizeSlider" min="24" max="80" value="30">
-            <span id="hexSize">30</span>
+            <span id="hexSize">40</span>
             `;
             toolbarContainer.appendChild(hexSizeSlider);
             document.getElementById('hexSizeSlider').addEventListener('input', (event) => {
@@ -1633,16 +1640,14 @@ function updateToolbarView(isExpanded = true) {
 // 设置工具栏容器的样式
 function setToolbarStyle(toolbarContainer) {
     toolbarContainer.style.position = 'fixed';
-    toolbarContainer.style.top = '1%';
-    toolbarContainer.style.left = '1%';
     toolbarContainer.style.display = 'flex';
     toolbarContainer.style.flexDirection = 'column'; // 工具栏列排列
     toolbarContainer.style.gap = '20px'; // 控制行间距
     toolbarContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.85)'; // 设置白色背景
     toolbarContainer.style.padding = '10px'; // 添加内边距
-    toolbarContainer.style.border = '2px solid #ccc'; // 添加一个浅色边框
+    // toolbarContainer.style.border = '2px solid #ccc'; // 添加一个浅色边框
     toolbarContainer.style.borderRadius = '8px'; // 让边角圆润一些
-    toolbarContainer.style.boxShadow = '0px 4px 10px rgba(0, 0, 0, 0.1)'; // 添加阴影效果
+    // toolbarContainer.style.boxShadow = '0px 4px 10px rgba(0, 0, 0, 0.1)'; // 添加阴影效果
 }
 
 // 阈值指示区域
@@ -1679,308 +1684,7 @@ function updateDetectedHexListView() {
     });
 }
 
-// 区域信息显示
-function updateRegionCards() {
-    let regionContainer = document.getElementById('regionContainer');
-    let toggleButton = document.getElementById('toggleButton');
 
-    //卡片容器样式
-    if (!regionContainer) { 
-        // 创建容器 
-        regionContainer = document.createElement('div'); 
-        regionContainer.id = 'regionContainer'; 
-        regionContainer.style.position = 'fixed'; 
-        regionContainer.style.bottom = '20px'; 
-        regionContainer.style.left = '1%'; 
-        // regionContainer.style.transform = 'translateX(-50%)'; 
-        regionContainer.style.height = 'min-content';
-        regionContainer.style.maxHeight = '20%'; // 调整高度适应更多内容
-        regionContainer.style.width = 'min-content'; // 最小适应
-        regionContainer.style.maxWidth = '95%'; // 最大宽度为页面的90%
-        regionContainer.style.overflowX = 'auto'; // 确保容器在内容溢出时显示水平滚动条
-        regionContainer.style.overflowY = 'auto'; // 禁止纵向滚动
-        regionContainer.style.whiteSpace = 'nowrap'; // 确保卡片在同一行显示
-        regionContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'; 
-        regionContainer.style.border = '1px solid #ccc'; 
-        regionContainer.style.padding = '15px'; 
-        regionContainer.style.borderRadius = '12px'; 
-        regionContainer.style.display = 'flex'; 
-        regionContainer.style.alignItems = 'flex-start';  // 卡片相对于容器顶部对齐 
-        regionContainer.style.boxShadow = '0px 8px 15px rgba(0, 0, 0, 0.2)'; // 增加阴影效果
-        regionContainer.style.zIndex = '999';
-        document.body.appendChild(regionContainer); 
-    }
-
-    // 创建或获取切换按钮
-    if (!toggleButton) {
-        toggleButton = document.createElement('button');
-        toggleButton.id = 'toggleButton';
-        toggleButton.textContent = '收起';
-        toggleButton.style.position = 'fixed';
-        toggleButton.style.bottom = '22%';
-        toggleButton.style.left = '1%';
-        toggleButton.style.zIndex = '1000';
-        toggleButton.style.padding = '8px 12px';
-        toggleButton.style.border = 'none';
-        toggleButton.style.borderRadius = '6px';
-        toggleButton.style.backgroundColor = '#ecf1fe';
-        toggleButton.style.color = '#7d8391';
-        toggleButton.style.cursor = 'pointer';
-        toggleButton.onclick = function () {
-            if (regionContainer.style.display === 'none') {
-                regionContainer.style.display = 'flex';
-                toggleButton.textContent = '收起';
-                toggleButton.style.bottom = '22%';
-            } else {
-                regionContainer.style.display = 'none';
-                toggleButton.textContent = '查看区域信息';
-                toggleButton.style.bottom = '5%';
-            }
-        };
-        document.body.appendChild(toggleButton);
-    }
-
-    // 封装一个用于创建垂直区域列表的函数
-    function createVerticalList(titleText, items, param = 'p', titleFontSize = null) {
-        // 创建标题元素
-        const title = document.createElement(param);
-        title.textContent = titleText;
-        title.style.fontSize = titleFontSize;
-        // 创建无序列表元素
-        const list = document.createElement('ul');
-        list.style.margin = '0';
-        list.style.paddingLeft = '20px';
-
-        // 为每个元素创建列表项
-        items.forEach(item => {
-            const listItem = document.createElement('li');
-            listItem.textContent = item;
-            listItem.style.fontSize = '14px';
-            list.appendChild(listItem);
-        });
-
-        // 创建一个容器元素，用于将标题和列表组合
-        const container = document.createElement('div');
-        container.appendChild(title);
-        container.appendChild(list);
-
-        return container;
-    }
-
-    // 用于呈现 InnerEffect 的结果到 UI 上
-    function renderInnerEffectUI(innerEffectData, param) {
-        const container = document.createElement('div');
-        let listData;
-        if (param === 'd') {
-            listData = innerEffectData('d');
-            listData.forEach(detail => {
-                let items = [];
-                if (detail.pollution === null) {
-                    items = [`${detail.heat}`];
-                } else {
-                    items = [`${detail.heat}`, `${detail.pollution}`];
-                }
-                const list = createVerticalList(`${detail.region}`, items);
-                container.appendChild(list);
-            });
-        } else if (param === 'a') {
-            listData = innerEffectData('a');
-            listData.forEach(effect => {
-                let items = [];
-                if (effect.disease === null && effect.pollution === null) {
-                    items = [`${effect.heat}`];
-                } else if (effect.disease === null){
-                    items = [`${effect.heat}`, `${effect.pollution}`];
-                } else if (effect.pollution === null){
-                    items = [`${effect.heat}`, `${effect.disease}`];
-                } else {
-                    items = [`${effect.heat}`, `${effect.pollution}`, `${effect.disease}`];
-                }
-                const list = createVerticalList(`${effect.type}`, items);
-                container.appendChild(list);
-            });
-        } else if (param === 't') {
-            const totalEffects = innerEffectData('t');
-            const items = [
-               
-                `热能: ${totalEffects.heat}`,
-                `脏污: ${totalEffects.pollution}`,
-                `疾病: ${totalEffects.disease}`
-            ];
-            const title = `效应区域数: ${totalEffects.region}`;
-            const list = createVerticalList(title, items);
-            container.appendChild(list);
-        }
-        return container;
-    }
-    //卡片样式
-    function createStyledCard(backgroundColor = '#f9f9c5') {
-        const card = document.createElement('div');
-        card.style.flex = '0 0 auto'; // 固定宽度，不被挤压
-        card.style.width = '150px';
-        card.style.marginRight = '15px';
-        card.style.padding = '15px';
-        card.style.border = '1px solid #ccc';
-        card.style.borderRadius = '12px';
-        card.style.backgroundColor = backgroundColor; // 使用略浅的颜色
-        card.style.boxShadow = '0px 4px 8px rgba(0, 0, 0, 0.1)';
-        return card;
-    }
-    regionContainer.innerHTML = ''; // 清空容器内容
-
-    // 添加区域内容统计卡片
-    const summaryCard = createStyledCard('#f9f9c5');
-    const summaryTitle = document.createElement('h4');
-    summaryTitle.textContent = `统计信息`;
-    summaryTitle.style.marginBottom = '10px'; // 增加间距
-    summaryCard.appendChild(summaryTitle);
-
-    // 获取区域统计信息
-    const regionStats = hexGrid.regionStatistics();
-    const regionItems = Object.entries(regionStats).map(([type, count]) => `${type}: ${count}`);
-    const regionStatList = createVerticalList(`总区域数: ${hexGrid.regions.length}`, regionItems);
-    summaryCard.appendChild(regionStatList);
-
-    // 获取枢纽统计信息
-    const hubStats = hexGrid.hubsStatistics();
-    const hubItems = Object.entries(hubStats).map(([type, count]) => `${type}: ${count}`);
-    const hubStatList = createVerticalList(`总枢纽数: ${hexGrid.hubs.length}`, hubItems);
-    summaryCard.appendChild(hubStatList);
-
-    regionContainer.appendChild(summaryCard);
-
-    // 每个区域的内容卡片
-    hexGrid.regions.forEach(region => {
-        const card = createStyledCard('white')
-
-        const name = document.createElement('h4');
-        name.textContent = `${region.name}`;
-        name.style.marginBottom = '8px';
-        card.appendChild(name);
-
-        const type = document.createElement('p');
-        type.textContent = `类型: ${region.type}`;
-        type.style.fontSize = '10px';
-        type.style.color = 'gray';
-        card.appendChild(type);
-
-        const hexCount = document.createElement('p');
-        hexCount.textContent = `格子数量: ${region.hexes.length}`;
-        card.appendChild(hexCount);
-
-        const neighborCount = document.createElement('p');
-        neighborCount.textContent = `邻居数量: ${region.getAreaOneRingHex().length}`;
-        card.appendChild(neighborCount);
-
-        if (region.innerEffectArea.length > 0 || region.totalHubsCount > 0) {
-            const totalEffectsTitle = document.createElement('h4');
-            totalEffectsTitle.textContent = `效应总计`;
-            totalEffectsTitle.style.marginBottom = '8px';
-            card.appendChild(totalEffectsTitle);
-
-            const totalEffects = region.InnerEffect('t');
-            let regionCount = totalEffects.region
-            const title = document.createElement('p');
-            title.textContent = `区域总数: ${regionCount}`;
-            // title.style.fontSize = '20px';
-            card.appendChild(title)
-            let listTitle = `枢纽总数: ${region.totalHubsCount}`;
-            let listItems = region.effectSummary;
-            const effectSummaryList = createVerticalList(listTitle, listItems);
-            card.appendChild(effectSummaryList);
-
-        }
-        if (region.innerEffectArea.length > 0) {
-
-            
-            // const totalEffectsList = renderInnerEffectUI(region.InnerEffect.bind(region), 't');
-            // card.appendChild(totalEffectsList);
-
-
-            const titleAcount = document.createElement('h4');
-            titleAcount.textContent = `效应分类统计`;
-            titleAcount.style.marginBottom = '8px';
-            card.appendChild(titleAcount);
-            
-            const innerEffectCountList = renderInnerEffectUI(region.InnerEffect.bind(region), 'a');
-            card.appendChild(innerEffectCountList);
-
-            const titleDetail = document.createElement('h4');
-            titleDetail.textContent = `效应细节`;
-            titleDetail.style.marginBottom = '8px';
-            card.appendChild(titleDetail);
-
-            const innerEffectDetailList = renderInnerEffectUI(region.InnerEffect.bind(region), 'd');
-            card.appendChild(innerEffectDetailList);
-        }
-        // 获取并显示枢纽效应统计
-        const effectStats = region.hubsEffectStat;
-        if (Object.keys(effectStats).length > 0) {
-            const effectTitle = document.createElement('h4');
-            effectTitle.textContent = `枢纽效应统计：`;
-            effectTitle.style.marginBottom = '10px';
-            card.appendChild(effectTitle);
-
-            // 使用封装的函数创建“枢纽效应”列表
-            Object.entries(effectStats).forEach(([brushType, data]) => {
-                const listTitle = `${brushType}`;
-                const listItems = [
-                    `数量: ${data.count}`,
-                    `${data.effectType}`,
-                    `总效应: ${data.totalEffect}`
-                ];
-                const hubEffectList = createVerticalList(listTitle, listItems);
-                card.appendChild(hubEffectList);
-            });
-        }
-        if (region.outerEffect.length > 0) {
-            const outerEffectList = createVerticalList('外馈区域:', region.outerEffect, 'h4');
-            card.appendChild(outerEffectList);
-        }
-
-
-
-
-        // 动态调整卡片高度
-        card.style.height = 'auto';
-
-        regionContainer.appendChild(card);
-    });
-    // 枢纽的内容卡片
-    hexGrid.hubs.forEach(hub => {
-        const card = createStyledCard('white')
-
-        const hubEffect = hub.hubEffect;
-        const hubEffectArea = hub.findEffectedArea;
-
-        const name = document.createElement('h4');
-        name.textContent = `${hub.region}`;
-        name.style.marginBottom = '8px';
-        card.appendChild(name);
-
-        const effect = document.createElement('p');
-        effect.textContent = `${hubEffect.effect}`;
-        effect.style.fontSize = '10px';
-        effect.style.color = 'gray';
-        card.appendChild(effect);
-
-        // 使用封装的函数创建“内效区域”列表
-        if (hub.effectedArea !== 0) {
-            const hexCount = document.createElement('p');
-            hexCount.textContent = `总效应: ${hubEffect.effectValue * hubEffectArea.length}`;
-            card.appendChild(hexCount);
-
-            const effectAreaList = createVerticalList(`覆盖数: ${hubEffectArea.length}`, hubEffectArea);
-            card.appendChild(effectAreaList);
-        }
-
-        // 动态调整卡片高度
-        card.style.height = 'auto';
-
-        regionContainer.appendChild(card);
-    });
-
-}
 
 //提示框
 function toggleCustomPrompt(show = true, textContent = '是否执行操作？', confirmCallback = null) {
@@ -2044,10 +1748,12 @@ function toggleCustomPrompt(show = true, textContent = '是否执行操作？', 
 
 // 调整画布
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    labelCanvas.width = window.innerWidth;
-    labelCanvas.height = window.innerHeight;
+    canvas.width = window.innerWidth * 2;
+    canvas.height = window.innerHeight * 2;
+    labelCanvas.width = window.innerWidth * 2;
+    labelCanvas.height = window.innerHeight * 2;
+    tipsCanvas.width = window.innerWidth * 2;
+    tipsCanvas.height = window.innerHeight * 2;
         // 更新原点位置为画布中心
     hexGrid.layout.origin = new Point(canvas.width / 2, canvas.height / 2);
     // 将视窗滚动到画布的中心
@@ -2063,117 +1769,66 @@ function resizeCanvas() {
     hexGrid.drawHexagons();
 }
 
-// 封装右键拖动滚动的功能为一个类
-class RightClickDragScroller {
-    constructor() {
-        this.isRightMouseDown = false;
-        this.startX = 0;
-        this.startY = 0;
-        this.init();
-    }
 
-    init() {
-        // 监听鼠标按下事件
-        window.addEventListener('mousedown', this.onMouseDown.bind(this));
-        // 监听鼠标移动事件
-        window.addEventListener('mousemove', this.onMouseMove.bind(this));
-        // 监听鼠标释放事件
-        window.addEventListener('mouseup', this.onMouseUp.bind(this));
-        // 取消默认的右键菜单事件
-        window.addEventListener('contextmenu', this.onContextMenu.bind(this));
-    }
-
-    onMouseDown(event) {
-        // 判断是否为右键
-        if (event.button === 2) {
-            this.isRightMouseDown = true;
-            this.startX = event.clientX;
-            this.startY = event.clientY;
-            document.body.style.cursor = 'grab'; // 鼠标变为小手
-        }
-    }
-
-    onMouseMove(event) {
-        if (this.isRightMouseDown) {
-            const deltaX = this.startX - event.clientX;
-            const deltaY = this.startY - event.clientY;
-            
-            // 滚动窗口
-            window.scrollBy(deltaX, deltaY);
-            
-            // 更新起始点
-            this.startX = event.clientX;
-            this.startY = event.clientY;
-        }
-    }
-
-    onMouseUp(event) {
-        // 当右键释放时，停止滚动
-        if (event.button === 2) {
-            this.isRightMouseDown = false;
-            document.body.style.cursor = 'default'; // 恢复默认光标
-        }
-    }
-
-    onContextMenu(event) {
-        event.preventDefault();
-    }
-}
 
 // 按下中键就显示信息，测试用
-class HexInfoDisplay {
-    constructor(canvasId, hexgrid, infoBoxId) {
-        this.canvas = document.getElementById(canvasId);
-        this.hexgrid = hexgrid;
-        this.infoBox = document.getElementById(infoBoxId);
-        this.initEventListeners();
-    }
+// class HexInfoDisplay {
+//     constructor(canvasId, hexgrid, infoBoxId) {
+//         this.canvas = document.getElementById(canvasId);
+//         this.hexgrid = hexgrid;
+//         this.infoBox = document.getElementById(infoBoxId);
+//         this.initEventListeners();
+//     }
 
-    initEventListeners() {
-        this.canvas.addEventListener('mousedown', (event) => this.handleMouseDown(event));
-        this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
-    }
+//     initEventListeners() {
+//         this.canvas.addEventListener('mousedown', (event) => this.handleMouseDown(event));
+//         this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
+//     }
 
-    handleMouseDown(event) {
-        if (event.button === 1) { // Check if middle mouse button is clicked
-            const rect = this.canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
+//     handleMouseDown(event) {
+//         if (event.button === 1) { // Check if middle mouse button is clicked
+//             const rect = this.canvas.getBoundingClientRect();
+//             const mouseX = event.clientX - rect.left;
+//             const mouseY = event.clientY - rect.top;
 
-            const hex = this.getHexInfoFromMouse(mouseX, mouseY);
-            if (hex) {
-                this.displayHexInfo(hex, event.clientX, event.clientY);
-            }
-        }
-    }
+//             const hex = this.getHexInfoFromMouse(mouseX, mouseY);
+//             if (hex) {
+//                 this.displayHexInfo(hex, event.clientX, event.clientY);
+//             }
+//         }
+//     }
 
-    handleMouseMove(event) {
-        if (this.infoBox.style.display === 'block') {
-            this.infoBox.style.left = `${event.clientX + 10}px`;
-            this.infoBox.style.top = `${event.clientY + 10}px`;
-        }
-    }
+//     handleMouseMove(event) {
+//         if (this.infoBox.style.display === 'block') {
+//             this.infoBox.style.left = `${event.clientX + 10}px`;
+//             this.infoBox.style.top = `${event.clientY + 10}px`;
+//         }
+//     }
 
-    getHexInfoFromMouse(mouseX, mouseY) {
-        const hexId = this.hexgrid.getHexIdFromMouse(mouseX, mouseY);
-        return this.hexgrid.getHexById(hexId);
-    }
+//     getHexInfoFromMouse(mouseX, mouseY) {
+//         const hexId = this.hexgrid.getHexIdFromMouse(mouseX, mouseY);
+//         return this.hexgrid.getHexById(hexId);
+//     }
 
-    displayHexInfo(hex, clientX, clientY) {
-        const infoText = `Hex ID: ${hex.id}\nBrush: ${hex.brush}\nType: ${hex.type}\nRegion: ${hex.region}`;
-        this.infoBox.innerText = infoText;
-        this.infoBox.style.display = 'block';
-        this.infoBox.style.left = `${clientX + 10}px`;
-        this.infoBox.style.top = `${clientY + 10}px`;
-    }
-}
+//     displayHexInfo(hex, clientX, clientY) {
+//         const infoText = `Hex ID: ${hex.id}\nBrush: ${hex.brush}\nType: ${hex.type}\nRegion: ${hex.region}`;
+//         this.infoBox.innerText = infoText;
+//         this.infoBox.style.display = 'block';
+//         this.infoBox.style.left = `${clientX + 10}px`;
+//         this.infoBox.style.top = `${clientY + 10}px`;
+//     }
+// }
 
 
 
 const canvas = document.getElementById('hexCanvas');
 const ctx = canvas.getContext('2d');
+
 const labelCanvas = document.getElementById('labelCanvas');
 const labelCtx = labelCanvas.getContext('2d');
+
+const tipsCanvas = document.getElementById('tipsCanvas');
+const tipsCtx = tipsCanvas.getContext('2d');
 
 canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
@@ -2204,9 +1859,6 @@ canvas.addEventListener('click', (event) => {
     }
 });
 
-//鼠标位置显示格子颜色
-let previousHoveredHexId = null;
-
 // 鼠标移动事件监听器
 canvas.addEventListener('mousemove', (event) => {
     const rect = canvas.getBoundingClientRect();
@@ -2214,40 +1866,19 @@ canvas.addEventListener('mousemove', (event) => {
     const mouseY = event.clientY - rect.top;
     const hexId = hexGrid.getHexIdFromMouse(mouseX, mouseY);
 
-    // 如果鼠标悬停在不同的格子上
-    if (hexId !== previousHoveredHexId) {
-        // 清除上一个高亮格子的高亮效果
-        if (previousHoveredHexId !== null) {
-            const previousHex = hexGrid.getHexById(previousHoveredHexId);
-            if (previousHex) {
-                // 重绘上一个格子以恢复其原始状态（根据 hexGrid.showID 决定是否显示 ID）
-                previousHex.drawHex(ctx, hexGrid.layout, hexGrid.showID);
-            }
-        }
-
-        // 更新当前悬停的格子
-        const hoveredHex = hexGrid.getHexById(hexId);
-        if (hoveredHex) {
-            // 绘制新的高亮效果（如果 showID 为 false，则悬停时显示 ID）
-            const showHoverId = !hexGrid.showID; // 悬停时如果 showID 为 false 则显示 ID
-            hoveredHex.drawHoverHex(ctx, hexGrid.layout, '#EEFFB3', 0.5, showHoverId);
-        }
-
-        // 更新记录的悬停格子 ID
-        previousHoveredHexId = hexId;
+    // 更新当前悬停的格子
+    const hoveredHex = hexGrid.getHexById(hexId);
+    if (hoveredHex) {
+        // 绘制新的高亮效果（如果 showID 为 false，则悬停时显示 ID）
+        const showHoverId = !hexGrid.showID; // 悬停时如果 showID 为 false 则显示 ID
+        tipsCtx.clearRect(0, 0, canvas.width, canvas.height); // 清除高亮层
+        hoveredHex.drawHoverHex(tipsCtx, hexGrid.layout, '#EEFFB3', 0.5, showHoverId);
     }
 });
 
 // 鼠标离开画布时清除高亮
 canvas.addEventListener('mouseleave', () => {
-    if (previousHoveredHexId !== null) {
-        const previousHex = hexGrid.getHexById(previousHoveredHexId);
-        if (previousHex) {
-            // 重绘上一个格子以恢复其原始状态（根据 hexGrid.showID 决定是否显示 ID）
-            previousHex.drawHex(ctx, hexGrid.layout, hexGrid.showID);
-        }
-        previousHoveredHexId = null;
-    }
+    tipsCtx.clearRect(0, 0, canvas.width, canvas.height); // 清除高亮层
 });
 
 hexGrid = new HexGrid();
@@ -2260,9 +1891,11 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 hexGrid.drawHexagons();
 updateToolbarView();
+
 // 创建一个 RightClickDragScroller 实例来启用功能
 const rightClickDragScroller = new RightClickDragScroller();
-window.onload = function() {
-    const hexInfoDisplay = new HexInfoDisplay('hexCanvas', hexGrid, 'hexInfoBox');
-};
+
+// window.onload = function() {
+//     const hexInfoDisplay = new HexInfoDisplay('hexCanvas', hexGrid, 'hexInfoBox');
+// };
 
