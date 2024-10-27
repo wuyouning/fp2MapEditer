@@ -543,21 +543,11 @@ class Hex {
             borderColor = brushMap[this.brush].borderColor || '#000000';
         }
 
-        // 使用正确的邻居方向和格子编号来遍历边
-        // let neighborDirections = [
-        //     { direction: Hex.directions[5], label: 1 },  // 右下方向，对应编号 0, 1, -1
-        //     { direction: Hex.directions[4], label: 2 },  // 左下方向，对应编号 -1, 1, 0
-        //     { direction: Hex.directions[3], label: 3 },  // 正左方向，对应编号 -1, 0, 1
-        //     { direction: Hex.directions[2], label: 4 },  // 左上方向，对应编号 0, -1, 1
-        //     { direction: Hex.directions[1], label: 5 },  // 右上方向，对应编号 -1, 1, 0
-        //     { direction: Hex.directions[0], label: 6 }   // 正右方向，对应编号 1, 0, -1
-        // ];
-
-        // 判断布局类型，并定义邻居方向 ，右下角开始
+        // 判断布局类型，并定义邻居方向 ，右下角开始顺时针旋转
         let neighborDirections;
         if (layout.orientation.name === 'pointy') {
             neighborDirections = [
-                { direction: { q: 0, r: 1, s: -1 }},
+                { direction: { q: 0, r: 1, s: -1 }}, 
                 { direction: { q: -1, r: 1, s: 0 }},
                 { direction: { q: -1, r: 0, s: 1 }}, 
                 { direction: { q: 0, r: -1, s: 1 }}, 
@@ -1335,7 +1325,7 @@ class Region {
     }
     ///计算有多少个枢纽
     get totalHubsCount() {
-        return this.effectHubs.length || 0 ;
+        return this.effectHubs.size || 0 ;
     }
 
     //最终的效应统计
@@ -1768,7 +1758,6 @@ function resizeCanvas() {
     // 重新绘制格子
     hexGrid.drawHexagons();
 }
-
 
 
 // 按下中键就显示信息，测试用

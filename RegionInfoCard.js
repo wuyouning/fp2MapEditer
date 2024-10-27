@@ -143,7 +143,7 @@ function updateRegionCards() {
       const effectStats = region.hubsEffectStat;
       if (Object.keys(effectStats).length > 0) {
         const effectTitle = document.createElement('h4');
-        effectTitle.textContent = `枢纽效应统计：`;
+        effectTitle.textContent = `枢纽效应统计`;
         effectTitle.className = 'effect-title';
         card.appendChild(effectTitle);
   
