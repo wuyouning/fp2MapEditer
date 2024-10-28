@@ -7,7 +7,14 @@
     <link rel="stylesheet" href="index.CSS"> <!-- 引入 CSS 文件 -->
     <script src="index.JS" defer></script>
     <script src="FP2MapEditer0.0.4.js" defer></script>
-    <script src="RegionInfoCard.js" defer></script> 
+    <script src="RegionInfoCard.js" defer></script>
+
+    <script src="server.js" defer></script> 
+    <script src="./admin/user.js" defer></script>
+    <script src="./db.js" defer></script>
+    <script src="HexGridListView.js" defer></script>
+
+    
     <title>冰汽时代2 - 区域规划器</title>
     <meta name="description" content="冰汽时代编辑器为您提供详细的地图编辑功能，帮助玩家进行冰汽时代地图规划与设计，实现您的规划梦想。">
     <meta name="keywords" content="冰汽时代编辑器, 冰汽时代地图, 冰汽时代规划, 冰汽时代2, 地图编辑器, 地图规划工具, 冰汽时代2城市规划, 冰汽时代2区域, frostpunk2">
@@ -37,13 +44,35 @@
                 <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 笔刷工具" class="button-icon">
                 <span class="button-text">笔刷工具</span>
             </button>
+
             <button id="toggleButton2" class="toggle-button" onclick="toggleToolbar('toolbar2', this)">
                 <img src="/images/数据表-亮.png" alt="冰汽时代地图规划 - 区域数据图标" class="button-icon">
                 <span class="button-text">区域数据</span>
             </button>
+
             <button id="toggleButton3" class="toggle-button" onclick="toggleToolbar('toolbar3', this)">
                 <img src="/images/提示说明.png" alt="冰汽时代地图编辑器 - 关于与支持图标" class="button-icon">
                 <span class="button-text">学院公告</span>
+            </button>
+
+            <button id="toggleButton4" class="toggle-button" onclick="toggleToolbarFullScreen('publicHexGridBar', this)" >
+                <img src="/images/公共规划.png" alt="冰汽时代地图编辑器 - 公共规划" class="button-icon" >
+                <span class="button-text" >大佬们的规划</span>
+            </button>
+
+            <button id="userHexGridList" class="toggle-button" onclick="toggleToolbarFullScreen('userHexGridBar', this)" style="display: none;">
+                <img src="/images/我的规划.png" alt="冰汽时代地图编辑器 - 我的规划" class="button-icon" >
+                <span class="button-text" >我的规划</span>
+            </button>
+
+            <button id="loginButton" class="toggle-button" onclick="loginToggle()" >
+                <img src="/images/登录.png" alt="冰汽时代地图编辑器 - 登录按钮" class="button-icon" >
+                <span class="button-text" >登录</span>
+            </button>
+
+            <button id="infoButton" class="toggle-button" onclick="userManager.logout()" style="display: none;">
+                <img src="/images/个人信息.png" alt="冰汽时代地图编辑器 - 个人信息" class="button-icon" >
+                <span id= loginedName class="button-text" >个人信息</span>
             </button>
         </div>
     </div>
@@ -98,12 +127,31 @@
         
         
     </div>
+
+    <div id="userHexGridBar" class="toolbar hexGridBar">
+
+    </div>
+
+    <div id="publicHexGridBar" class="toolbar hexGridBar">
+
+    </div>
+
+
     <div class= "main-content" style="position: relative;">
         <canvas id="hexCanvas" ></canvas>
         <canvas id="labelCanvas"></canvas>
         <canvas id="tipsCanvas"></canvas>
     </div>
 
+    <div id="loginModal" style="display: none;">
+        <h2>用户登录</h2>
+        <input type="text" id="username" placeholder="用户名" maxlength="16">
+        <input type="password" id="password" placeholder="密码" maxlength="16">
+        <input type="text" id="phone" placeholder="手机号码" maxlength="11">
+        <button class="login" onclick="userManager.login(document.getElementById('username').value, document.getElementById('password').value, document.getElementById('phone').value)">登录</button>
+        <button class="cancel" onclick="userManager.cancel()">取消</button>
+        <p id="message" style="color: red;"></p>
+    </div>
 
 
 

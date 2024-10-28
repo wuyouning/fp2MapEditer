@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台</title>
+
+    <link rel="stylesheet" href="admin.css"> <!-- 引入 CSS 文件 -->
+    <script src="user.js" defer></script>
+    <script src="admin.js" defer></script> 
+</head>
+<body>
+    <header class="navbar"> <!-- 第一层，顶部导航栏 -->
+        <h1 class="navbar-title">区域规划器管理后台</h1>
+        <div class="title">区域规划器管理后台 - 冰汽时代 2</div>
+        <a href="../index.html">返回首页</a>  <!-- 返回首页的链接 --> 
+    </header>
+    <div class="container">
+        <h2>用户登录</h2>
+        <input type="text" id="username" placeholder="用户名" maxlength="16">
+        <input type="password" id="password" placeholder="密码" maxlength="16">
+        <input type="text" id="phone" placeholder="手机号码" maxlength="11">
+        <button class="login" onclick="userManager.login(document.getElementById('username').value, document.getElementById('password').value, document.getElementById('phone').value)">登录</button>
+        <button class="cancel" onclick="userManager.cancel()">取消</button>
+        <p id="message" style="color: red;"></p>
+    </div>
+</body>
+</html>
+

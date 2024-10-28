@@ -26,6 +26,31 @@ function toggleToolbar(toolbarId, button) {
     }
 }
 
+function toggleToolbarFullScreen(toolbarId, button) {
+    toggleToolbar(toolbarId, button);
+    const toolbar = document.getElementById(toolbarId);
+    const isOpen = toolbar.style.display === "flex"; // 检查当前显示状态
+    
+    // 切换当前工具栏的显示状态
+    if (isOpen) {
+        setTimeout(() => {
+            toolbar.style.display = "none"; // 关闭工具栏
+        }, 3000);
+    } else {
+        toolbar.style.display = "flex"; // 打开工具栏
+    }
+}
+
+
+function loginToggle() {
+    const loginModal = document.getElementById('loginModal');
+    if(loginModal.style.display === 'block') {
+        loginModal.style.display = 'none';
+    } else {
+        loginModal.style.display = 'block';
+    }
+}
+
 // 文本内容导入
 function loadContent(url, elementId, jsonKey) {
     fetch(url)
@@ -46,11 +71,8 @@ function loadContent(url, elementId, jsonKey) {
         document.getElementById(elementId).innerHTML = '<p>内容加载失败，请稍后重试。</p>';
       });
 }
-  
-// 调用加载内容
-loadContent('toolbar3.json', 'introduction-content', 'introduction');
-loadContent('toolbar3.json', 'additional-content', `additional`);
-loadContent('toolbar3.json', 'donation-content', `donation`);
+
+
 // 封装右键拖动滚动的功能为一个类
 class RightClickDragScroller {
     constructor() {
@@ -107,3 +129,13 @@ class RightClickDragScroller {
         event.preventDefault();
     }
 }
+
+// 调用加载公告内容
+loadContent('toolbar3.json', 'introduction-content', 'introduction');
+loadContent('toolbar3.json', 'additional-content', `additional`);
+loadContent('toolbar3.json', 'donation-content', `donation`);
+
+// 检查登录信息后加载TODO:
+window.onload = () => {
+    userManager.setUserLogin()
+};

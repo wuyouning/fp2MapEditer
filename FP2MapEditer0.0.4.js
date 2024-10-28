@@ -650,6 +650,11 @@ class HexGrid {
             origin: new Point(canvas.width / 2, canvas.height / 2)
         };
         this.isShowRegionLabel = true;
+
+        //画布的名称描述
+        this.canvasName = "规划"; // 画布名称
+        this.description = ""; // 描述
+        this.isPublic = false; // 是否公开
     }
 
     addHex(hex) {
@@ -844,6 +849,174 @@ class HexGrid {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         }
     }
+    //绘制格子略缩图
+    generateThumbnail() {
+        // 获取包含非空白格子的所有六边形
+        const filledHexes = Object.values(this.hexes).filter(hex => hex.type !== "空白");
+        
+        if (filledHexes.length === 0) {
+            console.error("没有非空白的格子，无法生成缩略图");
+            return null;
+        }
+    
+        // 找到最小的包围盒边界
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    
+        filledHexes.forEach(hex => {
+            const { x, y } = hex.hexToPixel(this.layout);
+            const corners = hex.polygonCorners(this.layout);
+            
+            // 计算每个格子六个顶点的最大最小值
+            corners.forEach(corner => {
+                if (corner.x < minX) minX = corner.x;
+                if (corner.y < minY) minY = corner.y;
+                if (corner.x > maxX) maxX = corner.x;
+                if (corner.y > maxY) maxY = corner.y;
+            });
+        });
+    
+        // 设置缩略图的宽高和比例（可根据需求调整）
+        const padding = 10; // 为缩略图添加边距
+        const thumbnailWidth = maxX - minX + padding * 2;
+        const thumbnailHeight = maxY - minY + padding * 2;
+    
+        // 创建一个新的临时 canvas，用于生成缩略图
+        const thumbnailCanvas = document.createElement('canvas');
+        thumbnailCanvas.width = thumbnailWidth;
+        thumbnailCanvas.height = thumbnailHeight;
+        const thumbnailCtx = thumbnailCanvas.getContext('2d');
+    
+        // 清除并绘制缩略图内容
+        thumbnailCtx.clearRect(0, 0, thumbnailWidth, thumbnailHeight);
+        thumbnailCtx.fillStyle = "#ffffff"; // 设置缩略图背景为白色
+        thumbnailCtx.fillRect(0, 0, thumbnailWidth, thumbnailHeight);
+    
+        // 将有效的格子绘制到缩略图画布上
+        filledHexes.forEach(hex => {
+            const { x, y } = hex.hexToPixel(this.layout);
+            thumbnailCtx.save();
+            
+            // 平移坐标到缩略图的裁剪区域起点
+            thumbnailCtx.translate(x - minX + padding, y - minY + padding);
+            hex.drawHex(thumbnailCtx, this.layout, false); // 绘制六边形，不显示 ID
+            thumbnailCtx.restore();
+        });
+    
+        // 返回缩略图的 Data URL，可以将其用于 img 标签，或发送到服务器
+        return thumbnailCanvas.toDataURL('image/png');
+    }
+    
+    //更新名称、描述和公开性
+    updateProperties({ canvasName = '规划', description = '', isPublic = false}) {
+        if (canvasName !== undefined) {
+            this.canvasName = canvasName;
+        }
+        if (description !== undefined) {
+            this.description = description;
+        }
+        if (isPublic !== undefined) {
+            this.isPublic = isPublic;
+        }
+
+        // 更新数据库
+        this.updateDescription();
+    }
+
+    async updateDescription() {
+        try {
+            const ownerId = localStorage.getItem('uuid'); // 获取本地存储的用户 ID
+
+            if (!ownerId) {
+                console.error("无法更新数据: 找不到本地存储的用户ID (UUID)");
+                return;
+            }
+
+            const response = await fetch('/api/update-hexgrid', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ownerId: ownerId,
+                    canvasName: this.canvasName,
+                    description: this.description,
+                    isPublic: this.isPublic
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('HexGrid 数据更新成功');
+            } else {
+                console.error('更新 HexGrid 数据时出错：', result.message);
+            }
+        } catch (error) {
+            console.error('更新 HexGrid 数据时出错：', error);
+        }
+    }
+
+    async save() {
+        try {
+            const ownerId = localStorage.getItem('uuid');
+
+            if(!ownerId) {
+                console.error("无法保存数据: 找不到本地存储的用户ID (UUID)");
+                return;
+            }
+
+            const thumbnail = this.generateThumbnail();
+
+            const response = await fetch('/api/save-hexgrid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ownerId: ownerId,
+                    hexSize: this.hexSize,
+                    maxRadius: this.maxRadius,
+                    canvasName: this.canvasName,
+                    description: this.description,
+                    isPublic: this.isPublic,
+                    coverImage: thumbnail // 将缩略图传递到后端
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('HexGrid 数据保存成功');
+                const hexGridId = result.hexGridId; // 获取 hexGrid 保存后的 ID
+    
+                // 保存 hexes
+                for (const hex of Object.values(this.hexes)) {
+                    await fetch('/api/save-hex', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            hexgridId: hexGridId,
+                            q: hex.q,
+                            r: hex.r,
+                            s: hex.s,
+                            brush: hex.brush,
+                            region: hex.region,
+                            type: hex.type
+                        })
+                    });
+                }
+    
+                console.log('所有 hex 数据保存成功');
+            } else {
+                console.error('保存 HexGrid 数据时出错：', result.message);
+            }
+        } catch (error) {
+            console.error('保存 HexGrid 和 Hex 数据时出错：', error);
+        }
+    }
+
 
 
 

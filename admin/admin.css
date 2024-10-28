@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column; /* 使 body 的子元素纵向排列 */
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    margin: 0; /* 去除默认 margin */
+}
+
+.navbar {
+    position: fixed; /* 改为 fixed，确保其相对于视窗定位 */
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%; /* 让导航栏占满全宽 */
+    background-color: #fff; /* 背景色 */
+    padding: 10px 20px; /* 内边距 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    display: flex;
+    justify-content: space-between; /* 两边对齐 */
+    align-items: center; /* 垂直居中 */
+    box-sizing: border-box; /* 确保 padding 不会导致宽度超出视口 */
+    z-index: 100; /* 提高导航栏的层级，确保它在其他元素上方 */
+    overflow: hidden; /* 避免内容溢出 */
+}
+
+.navbar-title {
+    font-size: 1.5rem;
+    white-space: nowrap; /* 防止标题换行 */
+}
+
+.title {
+    font-size: 1rem;
+    margin-left: 20px;
+    white-space: nowrap;
+}
+
+.navbar-link {
+    font-size: 1rem;
+    text-decoration: none;
+    color: #007bff;
+    margin-left: auto; /* 将返回首页链接推到右侧 */
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin-top: 100px; /* 添加足够的顶部间距，避免内容被导航栏覆盖 */
+}
+
+input {
+    width: calc(100% - 20px); /* 减去左右内边距 */
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login {
+    background-color: #28a745;
+    color: white;
+}
+
+.cancel {
+    background-color: #dc3545;
+    color: white;
+}

@@ -99,7 +99,6 @@ body {
     position: fixed;
     display: flex;
     flex-direction: column; /* 工具栏列排列 */
-
     background-color: rgba(255, 255, 255, 0.75); /* 设置白色背景 */
     padding: 10px; /* 添加内边距 */
     border-right: 2px solid #ccc; /* 添加一个浅色边框 */
@@ -115,6 +114,7 @@ body {
 .toolbar.open {
     left: 120px; /* 显示在屏幕内 sidebar的尺寸 */
 }
+
 .toolbar1 {
     gap: 30px; /* 控制行间距 */
 }
@@ -124,6 +124,17 @@ body {
     gap: 10px;
     min-width: 370px;
     max-width: 380px;
+    padding-right: 20px;
+    padding-left: 20px;
+    box-sizing: border-box;
+}
+
+.hexGridBar {
+    left: calc(-100% + 120px);
+    display: none;
+    overflow-y: auto;
+    gap: 10px;
+    width: calc(100% - 120px);
     padding-right: 20px;
     padding-left: 20px;
     box-sizing: border-box;
@@ -282,4 +293,45 @@ body {
 
 .linkStyle p {
     font-size: 8px;
+}
+
+/* 登录窗口 */
+#loginModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+#loginModal input {
+    width: calc(100% - 20px); /* 减去左右内边距 */
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#loginModal button {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login {
+    background-color: #28a745;
+    color: white;
+}
+
+.cancel {
+    background-color: #dc3545;
+    color: white;
 }
