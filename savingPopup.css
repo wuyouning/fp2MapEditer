@@ -1,0 +1,136 @@
+.savingPopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+  }
+  
+  .savingPopup-content h3 {
+    margin-bottom: 10px;
+  }
+  
+  .savingPopup-content h3 {
+    margin-bottom: 5px; /* 减小标题与输入框之间的距离 */
+  }
+  
+  .savingPopup-content textarea,
+  .savingPopup-content input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px; /* 减小输入框与下方元素之间的距离 */
+    resize: none;
+  }
+  
+  /* 法阵名称输入框 */
+  #savingPopup-spellName {
+    height: 3em; /* 高度与文本大小匹配 */
+  }
+  
+  /* 描述输入框 */
+  #savingPopup-description {
+    height: calc(1em * 20); /* 高度为文本大小的四倍 */
+  }
+  
+
+  .savingPopup-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .savingPopup-toggle-container span {
+    margin-right: 10px;
+    font-size: 14px;
+  }
+  
+  .savingPopup-toggle {
+    width: 60px;
+    height: 30px;
+    background-color: #d0d0d0;
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .savingPopup-toggle .savingPopup-toggle-circle {
+    width: 26px;
+    height: 26px;
+    background-color: #907f60;
+
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: left 0.3s;
+  }
+  
+  .savingPopup-toggle.on {
+    background-color: #3857bd;
+  }
+  
+  .savingPopup-toggle.on .savingPopup-toggle-circle {
+    left: 32px;
+    background-color: #ffa500;
+  }
+  
+  .savingPopup-button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .savingPopup-button {
+    width: 30%;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #ccc;
+    transition: background-color 0.3s;
+  }
+  
+  .savingPopup-add {
+    background-color: #4c7aaf;
+    color: white;
+  }
+  
+  .savingPopup-edit {
+    background-color: #2196f3;
+    color: white;
+  }
+  
+  .savingPopup-cancel {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .savingPopup-button:hover {
+    opacity: 0.8;
+  }
+  
+  .savingPopup-toggle-container span {
+  margin-left: 15px; /* 为 span 增加左边距 */
+  font-size: 14px;
+}
+
+
+.savingPopup-error-message {
+    color: red; /* 报错信息的文字颜色 */
+    font-size: 12px; /* 报错信息的字体大小 */
+    margin-top: 5px; /* 距离上方的间距 */
+    display: none; /* 默认隐藏 */
+}
+  

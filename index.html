@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.CSS"> <!-- 引入 CSS 文件 -->
+    <link rel="stylesheet" href="index.CSS">
+    <link rel="stylesheet" href="savingPopup.css">
+
     <script src="index.JS" defer></script>
     <script src="FP2MapEditer0.0.4.js" defer></script>
     <script src="RegionInfoCard.js" defer></script>
@@ -56,22 +58,22 @@
             </button>
 
             <button id="toggleButton4" class="toggle-button" onclick="toggleToolbarFullScreen('publicHexGridBar', this)" >
-                <img src="/images/公共规划.png" alt="冰汽时代地图编辑器 - 公共规划" class="button-icon" >
-                <span class="button-text" >大佬们的规划</span>
+                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 公共规划" class="button-icon" >
+                <span class="button-text" >规划广场</span>
             </button>
 
-            <button id="userHexGridList" class="toggle-button" onclick="toggleToolbarFullScreen('userHexGridBar', this)" style="display: none;">
-                <img src="/images/我的规划.png" alt="冰汽时代地图编辑器 - 我的规划" class="button-icon" >
+            <button id="privateHexGrids" class="toggle-button" onclick="toggleToolbarFullScreen('privateHexGridBar', this)" style="display: none;">
+                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 我的规划" class="button-icon" >
                 <span class="button-text" >我的规划</span>
             </button>
 
             <button id="loginButton" class="toggle-button" onclick="loginToggle()" >
-                <img src="/images/登录.png" alt="冰汽时代地图编辑器 - 登录按钮" class="button-icon" >
+                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 登录按钮" class="button-icon" >
                 <span class="button-text" >登录</span>
             </button>
 
             <button id="infoButton" class="toggle-button" onclick="userManager.logout()" style="display: none;">
-                <img src="/images/个人信息.png" alt="冰汽时代地图编辑器 - 个人信息" class="button-icon" >
+                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 个人信息" class="button-icon" >
                 <span id= loginedName class="button-text" >个人信息</span>
             </button>
         </div>
@@ -128,13 +130,17 @@
         
     </div>
 
-    <div id="userHexGridBar" class="toolbar hexGridBar">
+    <div id="privateHexGridBar" class="toolbar hexGridBar">
 
     </div>
 
     <div id="publicHexGridBar" class="toolbar hexGridBar">
 
     </div>
+
+    <button id="saveButton" class="hex-button" onclick="toggleSaveSwitch()">
+        保存
+    </button>
 
 
     <div class= "main-content" style="position: relative;">
@@ -153,7 +159,30 @@
         <p id="message" style="color: red;"></p>
     </div>
 
+    <div id="savingPopup" class="savingPopup" style="display: none;">
+        <div class="savingPopup-content">
+          <h3>法阵名称</h3>
+          <textarea id="savingPopup-spellName" maxlength="60" placeholder="请输入法阵名称..."></textarea>
+          
+          <h3>描述</h3>
+          <textarea id="savingPopup-description" maxlength="1000" placeholder="请输入描述..."></textarea>
+          
+          <div class="savingPopup-toggle-container">
+            <div id="savingPopup-toggleButton" class="savingPopup-toggle" onclick="togglePushPublicSwitch()">
+              <div class="savingPopup-toggle-circle"></div>
+            </div>
+            <span>是否发布到广场</span>
+          </div>
+          
+          <div id="savingPopup-errorMessage" class="savingPopup-error-message"></div>
 
+          <div class="savingPopup-button-group">
+            <button class="savingPopup-button savingPopup-add" onclick="hexGrid.save()">新增</button>
+            <button id="editButton" class="savingPopup-button savingPopup-edit" style="display: none;" onclick="hexGrid.updateProperties(true)" >修改</button>
+            <button class="savingPopup-button savingPopup-cancel" onclick="toggleSaveSwitch()">关闭</button>
+          </div>
+        </div>
+      </div>
 
 </body>
 

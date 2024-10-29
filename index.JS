@@ -28,23 +28,27 @@ function toggleToolbar(toolbarId, button) {
 
 function toggleToolbarFullScreen(toolbarId, button) {
     toggleToolbar(toolbarId, button);
-    const toolbar = document.getElementById(toolbarId);
-    const isOpen = toolbar.style.display === "flex"; // 检查当前显示状态
+    //再想想优化的办法
+    // const toolbar = document.getElementById(toolbarId);
+    // const isClose = toolbar.style.display === "none"; // 检查当前显示状态
     
-    // 切换当前工具栏的显示状态
-    if (isOpen) {
-        setTimeout(() => {
-            toolbar.style.display = "none"; // 关闭工具栏
-        }, 3000);
-    } else {
-        toolbar.style.display = "flex"; // 打开工具栏
-    }
+    // // 切换当前工具栏的显示状态
+    // if (isClose) {
+    //     toolbar.style.display = "grid"; // 打开工具栏
+    // } else {
+    //     toolbar.style.display = "none"; // 关闭工具栏
+    // }
 }
 
 
 function loginToggle() {
     const loginModal = document.getElementById('loginModal');
-    if(loginModal.style.display === 'block') {
+    if (!loginModal) {
+        console.error("无法找到 loginModal 元素");
+        return;
+    }
+
+    if (loginModal.style.display === 'block') {
         loginModal.style.display = 'none';
     } else {
         loginModal.style.display = 'block';

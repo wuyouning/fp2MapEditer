@@ -89,8 +89,9 @@ class UserManager {
                 localStorage.setItem('uuid', uuid);
                 this.setUserLogin();
                 //用户登陆后按钮变化 // 更新消息并开始倒计时
-                let n = 5; 
-                
+                this.displayMessage('');
+
+                let n = 3; 
                 const countdownInterval = setInterval(() => {
                     this.displayMessage(`${message} ${n}秒后关闭...`);
                     n--;
@@ -116,7 +117,9 @@ class UserManager {
         localStorage.removeItem('username');
         localStorage.removeItem('userId');
         localStorage.removeItem('uuid');
+        localStorage.removeItem('hexGridId');
         this.displayMessage('已成功退出登录。');
+        this.displayMessage('')
         this.setUserLogin();
     }
 
@@ -131,7 +134,7 @@ class UserManager {
         const username = localStorage.getItem('username'); // 获取存储的用户名
         const loginButton = document.getElementById('loginButton');
         const infoButton = document.getElementById('infoButton');
-        const userHexGridList = document.getElementById('userHexGridList');
+        const privateHexGrids = document.getElementById('privateHexGrids');
         //TODO:  修改按钮的文本和图标
         const loginedName = document.getElementById('loginedName');
         // const loginedIcon = document.getElementById('loginedIcon');
@@ -139,14 +142,14 @@ class UserManager {
         if (isLoggedIn) {
             loginButton.style.display = "none";
             infoButton.style.display = "flex"
-            userHexGridList.style.display = "flex"
+            privateHexGrids.style.display = "flex"
             loginedName.textContent = username; // 修改文字
             // loginedIcon.src = '/images/个人信息图标.png'; // 修改图标路径
 
         } else {
             loginButton.style.display = "flex";
             infoButton.style.display = "none"
-            userHexGridList.style.display = "none"  
+            privateHexGrids.style.display = "none"  
             loginedName.textContent = '登录'; // 修改文字
             // loginedIcon.src = '/images/个人信息图标.png'; // 修改图标路径
 

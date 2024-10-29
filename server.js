@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');  // 引入 cors 库
 const connection = require('./db');
 const { v4: uuidv4 } = require('uuid');
+
 //允许跨域cors支持
 const app = express();
 app.use(cors());  // 使用 CORS 中间件
@@ -53,31 +54,55 @@ app.post('/api/login', (req, res) => {
   );
 });
 
+
 //更新画布描述
-app.put('/api/update-hexgrid', (req, res) => {
-  const { ownerId, canvasName, description, isPublic, coverImage } = req.body;
+app.put('/api/update-hexgrid', (req, res) => { 
+    const { hexGridId, ownerId, canvasName, description, isPublic, coverImage } = req.body; 
 
-  if (!ownerId) {
-      return res.status(400).json({ message: '缺少 ownerId' });
-  }
+    if (!hexGridId) { 
+        return res.status(400).json({ message: '缺少 hexGridId' }); 
+    } 
 
-  connection.query(
-      'UPDATE hexGrid SET canvas_name = ?, description = ?, is_public = ?, cover_image = ?, lastedit_at = NOW() WHERE owner_id = ?',
-      [canvasName, description, isPublic, coverImage, ownerId],
-      (err, result) => {
-          if (err) {
-              console.error('更新 HexGrid 数据时出错：', err);
-              return res.status(500).json({ message: '更新 HexGrid 数据时出错' });
-          }
+    let updateQuery = `
+        UPDATE hexgrid 
+        SET 
+            canvas_name = ?, 
+            description = ?, 
+            is_public = ?, 
+            cover_image = ?, 
+            lastedit_at = NOW()
+    `;
+    const updateParams = [canvasName, description, isPublic, coverImage];
 
-          if (result.affectedRows === 0) {
-              return res.status(404).json({ message: '未找到要更新的 HexGrid' });
-          }
+    // 如果 ownerId 为 0，执行软删除逻辑（将 ownerId 设置为 -1）
+    if (ownerId === 0) {
+        updateQuery += ', owner_id = -1';
+    } else if (ownerId !== undefined) {
+        // 如果 ownerId 不为 0 且存在，则更新 ownerId
+        updateQuery += ', owner_id = ?';
+        updateParams.push(ownerId);
+    }
 
-          return res.status(200).json({ message: 'HexGrid 更新成功' });
-      }
-  );
+    // 最终通过 hexGridId 进行更新
+    updateQuery += ' WHERE id = ?';
+    updateParams.push(hexGridId);
+
+    connection.query(updateQuery, updateParams, (err, result) => { 
+        if (err) { 
+            console.error('更新 HexGrid 数据时出错：', err); 
+            return res.status(500).json({ message: '更新 HexGrid 数据时出错' }); 
+        } 
+
+        if (result.affectedRows === 0) { 
+            return res.status(404).json({ message: '未找到要更新的 HexGrid' }); 
+        } 
+
+        return res.status(200).json({ message: 'HexGrid 更新成功' }); 
+    }); 
 });
+
+
+
 
 //保存画布
 app.post('/api/save-hexgrid', (req, res) => {
@@ -115,6 +140,48 @@ app.post('/api/save-hex', (req, res) => {
           return res.status(201).json({ message: 'Hex 保存成功' });
       }
   );
+});
+
+// 获取所有 isPublic 为 true 的 HexGrid 记录的 API
+app.get('/api/get-public-hexgrids', (req, res) => {
+    const query = `
+        SELECT hexgrid.*, users.username AS owner_name
+        FROM hexgrid
+        LEFT JOIN users ON hexgrid.owner_id = users.uuid
+        WHERE hexgrid.is_public = true
+    `;
+
+    connection.query(query, (err, results) => {
+        if (err) {
+            console.error('获取公共 HexGrid 数据时出错:', err);
+            return res.status(500).json({ message: '获取公共 HexGrid 数据时出错' });
+        }
+
+        res.status(200).json(results);
+    });
+});
+
+// 获取特定用户的私有 HexGrid 记录的 API
+app.get('/api/get-private-hexgrids', (req, res) => {
+    const ownerId = req.query.ownerId;
+    if (!ownerId) {
+        return res.status(400).json({ message: '缺少 ownerId 参数' });
+    }
+
+    const query = `
+        SELECT *
+        FROM hexgrid
+        WHERE owner_id = ? AND is_public = false
+    `;
+
+    connection.query(query, [ownerId], (err, results) => {
+        if (err) {
+            console.error('获取私有 HexGrid 数据时出错:', err);
+            return res.status(500).json({ message: '获取私有 HexGrid 数据时出错' });
+        }
+
+        res.status(200).json(results);
+    });
 });
 
 // 启动服务器
