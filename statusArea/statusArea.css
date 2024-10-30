@@ -1,0 +1,100 @@
+.status-area {
+    position: fixed;
+    top: 70px;
+    right: 1%;
+    
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.count-element {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.detected-container {
+    z-index: 1000;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+
+.hex-element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.custom-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+}
+
+#customPrompt .button-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    justify-content: center;
+    gap: 10px;
+}
+
+#customPrompt .confirm-button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#customPrompt .cancel-button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.status-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.status-button {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 8%;
+    width: 60px;
+    height: 30px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.status-button:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.05);
+}
+
+.warning-button {
+    background-color: #ffcccb;
+}
+
+.warning-button:hover {
+    background-color: #ff9999;
+}

@@ -6,15 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.CSS">
     <link rel="stylesheet" href="savingPopup.css">
+    <link rel="stylesheet" href="/statusArea/statusArea.css">
+    <link rel="stylesheet" href="/statusArea/statusArea.css">
+    <link rel="stylesheet" href="/styleGen/buttonStyle.css">
+    
 
     <script src="index.JS" defer></script>
     <script src="FP2MapEditer0.0.4.js" defer></script>
     <script src="RegionInfoCard.js" defer></script>
-
     <script src="server.js" defer></script> 
     <script src="./admin/user.js" defer></script>
     <script src="./db.js" defer></script>
     <script src="HexGridListView.js" defer></script>
+    <script src="import.js" defer></script>
+    <script src="statusArea/statusArea.js" defer></script>
+    <script src="styleGen/button.js" defer></script>
 
     
     <title>冰汽时代2 - 区域规划器</title>
@@ -138,15 +144,15 @@
 
     </div>
 
-    <button id="saveButton" class="hex-button" onclick="toggleSaveSwitch()">
-        保存
-    </button>
 
 
-    <div class= "main-content" style="position: relative;">
+
+    <div id= 'main-content' class= "main-content" style="position: relative;">
         <canvas id="hexCanvas" ></canvas>
-        <canvas id="labelCanvas"></canvas>
         <canvas id="tipsCanvas"></canvas>
+        <canvas id="areaHandleCanvas"></canvas>
+        <canvas id="labelCanvas"></canvas>
+
     </div>
 
     <div id="loginModal" style="display: none;">
@@ -167,8 +173,8 @@
           <h3>描述</h3>
           <textarea id="savingPopup-description" maxlength="1000" placeholder="请输入描述..."></textarea>
           
-          <div class="savingPopup-toggle-container">
-            <div id="savingPopup-toggleButton" class="savingPopup-toggle" onclick="togglePushPublicSwitch()">
+          <div class="sliderToggle-container savingPopup-toggle-container">
+            <div id="savingPopup-toggleButton" class="sliderToggle savingPopup-toggle" onclick="toggleSliderButton('savingPopup-toggleButton')">
               <div class="savingPopup-toggle-circle"></div>
             </div>
             <span>是否发布到广场</span>
@@ -183,7 +189,39 @@
           </div>
         </div>
       </div>
+    
+      <!-- 导入时候的弹窗 -->
+    <div id="importStatusModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <div id="importStatusMessage">
+                <p id="statusText">导入中，请稍候...</p>
+                <div id="loadingSpinner" class="spinner"></div>
+            </div>
+        </div>
+    </div>
 
+    <div id="statusArea" class="status-area">
+        <h3>施工面板</h3>
+        <div class="status-controls">
+            <button id="expandToolButton" class="status-button" onclick="toggleExpanAreaTool()">扩建工具</button>
+            <button id="clearListButton" class="status-button warning-button" onclick="cleanDetectedList()">清空待建</button>
+            <button id="expandToolButton" class="status-button">建造区域</button>
+            <button id="expandToolButton" class="status-button warning-button" >删除区域</button>
+            <button id="saveButton" class="status-button" onclick="toggleSaveSwitch()">保存规划</button>
+        </div>
+        <div class="sliderToggle-container  custom-style-container">
+            <div id="autoBuildRegionButton" class="sliderToggle custom-style-toggle on" onclick="toggleAutoBuildRegion()">
+              <div class="savingPopup-toggle-circle"></div>
+            </div>
+            <span>自动检测建造</span>
+          </div>
+        <div id="statusDisplay" class="status-display">
+            <!-- 这里可以添加其他状态显示内容 -->
+        </div>
+
+
+    </div>
 </body>
 
 </html>

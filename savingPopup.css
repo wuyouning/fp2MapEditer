@@ -41,48 +41,6 @@
     height: calc(1em * 20); /* 高度为文本大小的四倍 */
   }
   
-
-  .savingPopup-toggle-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .savingPopup-toggle-container span {
-    margin-right: 10px;
-    font-size: 14px;
-  }
-  
-  .savingPopup-toggle {
-    width: 60px;
-    height: 30px;
-    background-color: #d0d0d0;
-    border-radius: 30px;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .savingPopup-toggle .savingPopup-toggle-circle {
-    width: 26px;
-    height: 26px;
-    background-color: #907f60;
-
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: left 0.3s;
-  }
-  
-  .savingPopup-toggle.on {
-    background-color: #3857bd;
-  }
-  
-  .savingPopup-toggle.on .savingPopup-toggle-circle {
-    left: 32px;
-    background-color: #ffa500;
-  }
   
   .savingPopup-button-group {
     display: flex;

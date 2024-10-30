@@ -1,0 +1,76 @@
+.sliderToggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.custom-style-container {
+    margin-bottom: 10px;
+}
+
+.sliderToggle {
+    width: 50px;
+    height: 25px;
+    background-color: #d0d0d0;
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-style-toggle {
+    width: 50px;
+    height: 25px;
+}
+
+/* 保存页面的发布按钮 */
+.savingPopup-toggle-container {
+    margin-bottom: 15px;
+    justify-content: start;
+}
+
+.savingPopup-toggle-container span,
+.custom-style-container span {
+    margin-left: 10px;
+    font-size: 12px;
+}
+  
+.savingPopup-toggle {
+    width: 60px;
+    height: 30px;
+}
+
+.savingPopup-toggle .savingPopup-toggle-circle,
+.sliderToggle .savingPopup-toggle-circle {
+    width: 26px;
+    height: 26px;
+    background-color: #907f60;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: left 0.3s;
+}
+
+.custom-style-toggle .savingPopup-toggle-circle {
+    width: 22px;
+    height: 22px;
+    top: 1.5px;
+    left: 1.5px;
+}
+
+.savingPopup-toggle.on,
+.sliderToggle.on {
+    background-color: #3857bd;
+}
+
+.sliderToggle.on .savingPopup-toggle-circle {
+    left: 32px;
+    background-color: #ffa500;
+}
+
+.custom-style-toggle.on .savingPopup-toggle-circle {
+    left: 26px;
+    background-color: #ffa500;
+}

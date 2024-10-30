@@ -281,6 +281,21 @@ function displayPublicHexGridDetails(hexGrid) {
     const importButton = document.createElement('button');
     importButton.textContent = '导入';
     importButton.classList.add('hexgrid-modal-button');
+
+    //运行导入
+    importButton.addEventListener('click', () => {
+        const hexgridId = hexGrid.id;
+        importHexGridToCanvas(hexgridId)
+            .then(() => {
+                // 如果导入成功，关闭弹窗
+                document.body.removeChild(modal);
+            })
+            .catch((error) => {
+                // 处理错误（例如，显示错误消息）
+                console.error('导入失败:', error);
+                alert('导入失败，请重试。');
+            });
+    });
     contentContainer.appendChild(importButton);
 
     // 关闭按钮
@@ -337,6 +352,20 @@ function displayPrivateHexGridDetails(hexGrid) {
     const importButton = document.createElement('button');
     importButton.textContent = '导入';
     importButton.classList.add('hexgrid-modal-button');
+    importButton.addEventListener('click', () => {
+        const hexgridId = hexGrid.id;
+        importHexGridToCanvas(hexgridId)
+            .then(() => {
+                // 如果导入成功，关闭弹窗
+                document.body.removeChild(modal);
+            })
+            .catch((error) => {
+                // 处理错误（例如，显示错误消息）
+                console.error('导入失败:', error);
+                alert('导入失败，请重试。');
+            });
+    });
+
     buttonGroup.appendChild(importButton);
 
     const editButton = document.createElement('button');

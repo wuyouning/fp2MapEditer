@@ -54,7 +54,6 @@ app.post('/api/login', (req, res) => {
   );
 });
 
-
 //更新画布描述
 app.put('/api/update-hexgrid', (req, res) => { 
     const { hexGridId, ownerId, canvasName, description, isPublic, coverImage } = req.body; 
@@ -100,9 +99,6 @@ app.put('/api/update-hexgrid', (req, res) => {
         return res.status(200).json({ message: 'HexGrid 更新成功' }); 
     }); 
 });
-
-
-
 
 //保存画布
 app.post('/api/save-hexgrid', (req, res) => {
@@ -171,7 +167,7 @@ app.get('/api/get-private-hexgrids', (req, res) => {
     const query = `
         SELECT *
         FROM hexgrid
-        WHERE owner_id = ? AND is_public = false
+        WHERE owner_id = ? 
     `;
 
     connection.query(query, [ownerId], (err, results) => {
@@ -183,6 +179,63 @@ app.get('/api/get-private-hexgrids', (req, res) => {
         res.status(200).json(results);
     });
 });
+
+// 导入 HexGrid 方法的 API
+app.get('/api/hexgrid/:id', (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // 从数据库中查找 hexgrid 记录
+        const query = 'SELECT hexSize, maxRadius FROM hexgrid WHERE id = ?';
+        connection.query(query, [id], (err, rows) => {
+            if (err) {
+                console.error('Error fetching hex grid:', err);
+                res.status(500).json({ message: 'Internal Server Error' });
+                return;
+            }
+
+            if (rows.length > 0) {
+                res.json({
+                    hexSize: rows[0].hexSize,
+                    maxRadius: rows[0].maxRadius,
+                });
+            } else {
+                res.status(404).json({ message: `No record found for ID: ${id}` });
+            }
+        });
+    } catch (error) {
+        console.error('Unexpected error fetching hex grid:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+// 获取与 hexgrid_id 对应的所有 hexes 记录
+app.get('/api/hexes/:hexgrid_id', (req, res) => {
+    const { hexgrid_id } = req.params;
+
+    try {
+        // 从数据库中查找与 hexgrid_id 对应的所有 hexes 记录
+        const query = 'SELECT q, r, s, brush, region, type FROM hexes WHERE hexgrid_id = ?';
+        connection.query(query, [hexgrid_id], (err, rows) => {
+            if (err) {
+                console.error('Error fetching hexes:', err);
+                res.status(500).json({ message: 'Internal Server Error' });
+                return;
+            }
+
+            if (Array.isArray(rows) && rows.length > 0) {
+                res.json(rows);
+            } else {
+                res.status(404).json({ message: `No records found for hexgrid_id: ${hexgrid_id}` });
+            }
+        });
+    } catch (error) {
+        console.error('Unexpected error fetching hexes:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
 
 // 启动服务器
 const PORT = process.env.PORT || 3000;

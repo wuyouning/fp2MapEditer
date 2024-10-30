@@ -160,15 +160,25 @@ body {
     left: 0;
     z-index: 2;
 }
-#tipsCanvas {
+#areaHandleCanvas {
     position: absolute;
     top: 0;
     left: 0;
     pointer-events: none;
     z-index: 1;
 }
-#hexCanvas {
+#tipsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
     z-index: 0;
+}
+#hexCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
 /* 卡片类的样式 */
@@ -432,7 +442,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 11;
 }
 
 .hexgrid-modal-content {
@@ -474,4 +484,59 @@ body {
     width: 30px;
     height: 30px;
     cursor: pointer;
+}
+
+
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.4); 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 500px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

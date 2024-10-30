@@ -161,7 +161,7 @@ function updateRegionCards() {
   
       if (region.outerEffect.length > 0) {
         const outerEffectListTitle = document.createElement('h4');
-        outerEffectListTitle.textContent = `效应分类统计`;
+        outerEffectListTitle.textContent = `外馈效应区域`;
         outerEffectListTitle.className = 'effect-title';
         card.appendChild(outerEffectListTitle);
   

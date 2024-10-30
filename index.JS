@@ -26,6 +26,20 @@ function toggleToolbar(toolbarId, button) {
     }
 }
 
+function closeToolBar() {
+    // 关闭所有 toolbar
+    const toolbars = document.querySelectorAll('.toolbar');
+    toolbars.forEach(toolbar => {
+        toolbar.classList.remove('open');
+    });
+
+    // 关闭所有按钮的激活状态
+    const buttons = document.querySelectorAll('.toggle-button');
+    buttons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+}
+
 function toggleToolbarFullScreen(toolbarId, button) {
     toggleToolbar(toolbarId, button);
     //再想想优化的办法
@@ -77,8 +91,8 @@ function loadContent(url, elementId, jsonKey) {
 }
 
 
-// 封装右键拖动滚动的功能为一个类
-class RightClickDragScroller {
+// 左键拖动画布 
+class LeftClickDragScroller {
     constructor() {
         this.isRightMouseDown = false;
         this.startX = 0;
@@ -98,8 +112,8 @@ class RightClickDragScroller {
     }
 
     onMouseDown(event) {
-        // 判断是否为右键
-        if (event.button === 2) {
+        // 判断是否为左键
+        if (event.button === 0) {
             this.isRightMouseDown = true;
             this.startX = event.clientX;
             this.startY = event.clientY;
@@ -123,7 +137,7 @@ class RightClickDragScroller {
 
     onMouseUp(event) {
         // 当右键释放时，停止滚动
-        if (event.button === 2) {
+        if (event.button === 0) {
             this.isRightMouseDown = false;
             document.body.style.cursor = 'default'; // 恢复默认光标
         }
@@ -138,7 +152,8 @@ class RightClickDragScroller {
 loadContent('toolbar3.json', 'introduction-content', 'introduction');
 loadContent('toolbar3.json', 'additional-content', `additional`);
 loadContent('toolbar3.json', 'donation-content', `donation`);
-
+// 鼠标右键
+const leftClickDragScroller = new LeftClickDragScroller();
 // 检查登录信息后加载TODO:
 window.onload = () => {
     userManager.setUserLogin()
