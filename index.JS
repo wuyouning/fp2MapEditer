@@ -54,6 +54,12 @@ function toggleToolbarFullScreen(toolbarId, button) {
     // }
 }
 
+function toggleToolbarUserInfo(toolbarId, button) {
+    toggleToolbar(toolbarId, button);
+    updateUserinfo();
+}
+
+
 
 function loginToggle() {
     const loginModal = document.getElementById('loginModal');
@@ -149,12 +155,14 @@ class LeftClickDragScroller {
 }
 
 // 调用加载公告内容
-loadContent('toolbar3.json', 'introduction-content', 'introduction');
-loadContent('toolbar3.json', 'additional-content', `additional`);
-loadContent('toolbar3.json', 'donation-content', `donation`);
+loadContent('./sidebar/toolbar3.json', 'introduction-content', 'introduction');
+loadContent('./sidebar/toolbar3.json', 'additional-content', `additional`);
+loadContent('./sidebar/toolbar3.json', 'donation-content', `donation`);
 // 鼠标右键
 const leftClickDragScroller = new LeftClickDragScroller();
 // 检查登录信息后加载TODO:
-window.onload = () => {
-    userManager.setUserLogin()
-};
+window.addEventListener('load', () => {
+    userManager.setUserLogin();
+});
+
+//鼠标样式

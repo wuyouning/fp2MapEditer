@@ -1,13 +1,19 @@
+.buildCursor {
+    cursor: url('/images/建筑建造.png'), auto;
+}
+
 .status-area {
     position: fixed;
     top: 70px;
     right: 1%;
-    
+    max-height: calc(100% - 100px);
     z-index: 1000;
     background-color: rgba(255, 255, 255, 0.9);
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    display: flex;
+    flex-direction: column; /* 使子元素垂直排列 */
 }
 
 .count-element {
@@ -21,6 +27,13 @@
     border-radius: 5px;
 }
 
+.status-display {
+    overflow-y: auto;
+    font-size: calc(10px + (50vh - 70%) / 100);
+    max-height: 60%;
+    max-height: calc(100% - 50px);
+    flex-grow: 1;
+}
 
 .hex-element {
     display: flex;
@@ -97,4 +110,17 @@
 
 .warning-button:hover {
     background-color: #ff9999;
+}
+
+/* 额外控制字体大小以应对超出容器的情况 */
+@media (max-height: 600px) {
+    .status-display {
+        font-size: calc(8px + (50vh - 70%) / 100); /* 更小的字体 */
+    }
+}
+
+@media (max-height: 500px) {
+    .status-display {
+        font-size: calc(6px + (50vh - 70%) / 100); /* 更小的字体 */
+    }
 }

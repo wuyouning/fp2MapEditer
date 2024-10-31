@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <title>Pickr 示例</title>
+</head>
+<body>
+    <button id="color-picker">选择颜色</button>
+
+    <script>
+        const pickr = Pickr.create({
+            el: '#color-picker',
+            theme: 'classic',
+            swatches: ['#F44336', '#E91E63', '#9C27B0'],
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    input: true,
+                    clear: true,
+                    save: true,
+                },
+            },
+        });
+
+        pickr.on('change', (color) => {
+            const rgbaColor = color.toRGBA().toString();
+            document.body.style.backgroundColor = rgbaColor; // 设置背景色
+        });
+    </script>
+</body>
+</html>

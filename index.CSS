@@ -129,6 +129,78 @@ body {
     box-sizing: border-box;
 }
 
+.userInfoBar {
+    justify-items: start;
+    display: flex;
+    align-items: center;
+    justify-content: space-around; 
+     /* 控制每项之间的间距 */
+}
+.user-info-item {
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+
+/* 整体容器样式 */
+#user-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto; /* 居中显示 */
+}
+
+/* 标题样式 */
+#user-info-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    color: #333;
+    text-align: center;
+}
+
+/* 用户信息项样式 */
+.user-info-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #555;
+}
+
+/* 标签样式 */
+.user-info-item label {
+    font-weight: bold;
+    color: #333;
+}
+
+
+
+/* 按钮样式 */
+#editButton, #logoutButton {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+
+#logoutButton {
+    background-color: #f44336;
+    color: white;
+}
 
 
 /* 卡片区域 */

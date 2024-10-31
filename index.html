@@ -5,23 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.CSS">
-    <link rel="stylesheet" href="savingPopup.css">
+    <link rel="stylesheet" href="/statusArea/savingPopup.css">
     <link rel="stylesheet" href="/statusArea/statusArea.css">
     <link rel="stylesheet" href="/statusArea/statusArea.css">
     <link rel="stylesheet" href="/styleGen/buttonStyle.css">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+    <link rel="stylesheet" href="/statusArea/colorPicker.CSS">
 
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.es5.min.js"></script>
     <script src="index.JS" defer></script>
     <script src="FP2MapEditer0.0.4.js" defer></script>
-    <script src="RegionInfoCard.js" defer></script>
+    <script src="/sidebar/RegionInfoCard.js" defer></script>
     <script src="server.js" defer></script> 
     <script src="./admin/user.js" defer></script>
     <script src="./db.js" defer></script>
-    <script src="HexGridListView.js" defer></script>
+    <script src="/sidebar/HexGridListView.js" defer></script>
     <script src="import.js" defer></script>
     <script src="statusArea/statusArea.js" defer></script>
     <script src="styleGen/button.js" defer></script>
-
+    <script src="sidebar/userinfo.js" defer></script>
+    <script src="/statusArea/colorPicker.JS"></script>
+    <script src="/sidebar/toolBarView.js"></script>
     
     <title>冰汽时代2 - 区域规划器</title>
     <meta name="description" content="冰汽时代编辑器为您提供详细的地图编辑功能，帮助玩家进行冰汽时代地图规划与设计，实现您的规划梦想。">
@@ -64,22 +71,22 @@
             </button>
 
             <button id="toggleButton4" class="toggle-button" onclick="toggleToolbarFullScreen('publicHexGridBar', this)" >
-                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 公共规划" class="button-icon" >
+                <img src="/images/画廊模式.png" alt="冰汽时代地图编辑器 - 公共规划" class="button-icon" >
                 <span class="button-text" >规划广场</span>
             </button>
 
             <button id="privateHexGrids" class="toggle-button" onclick="toggleToolbarFullScreen('privateHexGridBar', this)" style="display: none;">
-                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 我的规划" class="button-icon" >
+                <img src="/images/作品.png" alt="冰汽时代地图编辑器 - 我的规划" class="button-icon" >
                 <span class="button-text" >我的规划</span>
             </button>
 
             <button id="loginButton" class="toggle-button" onclick="loginToggle()" >
-                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 登录按钮" class="button-icon" >
+                <img src="/images/我的.png" alt="冰汽时代地图编辑器 - 登录按钮" class="button-icon" >
                 <span class="button-text" >登录</span>
             </button>
 
-            <button id="infoButton" class="toggle-button" onclick="userManager.logout()" style="display: none;">
-                <img src="/images/刷子-亮.png" alt="冰汽时代地图编辑器 - 个人信息" class="button-icon" >
+            <button id="infoButton" class="toggle-button" onclick="toggleToolbarUserInfo('user-info-container',this)" style="display: none;">
+                <img src="/images/我的.png" alt="冰汽时代地图编辑器 - 个人信息" class="button-icon" >
                 <span id= loginedName class="button-text" >个人信息</span>
             </button>
         </div>
@@ -144,15 +151,32 @@
 
     </div>
 
-
-
+    <div id="user-info-container" class="toolbar userInfoBar">
+        <h2>个人信息</h2>
+        <div class="user-info-item">
+            <label for="usernameInfo">用户名:</label>
+            <span id="usernameInfo">1</span>
+        </div>
+        <div class="user-info-item">
+            <label for="phoneInfo">手机号码:</label>
+            <span id="phoneInfo">未设置</span>
+        </div>
+        <div class="user-info-item">
+            <label for="userIdInfo">用户ID:</label>
+            <span id="userIdInfo">2</span>
+        </div>
+        <div class="button-container">
+            <button id="editButton">编辑信息</button>
+            <button id="logoutButton" onclick="logoutAndClose()">退出登录</button>
+        </div>
+    </div>
+    
 
     <div id= 'main-content' class= "main-content" style="position: relative;">
         <canvas id="hexCanvas" ></canvas>
         <canvas id="tipsCanvas"></canvas>
         <canvas id="areaHandleCanvas"></canvas>
         <canvas id="labelCanvas"></canvas>
-
     </div>
 
     <div id="loginModal" style="display: none;">
@@ -188,7 +212,7 @@
             <button class="savingPopup-button savingPopup-cancel" onclick="toggleSaveSwitch()">关闭</button>
           </div>
         </div>
-      </div>
+    </div>
     
       <!-- 导入时候的弹窗 -->
     <div id="importStatusModal" class="modal hidden">
@@ -203,21 +227,30 @@
 
     <div id="statusArea" class="status-area">
         <h3>施工面板</h3>
+        <button id="color-picker">选择颜色</button>
+
         <div class="status-controls">
-            <button id="expandToolButton" class="status-button" onclick="toggleExpanAreaTool()">扩建工具</button>
-            <button id="clearListButton" class="status-button warning-button" onclick="cleanDetectedList()">清空待建</button>
-            <button id="expandToolButton" class="status-button">建造区域</button>
-            <button id="expandToolButton" class="status-button warning-button" >删除区域</button>
+            <button id="expandToolButton" class="status-button" onclick="toggleExpanAreaTool()">扩建区域</button>
+            <button id="toggleCleanRegionTool" class="status-button warning-button" onclick="toggleCleanRegionTool()">删除区域</button>
+
             <button id="saveButton" class="status-button" onclick="toggleSaveSwitch()">保存规划</button>
+            <button id="cleanGridButton" class="status-button warning-button" onclick="hexGrid.cleanGrid();">清除画布</button>
         </div>
+
         <div class="sliderToggle-container  custom-style-container">
-            <div id="autoBuildRegionButton" class="sliderToggle custom-style-toggle on" onclick="toggleAutoBuildRegion()">
+            <div id="autoBuildRegionButton" class="sliderToggle on" onclick="toggleAutoBuildRegion()">
               <div class="savingPopup-toggle-circle"></div>
             </div>
             <span>自动检测建造</span>
           </div>
+
         <div id="statusDisplay" class="status-display">
-            <!-- 这里可以添加其他状态显示内容 -->
+
+        </div>
+
+        <div class="status-controls">
+            <button id="expandToolButton" class="status-button" onclick="createRegionTool(detectedHexList)">建造区域</button>
+            <button id="clearListButton" class="status-button warning-button" onclick="cleanDetectedList()">清空待建</button>
         </div>
 
 
