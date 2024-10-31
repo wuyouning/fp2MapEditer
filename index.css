@@ -1,0 +1,68 @@
+@import './variables.css';
+
+.header, .sidebar, .footer, .main {
+    background-color: var(--background-color);
+}
+
+header {
+    position: fixed;
+    z-index: var(--z-index-header);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px var(--border-color);
+}
+
+header h1{
+    font-size: 30px;
+    letter-spacing: 4px;
+    font-family: Arial, sans-serif;
+}
+
+nav {
+    position: fixed;
+    z-index: var(--z-index-sidebar);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    top: var(--header-height);
+    left: 0;
+    width: var(--sider-width);
+    height: 100%;
+    border-right: var(--border-color);
+    box-shadow: 2px 5px 5px var(--border-color);
+}
+
+aside {
+    position: fixed;
+    z-index: var(--z-index-status-bar);
+    right: 0%;
+    top: var(--header-height);
+    width: 10%;
+    max-height: calc(100% - var(--header-height));
+    box-shadow: var(--box-shadow-default);
+    margin: 15px 15px 15px 15px;
+    border-radius: var(--border-radius);
+}
+
+main {
+    position: fixed;
+    z-index: var(--z-index-main);
+    left: var(--sider-width);
+    top: var(--header-height);
+
+}
+
+footer {
+    z-index: var(--z-index-footer);
+    position: fixed;
+    top: 95%;
+    width: 100%;
+    border-bottom: var(--border-color);
+    box-shadow: 10px 5px 5px var(--border-color);
+}
