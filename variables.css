@@ -1,0 +1,13 @@
+:root {
+    --z-index-header: 50;
+    --z-index-sidebar: 40;
+    --z-index-status-bar: 40;
+    --z-index-main: 30;
+    --z-index-footer: 0;
+}
+
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
