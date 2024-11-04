@@ -48,3 +48,4 @@ function toggleNavbarButton(toolbarId, button) {
         button.classList.remove('active');
     }
 }
+
