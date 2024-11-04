@@ -24,7 +24,7 @@
     --warning-color-secondary: rgb(179, 64, 32);
 
     /* 按钮配置 */
-    --button-size: 50px; /* 按钮的宽度和高度 */
+    --button-size: 30px; /* 按钮的宽度和高度 */
     --button-bg-color: #e0e4e9; /* 默认背景色 */
     --button-border-color: #c0c4c9; /* 默认边框色 */
     --button-icon-color: #333; /* 图标颜色 */
@@ -34,6 +34,7 @@
 
 
 body {
+    display: flex;
     margin: 0;
     font-family: Arial, sans-serif;
     color: var(--font-color);
@@ -65,7 +66,7 @@ a:hover {
     width: var(--button-size);
     height: var(--button-size);
     background-color: var(--button-bg-color);
-    border: 2px solid var(--button-border-color);
+    border: 1px solid var(--button-border-color);
     border-radius: 50%;
     display: flex;
     align-items: center;

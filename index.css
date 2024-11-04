@@ -33,10 +33,49 @@ nav {
     top: var(--header-height);
     left: 0;
     width: var(--sider-width);
-    height: 100%;
-    border-right: var(--border-color);
+    height: calc(100% - var(--header-height));
+    border-right: 1px solid var(--border-color);
     box-shadow: 2px 5px 5px var(--border-color);
+    background-color: var(--button-bg-color); /* 背景颜色 */
 }
+
+.navBar-button {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    justify-items: center;
+    padding: 10px;
+    width: 100%;
+    height: auto;
+    border: none;
+    background-color: var(--button-bg-color);
+    border-bottom: 1px solid var(--border-color); /* 按钮底部分隔线 */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.navBar-button.active {
+    background-color: var(--accent-color);
+    color: var(--accent-color-secondary);
+}
+
+.navBar-button:hover {
+    background-color: var(--accent-color);  
+}
+
+.navBar-button-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 5px; /* 图标与文字间的距离 */
+}
+
+.navBar-button-text {
+    font-size: 11px;
+    color: var(--button-text-color); /* 文字颜色 */
+}
+
+
 
 aside {
     position: fixed;
@@ -50,12 +89,16 @@ aside {
     border-radius: var(--border-radius);
 }
 
-main {
-    position: fixed;
+
+#main {
+    display: block;
+    position: absolute;
     z-index: var(--z-index-main);
     left: var(--sider-width);
     top: var(--header-height);
-
+    width: calc(100% - var(--sider-width));
+    height: calc(100% - var(--header-height));
+    overflow: hidden; /* 防止滚动条出现 */
 }
 
 footer {
