@@ -1,0 +1,161 @@
+import { brushMap } from "../main/module.js";
+import {createSquareColorButton} from "../Component/buttonComponent.js";
+import { SliderToggleButton } from "../Component/buttonComponent.js";
+
+class SliderCard {
+    constructor(cardID, cardWidth) {
+        this.cardID = cardID; // 卡片 ID
+        this.cardWidth = cardWidth; // 卡片宽度
+        this.cardElement = this.createCard(); // 创建卡片元素
+    }
+
+    createCard() {
+        const card = document.createElement('div');
+        card.className = 'sliderCard';
+        card.id = this.cardID;
+        card.style.width = this.cardWidth;
+        // card.innerText = this.cardID; // 设置卡片的文本内容，可以根据需求修改
+        return card;
+    }
+
+    appendTo(parent) {
+        parent.appendChild(this.cardElement); // 将卡片添加到指定的父元素
+    }
+}
+
+export function initializeSliderCard() {
+    const sliderGroup = document.getElementById('sliderGroup');
+
+    const CardsData = [
+        {
+            id: 'brushToolCard',
+            width: '350px'
+        },
+        {
+            id: 'regionsCard',
+            width: '350px'
+        },
+        {
+            id: 'Announcement',
+            width: '350px'
+        },
+        {
+            id: 'publicCard',
+            width: 'calc(100% - var(--navbar-width))'
+        },
+        {
+            id: 'privateCard',
+            width: '100%'
+        },
+        {
+            id: 'loginCard',
+            width: '350px'
+        },
+        {
+            id: 'infoCard',
+            width: '350px'
+        },
+    ];
+
+    CardsData.forEach(cardsData => {
+        const card = new SliderCard(
+            cardsData.id,
+            cardsData.width
+        );
+        // sliderGroup.appendChild(card);
+        card.appendTo(sliderGroup);
+    });
+
+}
+
+export function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
+    // 创建外层容器
+    const brushToolCard = document.getElementById('brushToolCard');
+    const container = document.createElement('div');
+    container.className = 'brush-tool-container'; // 使用样式类
+
+    let rows = [5, 4, 4, 4, 1];
+    let brushKeys = Object.keys(brushMap);
+    let currentIndex = 0;
+    
+    function clickSelectedBrush(key) {
+        if (selectedBrush.name !== key) {
+            selectedBrush.name = key;
+            // updateDetectedHexListView();
+        }
+    }
+
+    rows.forEach(rowCount => {
+        const rowContainer = document.createElement('div');
+        rowContainer.className = 'brush-row-container'; // 使用样式类
+
+        for (let i = 0; i < rowCount; i++) {
+            if (currentIndex >= brushKeys.length) break;
+
+            const key = brushKeys[currentIndex];
+            const button = brushMap[key];
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.className = 'brush-button-wrapper'; // 使用样式类
+
+            const btnElement = createSquareColorButton(button, key, selectedBrush.name, clickSelectedBrush);
+            buttonWrapper.appendChild(btnElement);
+
+            // 标签
+            const labelElement = document.createElement('div');
+            labelElement.className = 'brush-color-name';
+            labelElement.textContent = key;
+            buttonWrapper.appendChild(labelElement);
+
+            rowContainer.appendChild(buttonWrapper);
+            currentIndex++;
+        }
+
+        container.appendChild(rowContainer);
+    });
+
+    // 将生成的内容添加到 brushToolCard 中
+    brushToolCard.appendChild(container);
+
+    // 直接实例化 SliderToggleButton
+    try {
+        new SliderToggleButton(
+            "brushToolCard",  
+            "隐藏ID",      
+            "显示ID",      
+            hexGrid.showID,                     
+            hexGrid.setShowID.bind(hexGrid)
+        );
+    } catch (error) {
+        console.error(error);
+    }
+
+    try {
+        new SliderToggleButton(
+            "brushToolCard",  
+            "关闭标签",      
+            "显示标签",      
+            hexGrid.showLabel,                      
+            hexGrid.setShowLabel.bind(hexGrid)
+        );
+    } catch (error) {
+        console.error(error);
+    }
+
+    try {
+        new SliderToggleButton(
+            "brushToolCard",          
+            "平顶",            
+            "尖顶",            
+            hexGrid.layout.orientation.name === 'pointy',  // 初始状态是否为尖顶
+            (isOn) => {
+                // 根据按钮状态调用 setLayout
+                const layoutType = isOn ? 'pointy' : 'flat';
+                hexGrid.setLayout(layoutType);
+            }
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+

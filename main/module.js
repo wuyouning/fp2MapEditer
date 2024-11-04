@@ -381,12 +381,42 @@ class HexGrid {
 
     setShowID(showID) {
         this.showID = showID;
-        this.drawHexagons();
+        // this.drawHexagons();
+        // 显示画布
+        if (!this.IdCanvas) {
+            console.error("IdCanvas is undefined");
+            return;
+        }
+        if (showID) {
+            this.IdCanvas.classList.remove("hidden");
+            this.IdCanvas.classList.add("visible");
+            this.drawHexagons();
+        } else {
+            this.IdCanvas.classList.remove("visible");
+            this.IdCanvas.classList.add("hidden");
+        }
+
+        // 隐藏画布
+
+        
     }
 
     setShowLabel(showLabel) {
         this.showLabel = showLabel;
-        this.drawHexagons();
+        // this.drawHexagons();
+        if (!this.labelCanvas) {
+            console.error("labelCanvas is undefined");
+            return;
+        }
+        if (showLabel) {
+            this.labelCanvas.classList.remove("hidden");
+            this.labelCanvas.classList.add("visible");
+            this.drawHexagons();
+        } else {
+            this.labelCanvas.classList.remove("visible");
+            this.labelCanvas.classList.add("hidden");
+        }
+
     }
 
     generateHexagons(center, maxRadius) {
@@ -435,6 +465,8 @@ class HexGrid {
 
         // 清除画布
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.IdCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.labelCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
 
         // 绘制所有格子并添加到 hexGrid
@@ -443,7 +475,7 @@ class HexGrid {
 
             if (existingHex) {
                 // 如果六边形已经存在，则保留它的属性
-                existingHex.drawHex(this.ctx, this.IdCtx, this.labelCtx, this.layout, this.showID);
+                existingHex.drawHex(this.ctx, this.IdCtx, this.labelCtx, this.layout, this.showID, this.showLabel);
             } else {
                 // 如果是新的六边形，则创建一个新的 Hex 实例
                 const newHex = new Hex(hexCoords.q, hexCoords.r, hexCoords.s, '擦除', null, "空白", this.hexSize);
@@ -749,7 +781,12 @@ export class MainView {
         // 初始化选中的笔刷
         this.selectedBrush = new Brush('居住区');
         this.isPromptShow = false;
-        this.layers = this.initializeLayers();
+
+        this.layers = this.initializeLayers(); // 初始化层
+        if (!this.layers) {
+            throw new Error('Failed to initialize layers');
+        }
+
         this.hexGrid = new HexGrid(this.layers);
         this.hexGrid.drawHexagons();
             // 绑定事件监听器

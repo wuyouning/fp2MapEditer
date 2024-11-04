@@ -9,6 +9,7 @@ class CanvasLayer {
         this.canvas.style.pointerEvents = pointerEvents; // 使用传入的参数
         this.context = this.canvas.getContext('2d');
 
+
         container.appendChild(this.canvas);
 
         // 保存初始宽高

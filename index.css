@@ -26,13 +26,13 @@ header h1{
 
 nav {
     position: fixed;
-    z-index: var(--z-index-sidebar);
+    z-index: var(--z-index-navbar);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     top: var(--header-height);
     left: 0;
-    width: var(--sider-width);
+    width: var(--navbar-width);
     height: calc(100% - var(--header-height));
     border-right: 1px solid var(--border-color);
     box-shadow: 2px 5px 5px var(--border-color);
@@ -94,9 +94,9 @@ aside {
     display: block;
     position: absolute;
     z-index: var(--z-index-main);
-    left: var(--sider-width);
+    left: var(--navbar-width);
     top: var(--header-height);
-    width: calc(100% - var(--sider-width));
+    width: calc(100% - var(--navbar-width));
     height: calc(100% - var(--header-height));
     overflow: hidden; /* 防止滚动条出现 */
 }
