@@ -2,7 +2,7 @@
     position: absolute;
     z-index: var(--z-index-sidebar);
     top: var(--header-height);
-    height: calc(100% - var(--header-height));
+    height: calc(100% - var(--header-height) - 42px);
     background-color: var(--background-color);
     box-shadow: 5px 0px 10px rgba(30, 125, 183, 0.4);
     transition: transform 0.3s ease;

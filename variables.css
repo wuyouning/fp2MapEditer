@@ -31,6 +31,10 @@
     --button-icon-color: #333; /* 图标颜色 */
     --button-active-border-color: #d1a26f; /* 激活状态的边框色 */
     --button-shadow-color: rgba(0, 0, 0, 0.2); /* 按钮的阴影颜色 */
+
+    /* 文字配置 */
+    --text-small-color: #798da4c9; /* 默认边框色 */
+    --text-h1-color: #d2691e;
 }
 
 

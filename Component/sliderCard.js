@@ -34,7 +34,7 @@ export function initializeSliderCard() {
         },
         {
             id: 'regionsCard',
-            width: '350px'
+            width: '450px'
         },
         {
             id: 'Announcement',

@@ -3,6 +3,7 @@ import { CanvasLayersManager } from "../Component/canvasLayer.js";
 import { asideCard } from "../index.js";
 import { Brush } from "./module.js";
 import { HexGrid } from "./module.js";
+
 export class MainView {
     constructor () {
         // 初始化选中的笔刷
@@ -38,7 +39,7 @@ export class MainView {
     }
 
     addCanvasListeners() {
-        const canvas = this.layers.getLayer('colorLayer').canvas;; // 获取 colorLayer 的画布
+        const canvas = this.layers.getLayer('colorLayer').canvas; // 获取 colorLayer 的画布
         let hexGrid = this.hexGrid;
 
         canvas.addEventListener('click', (event) => {
@@ -49,14 +50,13 @@ export class MainView {
             const hex = hexGrid.getHexById(hexId);
             
             if (hex) {
-                console.log('修改前的数值' ,hex)
                 hex.setBrush(this.selectedBrush, hexGrid);
                 // 仅重绘这个被单击的 Hex
                 hex.drawHex(this.hexGrid);
-                console.log('修改后的数值' ,hex)
                 asideCard.updateBrushInfo();
+
             } else {
-                alert('点开格子框架外了哦')
+                alert('点格子框架外了哦')
             }
 
         });

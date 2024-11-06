@@ -4,7 +4,7 @@ import { initializeSliderCard } from "./Component/sliderCard.js";
 import { initalzeBrushToolCard } from "./Component/sliderCard.js";
 import { AsideCard } from "./Component/aside.js";
 import { TestDashboardView } from "./TESTdashboard.js"
-
+import { initRegionsCard } from "./Component/regionInfoCard.js"
 
 // let layers; //画布组
 export let mainView;
@@ -25,7 +25,7 @@ initalzeBrushToolCard(mainView.selectedBrush, mainView.hexGrid, mainView.layers)
 export let asideCard = new AsideCard(mainView.selectedBrush, mainView.layers, mainView.hexGrid);
 asideCard.initCard();
 export let testDashboardView = new TestDashboardView(mainView);
-
+initRegionsCard(mainView.hexGrid);
 function initializeNavBarButtons() {
     const navBar = document.getElementById('navBar');
 

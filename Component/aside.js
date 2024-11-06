@@ -1,6 +1,7 @@
 import { SliderToggleButton } from "../Component/buttonComponent.js";
 import { MainStyledButton } from "../Component/buttonComponent.js";
-import { Region } from "../main/module.js";
+import { Region } from "../main/modules/Region.js";
+import {initRegionsCard } from "../Component/regionInfoCard.js"
 
 export class AsideCard {
     constructor(brush, layers, hexGrid) {
@@ -58,7 +59,8 @@ export class AsideCard {
             "清除画布",
             () => { 
                 this.layers.clearAllLayers(); 
-                this.hexGrid.cleanGrid(this.brush) 
+                this.hexGrid.cleanGrid(this.brush);
+                initRegionsCard(this.hexGrid);
             },
             
         );

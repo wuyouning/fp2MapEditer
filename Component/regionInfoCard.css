@@ -1,0 +1,54 @@
+#regionsCard {
+    position: fixed;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 30px 20px 30px;
+    gap: 15px;
+    
+}
+.regionInfoCard {
+    background: linear-gradient(to bottom, rgba(220, 220, 220, 0.7), rgba(255, 255, 255, 0.5));
+    border-radius: 10px; /* 边缘圆滑效果 */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* 模糊的阴影效果 */
+    padding: 5px 20px 20px 20px; /* 内容的内边距 */
+    backdrop-filter: blur(10px); /* 模糊效果，可以让背景更加柔和 */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* 模拟边框的细微高光 */}
+    
+
+.regioncard-region-title {
+    margin: 10px 0px 5px 0px;
+}
+
+.regionInfoCard h1, .regionInfoCard h2, .regionInfoCard h3 {
+    margin: 10px 0px 5px 0px;
+}
+
+.regionInfoCard h1 {
+    color: var(--text-h1-color);
+}
+.regionscard-label-content {
+    display: flex;            /* 使用 flexbox 布局 */
+    flex-direction: row;      /* 横向排列子元素 */
+    align-items: center;      /* 子元素在垂直方向上居中 */
+    gap: 10px;                /* 子元素之间的间距，可以根据需要调整 */
+    padding: 1px;            /* 内边距，增加一些空间感 */
+    box-sizing: border-box;   /* 包含内边距和边框 */
+    height: 10px;
+    color: var(--text-small-color);
+}
+
+.regionInfoCard-infoArea{
+    display: flex;            /* 使用 flexbox 布局 */
+    flex-direction: row;      /* 横向排列子元素 */
+    align-items: start;      /* 子元素在垂直方向上居中 */
+    justify-content: space-between; /* 子元素之间平分可用空间 */
+}
+
+
+.regionInfoCard-infoExpandArea {
+    display: flex;            /* 使用 flexbox 布局 */
+    flex-direction: row;      /* 横向排列子元素 */
+    align-items: start;      /* 子元素在垂直方向上居中 */
+    justify-content: space-between; /* 子元素之间平分可用空间 */
+}
