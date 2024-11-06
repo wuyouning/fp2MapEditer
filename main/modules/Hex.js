@@ -71,9 +71,12 @@ export class Hex {
                     this.clearHex(selectedBrush);
                 } else if (this.type === '属地') {
                     this.clearRegion(hexGrid, selectedBrush);
+                    initRegionsCard(mainView.hexGrid);
                     console.log("清除了区域内的格子")
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
+                    initRegionsCard(mainView.hexGrid);
+
                 }
                 break;
     
@@ -82,20 +85,29 @@ export class Hex {
                     this.applyHubBrush(selectedBrush, hexGrid);
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
+                    initRegionsCard(mainView.hexGrid);
+
                 } else if (this.type === '属地') {
                     this.clearRegion(hexGrid, selectedBrush);
+                    initRegionsCard(mainView.hexGrid);
+
                 } else if (this.type === '自由') {
                     this.clearHex(selectedBrush);
+                    initRegionsCard(mainView.hexGrid);
+
                 }
                 break;
     
             case '空白':
                 if (this.type === '属地') {
                     this.clearRegion(hexGrid, selectedBrush);
+                    initRegionsCard(mainView.hexGrid);
                 } else if (this.type === '自由') {
                     this.clearHex(selectedBrush);
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
+                    initRegionsCard(mainView.hexGrid);
+
                 }
                 break;
     
@@ -363,21 +375,21 @@ export class Hex {
         let neighborDirections;
         if (layout.orientation.name === 'pointy') {
             neighborDirections = [
-                { direction: { q: 0, r: 1, s: -1 } },
-                { direction: { q: -1, r: 1, s: 0 } },
-                { direction: { q: -1, r: 0, s: 1 } },
-                { direction: { q: 0, r: -1, s: 1 } },
-                { direction: { q: 1, r: -1, s: 0 } },
-                { direction: { q: 1, r: 0, s: -1 } },
+                { direction: { q: 0, r: 1, s: -1 } }, //右下
+                { direction: { q: -1, r: 1, s: 0 } }, //正下
+                { direction: { q: -1, r: 0, s: 1 } }, //左下
+                { direction: { q: 0, r: -1, s: 1 } }, //正左
+                { direction: { q: 1, r: -1, s: 0 } }, //右上
+                { direction: { q: 1, r: 0, s: -1 } }, //正右
             ];
         } else if (layout.orientation.name === 'flat') {
             neighborDirections = [
-                { direction: { q: 1, r: 0, s: -1 } },
-                { direction: { q: 0, r: 1, s: -1 } },
-                { direction: { q: -1, r: 1, s: 0 } },
-                { direction: { q: -1, r: 0, s: 1 } },
-                { direction: { q: 0, r: -1, s: 1 } },
-                { direction: { q: 1, r: -1, s: 0 } },
+                { direction: { q: 1, r: 0, s: -1 } }, //右下
+                { direction: { q: 0, r: 1, s: -1 } }, //正下
+                { direction: { q: -1, r: 1, s: 0 } }, //左下
+                { direction: { q: -1, r: 0, s: 1 } }, //左上
+                { direction: { q: 0, r: -1, s: 1 } }, //正上
+                { direction: { q: 1, r: -1, s: 0 } }, //右上
             ];
         }
 
