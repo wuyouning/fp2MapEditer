@@ -23,10 +23,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 0px;
+    padding: 1% 1.5%;
     border-radius: 8px;
-    
-    
 }
 
 
@@ -35,7 +33,7 @@
     flex-direction: column;
     gap: 20px;
     padding: 10px;
-    margin: 15px 15px 15px 15px;
+    margin: 5px 5px 5px 5px;
 }
 
 .brush-row-container {
@@ -55,4 +53,112 @@
     margin-top: 5px;
     font-size: 14px;
     text-align: center;
+}
+
+
+/* 滑动条整体容器 */
+.custom-slider-container {
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center; 
+    gap: 10px; 
+    padding: 10px; 
+}
+
+.topArea, .bottomArea {
+    display: flex;  
+    justify-content: space-between;  
+    align-items: center;  
+    width: 100%;  
+}
+
+.slider-label {
+    font-size: 18px;
+    margin-right: 10px; 
+    font-weight: bold;
+}
+
+.slider-value-display {
+    font-size: 14px;
+    margin-left: 10px; 
+}
+
+/* 左右按钮的样式 */
+.slider-button {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(45deg, #999b9d, #f8faff);
+    border: 2px solid #c0c0c0;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.slider-button:hover {
+    background-color: #d0d0d0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 滑动条的样式 */
+.custom-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 75%;
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    border: 1px solid #c0c0c0;
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s;
+    
+}
+
+.custom-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 12px;
+    cursor: pointer;
+    background: linear-gradient(to right, #e6e6e6, #ffffff);
+    border-radius: 10px;
+    border: 1px solid #c0c0c0;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 30%;
+    border: 2px solid #c0c0c0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.1);
+}
+
+/* Firefox */
+.custom-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 2px solid #c0c0c0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.custom-slider::-moz-range-thumb:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.1);
 }

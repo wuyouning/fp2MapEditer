@@ -1,7 +1,8 @@
 import { brushMap } from "../main/module.js";
 import {createSquareColorButton} from "../Component/buttonComponent.js";
 import { SliderToggleButton } from "../Component/buttonComponent.js";
-
+import { CustomSlider } from "../Component/buttonComponent.js";
+import { asideCard } from "../index.js";
 class SliderCard {
     constructor(cardID, cardWidth) {
         this.cardID = cardID; // 卡片 ID
@@ -45,7 +46,7 @@ export function initializeSliderCard() {
         },
         {
             id: 'privateCard',
-            width: '100%'
+            width: '90%'
         },
         {
             id: 'loginCard',
@@ -54,6 +55,10 @@ export function initializeSliderCard() {
         {
             id: 'infoCard',
             width: '350px'
+        },
+        {   
+            id: 'testDashboard',
+            width: 'calc(100% - var(--navbar-width))'
         },
     ];
 
@@ -81,6 +86,7 @@ export function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     function clickSelectedBrush(key) {
         if (selectedBrush.name !== key) {
             selectedBrush.name = key;
+            asideCard.updateBrushInfo();
             // updateDetectedHexListView();
         }
     }
@@ -120,8 +126,8 @@ export function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     try {
         new SliderToggleButton(
             "brushToolCard",  
-            "隐藏ID",      
-            "显示ID",      
+            "隐藏坐标",      
+            "显示坐标",      
             hexGrid.showID,                     
             hexGrid.setShowID.bind(hexGrid)
         );
@@ -144,13 +150,46 @@ export function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     try {
         new SliderToggleButton(
             "brushToolCard",          
-            "平顶",            
-            "尖顶",            
+            "平顶布局",            
+            "尖顶布局",            
             hexGrid.layout.orientation.name === 'pointy',  // 初始状态是否为尖顶
             (isOn) => {
                 // 根据按钮状态调用 setLayout
                 const layoutType = isOn ? 'pointy' : 'flat';
                 hexGrid.setLayout(layoutType);
+            }
+        );
+    } catch (error) {
+        console.error(error);
+    }
+
+
+    try {
+        new CustomSlider(
+            "brushToolCard",   // 容器ID
+            "格子尺寸:",      // 文字说明
+            24,                   // 最小值
+            80,                   // 最大值
+            40,                   // 初始值
+            1,                    // 步长
+            (value) => {          // 值变化的回调函数
+                hexGrid.setHexSize(value);
+            }
+        );
+    } catch (error) {
+        console.error(error);
+    }
+
+    try {
+        new CustomSlider(
+            "brushToolCard",   // 容器ID
+            "最大半径:",      // 文字说明
+            1,                   // 最小值
+            36,                   // 最大值
+            6,                   // 初始值
+            1,                    // 步长
+            (value) => {          // 值变化的回调函数
+                hexGrid.setMaxRadius(value);
             }
         );
     } catch (error) {

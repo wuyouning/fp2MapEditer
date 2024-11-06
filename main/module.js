@@ -1,3 +1,7 @@
+import { Hex } from "./modules/Hex.js";
+import { Point } from "./modules/Hex.js";
+import { mainView } from "../index.js";
+
 export const brushMap = {
     '居住区': {
         color: 'rgb(118, 190, 186)',
@@ -150,12 +154,14 @@ export const brushMap = {
     }
 }
 
-class Brush {
-    constructor(name, autoBuildRegion = true, isExpandArea = false) {
+export class Brush {
+    constructor(name, autoBuildRegion = true, isExpandRegion = false) {
         this._name = name; // 使用私有变量存储name
         this.autoBuildRegion = autoBuildRegion;
-        this.isExpandArea = isExpandArea;
+        this.isExpandRegion = isExpandRegion;
         this.pedingHexes = new Set();
+        this.model = '笔刷';
+        this.pedingRegion = null;
     }
 
     // 动态获取名称
@@ -166,8 +172,9 @@ class Brush {
     // 设置新名称并更新其他属性
     set name(newName) {
         this._name = newName;
-        this.isExpandArea = false; 
+        this.isExpandRegion = false; 
         this.pedingHexes.clear(); 
+        this.pedingRegion = null;
         //TODO: 更新笔刷状况栏
     }
 
@@ -200,7 +207,7 @@ class Brush {
         return brushMap[this._name]?.effectValue || 0;
     }
 
-    getPendingHexesCount() {
+    get pendingHexesCount() {
         return this.pedingHexes.size;
     }
 
@@ -220,14 +227,14 @@ class Brush {
 
     joinPedingHexes(hex, hexGrid) {
         // 检查当前待建格子数量是否小于阈值，且 hex 是否是邻居
-        if (this.getPendingHexesCount() < this.threshold && this.isNeighborOfPendingHexes(hex, hexGrid)) {
+        if (this.pendingHexesCount < this.threshold && this.isNeighborOfPendingHexes(hex, hexGrid)) {
             this.pedingHexes.add(hex); // 在满足条件时，添加 hex
         } else {
             if (this.autoBuildRegion) {
                 this.pedingHexes.clear(); // 自动构建区域时清空
             }
             this.pedingHexes.add(hex); // 添加新 hex
-            this.isExpandArea = false; // 重置 isExpandArea
+            this.isExpandRegion = false; // 重置 isExpandArea
         }
     }
 
@@ -236,9 +243,18 @@ class Brush {
         this.pedingHexes = new Set([...this.pedingHexes].filter(pendingHex => pendingHex.id !== hex.id));
     }
     
+    toggleExpandMode(region) {
+        if (this.pendingHexesCount <= this.threshold) {
+            this.isExpandRegion = true;
+            this.pedingRegion = region;
+        } else {
+            this.isExpandRegion = false;
+            this.pedingRegion = null;
+        }
+    }
 }
 
-class HexGrid {
+export class HexGrid {
     constructor(layers, hexSize = 45, maxRadius = 6, showID = true, showLabel = true) {
         this.layers = layers;
         this.hexes = new Set(); //新建后的格子存储
@@ -273,16 +289,18 @@ class HexGrid {
             start_angle: 0.0
         };
 
-        this.canvas = this.layers.colorLayer.canvas;
-        this.ctx = this.layers.colorLayer.getContext(); // 使用 getContext() 获取上下文
+        this.canvas = this.layers.getLayer('colorLayer').canvas;
+        this.ctx = this.layers.getLayer('colorLayer').getContext(); // 使用 getContext() 获取上下文
         
-        this.IdCanvas = this.layers.idLayer.canvas;
-        this.IdCtx = this.layers.idLayer.getContext(); // 使用 getContext() 获取上下文
+        this.IdCanvas = this.layers.getLayer('idLayer').canvas;
+        this.IdCtx = this.layers.getLayer('idLayer').getContext(); // 使用 getContext() 获取上下文
         
-        this.labelCanvas = this.layers.labelLayer.canvas;
-        this.labelCtx = this.layers.labelLayer.getContext(); // 使用 getContext() 获取上下文
+        this.labelCanvas = this.layers.getLayer('labelLayer').canvas;
+        this.labelCtx = this.layers.getLayer('labelLayer').getContext();
         
-
+        this.edgeCanvas = this.layers.getLayer('edgeLayer').canvas;
+        this.edgeCtx = this.layers.getLayer('edgeLayer').getContext();
+        
         this.layout = {
             orientation: this.layoutPointy,
             size: new Point(this.hexSize, this.hexSize),
@@ -371,7 +389,7 @@ class HexGrid {
         this.hexSize = size;
         this.layout.size = new Point(this.hexSize, this.hexSize);
         this.drawHexagons();
-        hexGrid.updateAllRegionsLabels(labelCtx);
+        // hexGrid.updateAllRegionsLabels(labelCtx);
     }
 
     setMaxRadius(radius) {
@@ -467,38 +485,41 @@ class HexGrid {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.IdCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.labelCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
+        this.edgeCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // 绘制所有格子并添加到 hexGrid
         for (const hexCoords of hexagons) {
             const existingHex = this.getHexById(`${hexCoords.q}_${hexCoords.r}_${hexCoords.s}`);
 
             if (existingHex) {
+                // 传大小递数值进去，不然字体会收到影响
+                existingHex.size = this.hexSize;
                 // 如果六边形已经存在，则保留它的属性
-                existingHex.drawHex(this.ctx, this.IdCtx, this.labelCtx, this.layout, this.showID, this.showLabel);
+                existingHex.drawHex(this);
             } else {
                 // 如果是新的六边形，则创建一个新的 Hex 实例
                 const newHex = new Hex(hexCoords.q, hexCoords.r, hexCoords.s, '擦除', null, "空白", this.hexSize);
-                newHex.drawHex(this.ctx, this.IdCtx, this.labelCtx, this.layout, this.showID);
+                newHex.drawHex(this);
                 this.addHex(newHex);
             }
         }
     }
 
-    cleanGrid() {
+    cleanGrid(selectedBrush) {
         const centerHex = new Hex(0, 0, 0);
+        this.hubs.clear();  
+        this.regions.clear(); 
+        selectedBrush.pedingHexes.clear();
+        this.hexes.clear();
         const hexagons = this.generateHexagons(centerHex, this.maxRadius);
-        this.hubs = [];
-        this.regions = [];
-        detectedHexList.length = 0
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         for (const hexCoords of hexagons) {
             // 如果是新的六边形，则创建一个新的 Hex 实例
             const newHex = new Hex(hexCoords.q, hexCoords.r, hexCoords.s, '擦除', null, "空白", this.hexSize);
-            newHex.drawHex(ctx, this.layout, this.showID, this.showLabel);
+            newHex.drawHex(this);
             this.addHex(newHex);
         }
-        updateRegionCards();
+        // updateRegionCards();
     }
 
 
@@ -702,23 +723,144 @@ class HexGrid {
 
 }
 
-class Region {
+export class Region {
     constructor(name, hexes, type) {
         this.hexes = new Set(hexes || []); // 使用 Set 来存储 hexes
         this.type = type;
 
         // 如果没有传入 name，自动生成一个默认名称
         if (!name) {
-            const sameTypeRegions = [...hexGrid.regions].filter(region => region.type === type);
-            this.name = `${type} - ${sameTypeRegions.length + 1}`;
+            const sameTypeRegions = [...mainView.hexGrid.regions].filter(region => region.type === type);
+            this.name = `${type}-${sameTypeRegions.length + 1}`;
+            
         } else {
             this.name = name;
+            consele.log(`生成的名字,${this.name}`);
         }
 
         this.effectHubs = new Set(); // 传输效应区域，检验计算正确与否
         //TODO: 区域的外部效应和内部效应都放在之类，通过回传更新存储，确保准确性
-
     }
+
+    // static createRegion(hexGrid, selectedBrush) {
+    //     // const { hexes } = hexGrid.hexes;
+    //     // const { pedingHexes } = selectedBrush.pedingHexes;
+
+    //     const hexes = hexGrid.hexes;
+    //     const pedingHexes = selectedBrush.pedingHexes;
+
+    //     const newRegion = new Region(null, null, selectedBrush.name);
+    //     console.log('hexGrid:', hexGrid);
+    //     console.log('hexGrid.hexes:', hexGrid.hexes);
+    //     console.log('selectedBrush:', selectedBrush);
+    //     console.log('selectedBrush.pedingHexes:', selectedBrush.pedingHexes);
+    //     hexes.forEach(hex => {
+    //         if (pedingHexes.has(hex)) {
+    //             hex.regionBelond = newRegion.name;
+    //             hex.type = "属地";
+    //             hex.drawHex(
+    //                 hexGrid.ctx,
+    //                 hexGrid.IdCtx,
+    //                 hexGrid.labelCtx,
+    //                 hexGrid.layout,
+    //                 hexGrid.showID,
+    //                 hexGrid.showLabel
+    //             );
+    //         }
+    //     })
+
+    //     newRegion.hexes = hexes;
+    //     hexGrid.regions.add(newRegion);
+    //     selectedBrush.pedingHexes = hexes;
+
+    //     selectedBrush.toggleExpandMode(newRegion);
+
+
+    //     //TODO: 更新传导数据给其他区域和枢纽
+    // }
+
+    static createRegion(hexGrid, selectedBrush) {
+        // 获取待扩展的集合
+        const hexes = hexGrid.hexes;
+        const pedingHexes = selectedBrush.pedingHexes;
+    
+        // 检查是否有待扩展的格子
+        if (!pedingHexes || pedingHexes.size === 0) {
+            alert('没有待扩展的格子');
+            return;
+        }
+    
+        // 创建新的区域对象，name 为空，使用 selectedBrush 的 name
+        const newRegion = new Region(null, null, selectedBrush.name);
+        console.log('hexGrid:', hexGrid);
+        console.log('selectedBrush:', selectedBrush);
+    
+        // 更新属于该区域的 hexes
+        const updatedHexes = new Set();
+        pedingHexes.forEach(hex => {
+            if (hexes.has(hex)) {
+                // 更新 hex 的属性
+                hex.regionBelond = newRegion.name;
+                hex.type = "属地";
+    
+                // 将修改的 hex 添加到 updatedHexes 中
+                updatedHexes.add(hex);
+            }
+        });
+        
+        // 全部信息填充后再绘制，可以保证边缘不会出错
+        updatedHexes.forEach(hex => {
+            if (hexes.has(hex)) {
+                // 绘制 hex
+                hex.drawHex(hexGrid);
+            }
+        });
+        
+        // 更新新区域的 hexes 集合
+        newRegion.hexes = new Set(updatedHexes); // 确保 newRegion.hexes 是一个独立的集合
+    
+        // 将新区域添加到 hexGrid.regions 中
+        hexGrid.regions.add(newRegion);
+        console.log('打印区域', hexGrid.regions);
+        
+        // 更新 selectedBrush 中的待扩展 hexes 为一个新的 Set，以避免共享引用
+        selectedBrush.pedingHexes = new Set(updatedHexes);
+        
+        // 切换扩展模式
+        selectedBrush.toggleExpandMode(newRegion);
+        
+        // TODO: 更新传导数据给其他区域和枢纽
+    }
+    //TODO: 设计一下思路
+    expandRegion(hexGrid, selectedBrush) {
+        if (selectedBrush.pedingRegion) {
+            const hexes = hexGrid.hexes;
+            const pedingHexes = selectedBrush.pedingHexes;
+            const region = selectedBrush.pedingRegion;
+            hexes.forEach(hex => {
+                if (pedingHexes.has(hex)) {
+                    hex.regionBelond = region.name;
+                    hex.type = "属地";
+                    hex.drawHex(
+                        hexGrid
+                    );
+                }
+            })
+            region.hexes = new Set([...region.hexes, ...pedingHexes]);
+            selectedBrush.pedingHexes = new Set([...selectedBrush.pedingHexes, ...pedingHexes]);
+
+            hexGrid.regions = new Set([...hexGrid.regions].map(existingRegion => 
+                existingRegion.name === region.name ? region : existingRegion
+            ));
+            selectedBrush.toggleExpandMode(region);
+
+        } else {
+            alert("触发了区域拓展但是却没有区域存在")
+            return;
+        }
+        
+    }
+
 
     // 示例方法：添加一个 hex 到 hexes Set
     addHex(hex) {
@@ -738,23 +880,31 @@ class Region {
     cleanRegion(hex, hexGrid) {
         if (hex) {
             this.clearSingleHex(hex, hexGrid);
+            console.warn(`执行了清除，对应的hex是${hex.id}`)
         } else {
             this.clearAllHexes(hexGrid);
         }
-        this.updateRegion();
-        updateRegionCards();
+        //FIX: 事实上是很不节省算力的行为，但是一直没有研究出来正确的局部处理方法，所以没有办法只能用这个全局配置来解决了。
+        hexGrid.drawHexagons();
+        // this.updateRegion();
+        // updateRegionCards();
+        hexGrid.regions.delete(this);
     }
 
     clearSingleHex(hex, hexGrid) {
+        console.warn(`被执行的区域是 ${this.name}`)
         for (let regionHex of this.hexes) {
+            regionHex.regionBelond = null;
             if (regionHex.id === hex.id) {
                 regionHex.brush = "擦除";
-                regionHex.region = null;
                 regionHex.type = "空白";
-                regionHex.drawHex(ctx, hexGrid.layout, hexGrid.showID);
-                this.hexes.delete(regionHex);
-                break;
+                console.warn(`执行了清除，因为对应的hex是${regionHex.id}`)
+            } else {
+                regionHex.type = "自由";
+                console.warn(`执行了清除，对应的hex是${regionHex.id}`)
             }
+            regionHex.drawHex(hexGrid);
+            this.hexes.delete(regionHex);
         }
     }
 
@@ -763,69 +913,47 @@ class Region {
             regionHex.brush = "擦除";
             regionHex.region = null;
             regionHex.type = "空白";
-            regionHex.drawHex(ctx, hexGrid.layout, hexGrid.showID);
+            regionHex.drawHex(hexGrid);
         });
         this.hexes.clear();
         hexGrid.regions.delete(this);
     }
 
+    //绘制区域标签
+    drawMaxInscribedCircle(ctx) {
+        // 获取所有 hex 的坐标
+        const hexCenters = [...this.hexes].map(hex => hex.hexToPixel(mainView.hexGrid.layout));
+
+        // 计算区域的外包矩形（bounding box）
+        const minX = Math.min(...hexCenters.map(p => p.x));
+        const maxX = Math.max(...hexCenters.map(p => p.x));
+        const minY = Math.min(...hexCenters.map(p => p.y));
+        const maxY = Math.max(...hexCenters.map(p => p.y));
+
+        // 找到外包矩形中心，作为初始猜测的内心位置
+        let centerX = (minX + maxX) / 2;
+        let centerY = (minY + maxY) / 2;
+
+        // 计算最大内接圆半径：取到边缘 hex 的最小距离
+        let maxRadius = Math.min(
+            ...hexCenters.map(p => Math.sqrt((p.x - centerX) ** 2 + (p.y - centerY) ** 2))
+        );
+
+        // 绘制最大内接圆和中心点
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'blue';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 绘制中心点
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+    }
+
+
 
 }
 
-import { initializeCanvasLayers } from "../Component/canvasLayer.js";
-import { Hex } from "./modules/Hex.js";
-import { Point } from "./modules/Hex.js";
-
-export class MainView {
-    constructor () {
-        // 初始化选中的笔刷
-        this.selectedBrush = new Brush('居住区');
-        this.isPromptShow = false;
-
-        this.layers = this.initializeLayers(); // 初始化层
-        if (!this.layers) {
-            throw new Error('Failed to initialize layers');
-        }
-
-        this.hexGrid = new HexGrid(this.layers);
-        this.hexGrid.drawHexagons();
-            // 绑定事件监听器
-        this.addCanvasListeners();
-
-        this.canvas = this.layers.colorLayer.canvas;
-        this.ctx = this.layers.colorLayer.getContext(); // 使用 getContext() 获取上下文
-        
-        this.IdCanvas = this.layers.idLayer.canvas;
-        this.IdCtx = this.layers.idLayer.getContext(); // 使用 getContext() 获取上下文
-        
-        this.labelCanvas = this.layers.labelLayer.canvas;
-        this.labelCtx = this.layers.labelLayer.getContext(); // 使用 getContext() 获取上下文
-
-    }
-
-    initializeLayers() {
-        return initializeCanvasLayers();
-    }
-
-    addCanvasListeners() {
-        const canvas = this.layers.colorLayer.canvas; // 获取 colorLayer 的画布
-        let hexGrid = this.hexGrid;
-
-        canvas.addEventListener('click', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-            const hexId = hexGrid.getHexIdFromMouse(mouseX, mouseY);
-            const hex = hexGrid.getHexById(hexId);
-        
-            if (hex) {
-                console.log('修改前的数值' ,hex)
-                hex.setBrush(this.selectedBrush, hexGrid);
-                // 仅重绘这个被单击的 Hex
-                hex.drawHex(this.ctx, this.IdCtx, this.labelCtx, hexGrid.layout, hexGrid.showID, hexGrid.showLabel);
-                console.log('修改后的数值' ,hex)
-            }
-        });
-    }
-
-}

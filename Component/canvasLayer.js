@@ -99,7 +99,7 @@ class CanvasLayer {
 }
 
 //五个画布
-export function initializeCanvasLayers() {
+function initializeCanvasLayers() {
     const mainContainer = document.getElementById('main');
     if (!mainContainer) {
         console.error('main container not found');
@@ -116,8 +116,9 @@ export function initializeCanvasLayers() {
         { id: 'colorLayer', zIndex: baseZIndex + 1, pointerEvents: 'auto' }, // 允许交互
         { id: 'contrastLayer', zIndex: baseZIndex + 2, pointerEvents: 'none' },  
         { id: 'idLayer', zIndex: baseZIndex + 3, pointerEvents: 'none' },        
-        { id: 'labelLayer', zIndex: baseZIndex + 4, pointerEvents: 'none' },     
-        { id: 'highlightLayer', zIndex: baseZIndex + 5, pointerEvents: 'none' }  
+        { id: 'labelLayer', zIndex: baseZIndex + 4, pointerEvents: 'none' },
+        { id: 'edgeLayer', zIndex: baseZIndex + 5, pointerEvents: 'none' },          
+        { id: 'highlightLayer', zIndex: baseZIndex + 6, pointerEvents: 'none' },
     ];
 
     const layers = {};
@@ -127,4 +128,61 @@ export function initializeCanvasLayers() {
     });
 
     return layers;
+}
+
+export class CanvasLayersManager {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) {
+            console.error('Container not found');
+            return;
+        }
+        
+        this.width = this.container.clientWidth;
+        this.height = this.container.clientHeight;
+        this.baseZIndex = parseInt(window.getComputedStyle(this.container).zIndex, 10) || 0;
+
+        this.layers = {};
+        this.initializeLayers();
+    }
+
+    initializeLayers() {
+        const layersConfig = [
+            { id: 'colorLayer', zIndex: this.baseZIndex + 1, pointerEvents: 'auto' }, // 允许交互
+            { id: 'contrastLayer', zIndex: this.baseZIndex + 2, pointerEvents: 'none' },  
+            { id: 'idLayer', zIndex: this.baseZIndex + 3, pointerEvents: 'none' },        
+            { id: 'labelLayer', zIndex: this.baseZIndex + 4, pointerEvents: 'none' },
+            { id: 'edgeLayer', zIndex: this.baseZIndex + 5, pointerEvents: 'none' },          
+            { id: 'highlightLayer', zIndex: this.baseZIndex + 6, pointerEvents: 'none' },
+        ];
+
+        layersConfig.forEach(({ id, zIndex, pointerEvents }) => {
+            this.layers[id] = new CanvasLayer(id, zIndex, this.width, this.height, this.container, pointerEvents);
+        });
+    }
+
+    getLayer(id) {
+        return this.layers[id] || null;
+    }
+
+    resizeLayers() {
+        this.width = this.container.clientWidth;
+        this.height = this.container.clientHeight;
+        Object.values(this.layers).forEach(layer => {
+            layer.resize(this.width, this.height);
+        });
+    }
+
+    clearLayer(id) {
+        const layer = this.getLayer(id);
+        if (layer) {
+            layer.clear();
+        }
+    }
+
+    clearAllLayers() {
+        Object.values(this.layers).forEach(layer => {
+            layer.clear();
+        });
+    }
 }

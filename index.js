@@ -1,10 +1,13 @@
 import { createNavbarButton } from "./Component/buttonComponent.js";
-import { MainView } from "./main/module.js";
+import { MainView } from "./main/main.js";
 import { initializeSliderCard } from "./Component/sliderCard.js";
 import { initalzeBrushToolCard } from "./Component/sliderCard.js";
+import { AsideCard } from "./Component/aside.js";
+import { TestDashboardView } from "./TESTdashboard.js"
+
 
 // let layers; //画布组
-let mainView;
+export let mainView;
 initializeNavBarButtons(); //创建左侧按钮
 
 //其他内容区域创建完毕后，再创建画布区域
@@ -19,6 +22,9 @@ initializeNavBarButtons(); //创建左侧按钮
 mainView = new MainView();
 initializeSliderCard();
 initalzeBrushToolCard(mainView.selectedBrush, mainView.hexGrid, mainView.layers);
+export let asideCard = new AsideCard(mainView.selectedBrush, mainView.layers, mainView.hexGrid);
+asideCard.initCard();
+export let testDashboardView = new TestDashboardView(mainView);
 
 function initializeNavBarButtons() {
     const navBar = document.getElementById('navBar');
@@ -74,6 +80,14 @@ function initializeNavBarButtons() {
             altText: '冰汽时代地图编辑器 - 个人信息',
             buttonText: '个人信息',
             isVisible: false,
+        },
+        {
+            id: 'testDashbutton',
+            cardId: 'testDashboard',
+            iconSrc: '/images/我的.png',
+            altText: '冰汽时代地图编辑器 - 测试',
+            buttonText: '测试信息',
+            isVisible: true,
         },
     ];
 

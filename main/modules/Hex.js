@@ -1,5 +1,5 @@
 import { brushMap } from "../module.js";
-
+import { mainView } from "../../index.js";
 export class Hex {
     constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size, ctx) {
         this.q = q;
@@ -31,7 +31,7 @@ export class Hex {
         return this.add(Hex.directions[direction]);
     }
     //不借用外部原点的生成邻居
-    getRingHexs(radius, hexGrid) {
+    getRingHexs(radius, hexGrid = mainView.hexGrid) {
         const neighbors = [];
         for (let dq = -radius; dq <= radius; dq++) {
             for (let dr = Math.max(-radius, -dq - radius); dr <= Math.min(radius, -dq + radius); dr++) {
@@ -55,66 +55,9 @@ export class Hex {
     }
 
     // 获取半径为2的邻居
-    getTwoRing(hexGrid) {
+    getTwoRing(hexGrid = mainView.hexGrid) {
         return this.getRingHexs(2, hexGrid);
     }
-
-    //以下是设定格子需要进行逻辑运作
-
-
-    // setbrush(selectedBrush, hexGrid) {
-    //     if (!this.type || this.type === '空白') {
-    //         this.brush = selectedBrush.brush;
-    //         this.type = selectedBrush.type;
-    //         if (selectedBrush.type === '自由') {
-    //             selectedBrush.joinPedingHexes(this);
-    //         } else if (selectedBrush.type === '枢纽') {
-    //             this.createHub(hexGrid.hubs, selectedBrush.name)
-    //             this.updateEffectedRegions();
-    //             updateRegionCards(); 
-    //             //TODO: 更新推送
-    //             //TODO: 一旦枢纽清除会造成效应计算重新计算，需要启动计算区域和枢纽的效应
-    //         } else {
-    //             console.log(`空白格子配置了什么${selectedBrush.name}？什么别做`)
-    //             alert("已擦除")
-    //         }
-    //     } else if (this.type === '属地') {
-    //         let region = null;
-    //         for (let r of hexGrid.regions) {
-    //             if (r.name === this.regionBelond) {
-    //                 region = r;
-    //                 break; // 找到匹配项后立即退出循环
-    //             }
-    //         }
-    //         if(region) {
-    //             region.cleanRegion(this, hexGrid);
-    //             hexGrid.removeRegionByName(this.regionBelond);
-    //             updateRegionCards(); 
-    //             //TODO: 一旦区域清除会造成效应计算重新计算，需要启动计算区域和枢纽的效应
-    //             //TODO: 更新画面 重画标签
-    //         } else {
-    //             console.log(`无法找到指定的区域格子`);
-    //             alert('删除了一个有了区域，但是区域没有被收录的格子，有BUG')
-    //         }
-    //         this.clearHex();
-    //     } else if (this.type === '枢纽') {
-    //         //从其他区域里面删除掉枢纽效应
-    //         this.removeEffectFromRegion();
-    //         //gridhex中删除
-    //         hexGrid.removeHubById(this.id);
-    //         //TODO: 一旦枢纽清除会造成效应计算重新计算，需要启动计算区域和枢纽的效应
-    //         updateRegionCards(); //更新效应卡 换个名字会不会好一点
-    //         this.clearHex();
-    //     } else if (this.type === '自由') {
-    //         this.clearHex();
-    //     } else {
-    //         console.warn(selectedBrush);
-    //         alert(`居然怎么样找不到它是什么类型的格子，太危险了，有BUG`)
-    //     }
-
-    //     //推送到所有区域进行重新计算效应 1.区域建立 2.枢纽建立 3.区域删除 4.枢纽删除
-    //     //更新画面
-    // }
 
     // => 💪 setbrush精简版本，看看能不能顺利运行下去 核心代码 处理核心逻辑后，在外部使用绘制格子重绘此格子
     setBrush(selectedBrush, hexGrid) {
@@ -126,6 +69,11 @@ export class Hex {
                     this.applyFreeBrush(selectedBrush, hexGrid);
                 } else if (this.type === '自由') {
                     this.clearHex(selectedBrush);
+                } else if (this.type === '属地') {
+                    this.clearRegion(hexGrid, selectedBrush);
+                    console.log("清除了区域内的格子")
+                } else if (this.type === '枢纽') {
+                    this.removeHub(hexGrid);
                 }
                 break;
     
@@ -134,12 +82,16 @@ export class Hex {
                     this.applyHubBrush(selectedBrush, hexGrid);
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
+                } else if (this.type === '属地') {
+                    this.clearRegion(hexGrid, selectedBrush);
+                } else if (this.type === '自由') {
+                    this.clearHex(selectedBrush);
                 }
                 break;
     
             case '空白':
                 if (this.type === '属地') {
-                    this.clearRegion(hexGrid);
+                    this.clearRegion(hexGrid, selectedBrush);
                 } else if (this.type === '自由') {
                     this.clearHex(selectedBrush);
                 } else if (this.type === '枢纽') {
@@ -166,15 +118,15 @@ export class Hex {
         this.brush = selectedBrush.name;
         this.type = selectedBrush.type;
         this.createHub(hexGrid.hubs, selectedBrush.name);
-        this.updateEffectedRegions();
-        updateRegionCards();
+        // this.updateEffectedRegions();
+        // updateRegionCards();
     }
     
     removeHub(hexGrid) {
         this.removeEffectFromRegion();
         hexGrid.removeHubById(this.id);
-        updateRegionCards();
-        this.clearHex();
+        // updateRegionCards();
+        this.clearHex(mainView.selectedBrush);
     }
     
     //建立枢纽
@@ -193,24 +145,31 @@ export class Hex {
     }
     //清理格子
     clearHex(selectedBrush) {
+        selectedBrush.removeHexFromPending(this);
         this.brush = '擦除';
         this.type = '空白';
         this.regionBelond = null;
-        selectedBrush.removeHexFromPending(this);
         //TODO: 更新画面
     }
 
-    clearRegion(hexGrid) {
+    clearRegion(hexGrid, selectedBrush) {
         const region = this.findRegion(hexGrid);
         if (region) {
             region.cleanRegion(this, hexGrid);
+            console.warn(`删除了区域: ${this.regionBelond}`);
+            console.warn(`确认regionname: ${region.name}`);
+            console.warn(`格子ID ${this.id}`)
         } else {
             console.warn(`未找到区域: ${this.regionBelond}`);
         }
-        this.clearHex();
+        this.clearHex(selectedBrush);
     }
     //TODO:  查找区域 和 下方移除和添加重复了，看看有没有必要处理呗
     findRegion(hexGrid) {
+        console.log('《《《区域名字 ', this.regionBelond)
+        console.log('<<<所有的信息', this)
+        console.log('《《《区域内容 ', hexGrid.regions)
+
         for (let r of hexGrid.regions) {
             if (r.name === this.regionBelond) {
                 return r;
@@ -235,7 +194,7 @@ export class Hex {
 
     // 计算枢纽影响到的区域
     get findEffectedArea() {
-        const twoRingHexes = this.twoRing; // 获取两圈内的邻居Hex对象
+        const twoRingHexes = this.getTwoRing(); // 获取两圈内的邻居Hex对象
         const allowedAreas = brushMap[this.brush]?.allowArea || []; // 获取当前brush的allowArea，如果不存在则为空集
         const effectedArea = {};
 
@@ -295,11 +254,11 @@ export class Hex {
     // =>  绘制格子UI的一系列配合
 
     //主程 画ID、画边缘、画标签
-    drawHex(ctx, IdCtx, labelCtx, layout, showID, showLabel) {
+    drawHex(hexGrid) {
         // 使用通用绘制多边形的方法，指定线条宽度和颜色
         this.drawPolygon(
-                        ctx, 
-                        layout,
+            hexGrid.ctx, 
+            hexGrid.layout,
                         this.setFillColor.bind(this), 
                         2, 
                         'rgba(168, 177, 197, 0.1)'
@@ -307,18 +266,18 @@ export class Hex {
 
         // 绘制ID信息
         // FIX: 如果不去限制呢？
-        if (showID) {
-            this.drawId(IdCtx, layout, this.polygonCorners(layout));
+        if (hexGrid.showID) {
+            this.drawId(hexGrid.IdCtx, hexGrid.layout, this.polygonCorners(hexGrid.layout));
         }
-
-        if (showLabel) {
-            this.drawHexLabel(labelCtx, layout, showLabel);
-        }
-
+                
         // 判断是否绘制边缘或区域标签
-        if (this.type === '属地') {
-            this.drawHexEdges(labelCtx, layout);
+        if (hexGrid.showLabel) {
+            this.drawHexLabel(hexGrid.labelCtx, hexGrid.layout, hexGrid.showLabel);
         }
+
+        if (this.type === '属地') {
+            this.drawHexEdges(hexGrid.edgeCtx, hexGrid.layout);
+        } 
     }
 
     drawHoverHex(ctx, IdCtx, layout, hoverColor = '#FFDD44', alpha = 0.5) {
@@ -371,9 +330,30 @@ export class Hex {
         ctx.stroke();
     }
 
-    drawHexEdges(ctx, layout, lineWidth = 1) {
+    // 形状清除
+    clearPolygon(ctx, layout) {
         const corners = this.polygonCorners(layout);
+        ctx.beginPath();
+        ctx.moveTo(corners[0].x, corners[0].y);
+        for (let i = 1; i < corners.length; i++) {
+            ctx.lineTo(corners[i].x, corners[i].y);
+        }
+        ctx.closePath();
+    
+        // 获取多边形的边界框
+        const minX = Math.min(...corners.map(corner => corner.x));
+        const maxX = Math.max(...corners.map(corner => corner.x));
+        const minY = Math.min(...corners.map(corner => corner.y));
+        const maxY = Math.max(...corners.map(corner => corner.y));
+    
+        // 清除该边界框内的区域
+        ctx.clearRect(minX, minY, maxX - minX, maxY - minY);
+    }
 
+    drawHexEdges(ctx, layout, lineWidth = 5) {
+        const corners = this.polygonCorners(layout);
+        
+        
         let borderColor = '#000000'; // 默认边框颜色
         if (brushMap[this.brush]) {
             borderColor = brushMap[this.brush].borderColor || '#000000';
@@ -408,7 +388,7 @@ export class Hex {
             // 获取相应方向上的邻居
             const direction = neighborDirections[i].direction;
             const neighborHexId = `${this.q + direction.q}_${this.r + direction.r}_${this.s + direction.s}`;
-            const neighbor = hexGrid.getHexById(neighborHexId);
+            const neighbor = mainView.hexGrid.getHexById(neighborHexId);
 
             // 如果邻居存在并且类型相同，则不绘制边
             if (neighbor && neighbor.regionBelond === this.regionBelond) {
@@ -419,7 +399,6 @@ export class Hex {
             ctx.save();
             ctx.strokeStyle = borderColor;
             ctx.lineWidth = lineWidth; // 可以根据需要调整边缘线的宽度
-
             // 使用全局复合操作来确保边缘不会被覆盖
             ctx.globalCompositeOperation = 'source-over';
 
@@ -428,8 +407,63 @@ export class Hex {
             ctx.moveTo(startCorner.x, startCorner.y);
             ctx.lineTo(endCorner.x, endCorner.y);
             ctx.stroke();
-
             ctx.restore();
+        }
+    }
+    //TODO: 依然没法清除
+    clearHexEdges(hexGrid, lineWidth = 5) {
+        const corners = this.polygonCorners(hexGrid.layout);
+    
+        // 判断布局类型，并定义邻居方向
+        let neighborDirections;
+        if (hexGrid.layout.orientation.name === 'pointy') {
+            neighborDirections = [
+                { direction: { q: 0, r: 1, s: -1 } },
+                { direction: { q: -1, r: 1, s: 0 } },
+                { direction: { q: -1, r: 0, s: 1 } },
+                { direction: { q: 0, r: -1, s: 1 } },
+                { direction: { q: 1, r: -1, s: 0 } },
+                { direction: { q: 1, r: 0, s: -1 } },
+            ];
+        } else if (hexGrid.layout.orientation.name === 'flat') {
+            neighborDirections = [
+                { direction: { q: 1, r: 0, s: -1 } },
+                { direction: { q: 0, r: 1, s: -1 } },
+                { direction: { q: -1, r: 1, s: 0 } },
+                { direction: { q: -1, r: 0, s: 1 } },
+                { direction: { q: 0, r: -1, s: 1 } },
+                { direction: { q: 1, r: -1, s: 0 } },
+            ];
+        }
+    
+        for (let i = 0; i < neighborDirections.length; i++) {
+            const startCorner = corners[i];
+            const endCorner = corners[(i + 1) % corners.length];
+    
+            // 获取相应方向上的邻居
+            const direction = neighborDirections[i].direction;
+            const neighborHexId = `${this.q + direction.q}_${this.r + direction.r}_${this.s + direction.s}`;
+            const neighbor = mainView?.hexGrid?.getHexById(neighborHexId);
+    
+            // 如果邻居存在并且类型相同，则不清除边
+            if (neighbor && neighbor.regionBelond === this.regionBelond) {
+                continue;
+            }
+    
+            // 使用保存的状态来重绘以便清除边
+            hexGrid.edgeCtx.save();
+            hexGrid.edgeCtx.strokeStyle = 'rgba(0, 0, 0, 0)';
+            hexGrid.edgeCtx.lineWidth = lineWidth;
+    
+            // // 使用复合操作 "destination-out" 来实现清除效果
+            // hexGrid.edgeCtx.globalCompositeOperation = 'destination-out';
+    
+            // 绘制每条边（清除边）
+            hexGrid.edgeCtx.beginPath();
+            hexGrid.edgeCtx.moveTo(startCorner.x, startCorner.y);
+            hexGrid.edgeCtx.lineTo(endCorner.x, endCorner.y);
+            hexGrid.edgeCtx.stroke();
+            hexGrid.edgeCtx.restore();
         }
     }
 
@@ -438,8 +472,8 @@ export class Hex {
         const center = this.hexToPixel(layout);
         
         // 清除当前六边形区域
-        const padding = this.size * 0.6; // 添加一些 padding 以确保清除范围足够覆盖文本区域
-        labelCtx.clearRect(center.x - padding, center.y - padding, padding * 2, padding * 2);
+        this.clearPolygon(labelCtx, layout);
+        
     
         // 如果 type 是空白，则不显示任何文本
         if (this.type === '空白' || this.type === '属地') {
@@ -465,7 +499,7 @@ export class Hex {
         IdCtx.font = `${(this.size / 2.5)}px Arial`; // 根据 size 调整字体大小
 
         // 计算偏移量，确保文本在格子内部且与中心点距离合适
-        const offset = Math.min(this.size / 3.5, 8);
+        const offset = Math.min(this.size / 3.5, 5);
         if (layout.orientation.name === 'pointy') {
             IdCtx.textAlign = "center";
             IdCtx.textBaseline = "bottom";
