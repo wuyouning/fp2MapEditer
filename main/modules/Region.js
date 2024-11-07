@@ -18,6 +18,7 @@ export class Region {
 
         this.effectHubs = new Set(); // 传输效应区域，检验计算正确与否
         //TODO: 区域的外部效应和内部效应都放在之类，通过回传更新存储，确保准确性
+        this.innerEffectArea = this.getInnerEffectArea();
     }
     //纯粹生成
     static createRegion2(hexGrid, selectedBrush) {
@@ -158,7 +159,6 @@ export class Region {
         // TODO: 更新传导数据给其他区域和枢纽
     }
 
-
     // 示例方法：添加一个 hex 到 hexes Set
     addHex(hex) {
         this.hexes.add(hex);
@@ -177,7 +177,6 @@ export class Region {
     cleanRegion(hex, hexGrid) {
         if (hex) {
             this.clearSingleHex(hex, hexGrid);
-            console.warn(`执行了清除，对应的hex是${hex.id}`)
         } else {
             this.clearAllHexes(hexGrid);
         }
@@ -195,10 +194,8 @@ export class Region {
             if (regionHex.id === hex.id) {
                 regionHex.brush = "擦除";
                 regionHex.type = "空白";
-                console.warn(`执行了清除，因为对应的hex是${regionHex.id}`)
             } else {
                 regionHex.type = "自由";
-                console.warn(`执行了清除，对应的hex是${regionHex.id}`)
             }
             regionHex.drawHex(hexGrid);
             this.hexes.delete(regionHex);
@@ -875,38 +872,27 @@ export class Region {
         });
         return Array.from(oneRingHexes.values());
     }
-
+            
+    //内效应 需要三个内部格子与其他区域接壤
     getInnerEffectArea() {
         const neighborRegionCount = new Map();
-
-        // Step 1: 遍历每个 hex，找到邻居中类型为 '属地' 的格子
+    
         this.hexes.forEach(hex => {
-            const adjacentTerritoryHexes = hex.getOneRing(mainView.hexGrid).filter(neighbor => neighbor.type === '属地' && !this.hexes.has(neighbor));
-
-            // Step 2: 形成接壤区域列表
-            const adjacentRegions = new Set();
+            const adjacentTerritoryHexes = hex.getOneRing(mainView.hexGrid).filter(
+                neighbor => neighbor.type === '属地' && !this.hexes.has(neighbor)
+            );
+    
             adjacentTerritoryHexes.forEach(neighbor => {
-                if (neighbor.region) {
-                    adjacentRegions.add(neighbor.region);
-                }
-            });
-
-            // Step 3: 将接壤区域添加到 neighborRegionCount 中
-            adjacentRegions.forEach(region => {
-                if (!neighborRegionCount.has(region)) {
-                    neighborRegionCount.set(region, 1);
-                } else {
-                    neighborRegionCount.set(region, neighborRegionCount.get(region) + 1);
+                if (neighbor.regionBelond) {
+                    neighborRegionCount.set(neighbor.regionBelond, (neighborRegionCount.get(neighbor.regionBelond) || 0) + 1);
                 }
             });
         });
-
-        // Step 4: 检查合并的表中是否有区域的统计值大于 3
-
+    
         const innerEffectArea = [];
-        neighborRegionCount.forEach((count, region) => {
+        neighborRegionCount.forEach((count, regionBelond) => {
             if (count >= 3) {
-                innerEffectArea.push(region);
+                innerEffectArea.push(regionBelond);
             }
         });
         return innerEffectArea;
@@ -919,9 +905,17 @@ export class Region {
     getInnerEffectDetailList(formatted = false) {
         const innerEffectArea = this.getInnerEffectArea();
         const innerEffectDetailList = [];
-    
+        console.log('开始运行细节了')
         innerEffectArea.forEach(reg => {
-            let region = hexGrid.regions.find(r => r.name === reg);
+            // let region = mainView.hexGrid.regions.find(r => r.name === reg);
+            let region = null;
+            for (let r of mainView.hexGrid.regions) {
+                if (r.name === reg) {
+                    region = r;
+                    break;
+                }
+            }
+
             const regionType = region.type;
             let pollutionEffect = null;
     
@@ -935,7 +929,7 @@ export class Region {
     
             const effectDetail = {
                 region: region.name,
-                heat: '20 热能',
+                heat: '20',
                 pollution: pollutionEffect || null
             };
     
@@ -962,16 +956,26 @@ export class Region {
         const innerEffectCountMap = new Map();
     
         innerEffectDetailList.forEach(detail => {
-            const regionType = hexGrid.regions.find(r => r.name === detail.region).type;
+            // 查找区域类型
+            let regionType = null;
+            for (let r of mainView.hexGrid.regions) {
+                if (r.name === detail.region) {
+                    regionType = r.type;
+                    break;
+                }
+            }
     
+            // 初始化或更新区域的效应统计
             if (!innerEffectCountMap.has(regionType)) {
                 innerEffectCountMap.set(regionType, {
+                    count: 1, // 初始化 count 属性为 1
                     heat: 20,
                     pollution: detail.pollution === '20 脏污' ? 20 : 0,
                     disease: detail.pollution === '20 疾病' ? 20 : 0
                 });
             } else {
                 const currentEffect = innerEffectCountMap.get(regionType);
+                currentEffect.count += 1; // 增加 count 属性
                 currentEffect.heat += 20;
                 if (detail.pollution === '20 脏污') currentEffect.pollution += 20;
                 if (detail.pollution === '20 疾病') currentEffect.disease += 20;
@@ -979,9 +983,10 @@ export class Region {
             }
         });
     
+        // 将 Map 转换为所需格式的数组
         return Array.from(innerEffectCountMap.entries()).map(([type, effects]) => {
             return {
-                title: type,
+                title: `${type} X ${effects.count}`, // 使用 effects.count
                 items: [`热能: ${effects.heat}`, `脏污: ${effects.pollution}`, `疾病: ${effects.disease}`]
             };
         });
@@ -1013,4 +1018,209 @@ export class Region {
         }; 
     }
 
+    //外反馈 外面有三个同类型区域的格子就生效
+    getOuterEffectArea() { 
+        // 获取环圈的所有格子 
+        const oneRingHexes = this.getNeighborHex(); 
+    
+        // 过滤出类型为 "属地" 的格子 
+        const filteredHexes = oneRingHexes.filter(hex => hex.type === "属地"); 
+    
+        // 统计每个区域的格子数量，并记录每个区域的刷子（brush）信息
+        const regionCountMap = new Map(); 
+        filteredHexes.forEach(hex => { 
+            const region = hex.regionBelond; 
+            if (region) {
+                // 初始化区域计数和刷子信息
+                if (!regionCountMap.has(region)) {
+                    regionCountMap.set(region, { count: 0, brush: hex.brush });
+                }
+                // 更新区域计数
+                regionCountMap.get(region).count += 1;
+            } 
+        }); 
+    
+        // 构造外部效果区域列表，区域格子数量大于等于 3 的保留 
+        const outerEffectArea = []; 
+        regionCountMap.forEach(({ count, brush }, region) => { 
+            if (count >= 3) { 
+                outerEffectArea.push({ region, brush }); 
+            } 
+        }); 
+    
+        return outerEffectArea; 
+    }
+
+    getOuterEffectDetailList(formatted = false) { 
+        const outerEffectArea = this.getOuterEffectArea(); 
+        const outerEffectDetailList = []; 
+    
+        outerEffectArea.forEach(({ region, brush }) => { 
+            // 查找具体的区域对象
+            let targetRegion = null; 
+            for (let r of mainView.hexGrid.regions) { 
+                if (r.name === region) { 
+                    targetRegion = r; 
+                    break; 
+                } 
+            } 
+    
+            const regionType = targetRegion.type; 
+            let pollutionDirt = 0;
+            let pollutionDisease = 0;
+    
+            // 根据区域类型设置污染效果
+            if (['工业区', '开采区', '后勤区'].includes(regionType)) { 
+                if (this.type === '居住区') { 
+                    pollutionDirt = 20; 
+                } else if (this.type === '食品区') { 
+                    pollutionDisease = 20; 
+                } 
+            } 
+    
+            // 构建效果详情对象
+            const effectDetail = { 
+                region: targetRegion.name, 
+                heat: 20, 
+                pollutionDirt: pollutionDirt,
+                pollutionDisease: pollutionDisease,
+                brush: brush 
+            }; 
+    
+            outerEffectDetailList.push(effectDetail); 
+        }); 
+    
+        // 如果格式化输出
+        if (formatted) { 
+            return outerEffectDetailList.map(detail => { 
+                return { 
+                    title: detail.region, 
+                    items: [ 
+                        `热能: ${detail.heat}`, 
+                        `污染: ${detail.pollutionDirt}`, 
+                        `疾病: ${detail.pollutionDisease}`, 
+                        `刷子: ${detail.brush}`
+                    ] 
+                }; 
+            }); 
+        } 
+    
+        return outerEffectDetailList; 
+    }
+
+    summarizeOuterEffectDetails() {
+        const outerEffectDetailList = this.getOuterEffectDetailList();
+        // 初始化计数器
+        let totalHeat = 0;
+        let totalPollutionDirt = 0;
+        let totalPollutionDisease = 0;
+    
+        // 遍历 outerEffectDetailList 统计信息
+        outerEffectDetailList.forEach(detail => {
+            // 累计热能值
+            totalHeat += detail.heat;
+    
+            // 累计污染类型
+            totalPollutionDirt += detail.pollutionDirt;
+            totalPollutionDisease += detail.pollutionDisease;
+        });
+    
+        // 返回统计结果
+        return {
+            totalHeat: totalHeat,
+            pollutionDirtCount: totalPollutionDirt,
+            pollutionDiseaseCount: totalPollutionDisease
+        };
+    }
+    
+    ///枢纽计算板块
+    get totalHubsCount() {
+        return this.effectHubs.size || 0;
+    }
+
+    hubEffectList(type, effectHubs = this.effectHubs) {
+        // 初始化一个空数组，用于存储结果
+        const hubDetails = [];
+        const brushMap = new Map();
+        const effectMap = new Map();
+    
+        // 遍历 effectHubs Set
+        for (const hub of effectHubs) {
+            // 提取 hub 的相关信息
+            const regionBelond = hub.regionBelond;
+            const brush = hub.brush;
+            const hubEffect = hub.hubEffect;
+    
+            // 检查 hubEffect 是否有效
+            if (!hubEffect) {
+                console.warn(`Hub effect for ${hub} is not available`);
+                continue; // 跳过此 hub，因为 hubEffect 无效
+            }
+    
+            // 构建对象
+            const hubDetailList = {
+                titleText: regionBelond,
+                items: [brush, hubEffect.effect, hubEffect.effectValue]
+            };
+    
+            // 将对象添加到列表中
+            hubDetails.push(hubDetailList);
+    
+            // 统计 brush 信息
+            if (!brushMap.has(brush)) {
+                brushMap.set(brush, {
+                    count: 1,
+                    effect: hubEffect.effect,
+                    totalEffectValue: hubEffect.effectValue
+                });
+            } else {
+                const current = brushMap.get(brush);
+                current.count += 1;
+                current.totalEffectValue += hubEffect.effectValue;
+                brushMap.set(brush, current);
+            }
+    
+            // 统计 effect 信息
+            const effect = hubEffect.effect;
+            const effectValue = hubEffect.effectValue;
+            if (!effectMap.has(effect)) {
+                effectMap.set(effect, {
+                    totalEffectValue: effectValue
+                });
+            } else {
+                const current = effectMap.get(effect);
+                current.totalEffectValue += effectValue;
+                effectMap.set(effect, current);
+            }
+        }
+    
+        // 构建 brush 统计结果列表
+        const hubAcountList = [];
+        brushMap.forEach((value, key) => {
+            hubAcountList.push({
+                titleText: key,
+                items: [ `数量：${value.count}`, value.effect, value.totalEffectValue]
+            });
+        });
+    
+        // 构建 effect 统计结果列表
+        const hubsTotalList = [];
+        effectMap.forEach((value, key) => {
+            hubsTotalList.push({
+                effect: key,
+                effectValue: value.totalEffectValue
+            });
+        });
+        hubsTotalList.sort((a, b) => (a.effect === '热能增加' ? -1 : b.effect === '热能增加' ? 1 : 0));
+        if (type === 'd'){
+           return hubDetails
+        } else if (type === 'a') {
+           return hubAcountList
+        } else if (type === 't') {
+           return hubsTotalList
+        } else {
+            return { hubDetails, hubAcountList, hubsTotalList };
+        }
+        // 返回构建的列表
+    }
 }

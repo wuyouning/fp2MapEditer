@@ -52,3 +52,49 @@
     align-items: start;      /* 子元素在垂直方向上居中 */
     justify-content: space-between; /* 子元素之间平分可用空间 */
 }
+
+.detailExpand-side {
+    display: flex;            /* 使用 flexbox 布局 */
+    flex-direction: column;      /* 横向排列子元素 */
+}
+.regioninfo-listTitle {
+    color: var(--text-h3-color);
+
+}
+.regioninfo-ul {
+    padding-left: 15px;
+}
+
+.region-styled-button {
+    font-size: 12px;
+    width: 20%;
+    color: #333;
+    padding: 8px 8px 8px 8px;
+    background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 0 #fff;
+    position: relative;
+    font-weight: bold;
+  }
+
+
+  .region-styled-button:before {
+    left: 10%;
+    transform: translateY(-150%);
+  }
+
+  .region-styled-button:after {
+    left: 10%;
+    transform: translateY(50%);
+  }
+
+  .region-styled-button:hover {
+    background: linear-gradient(to bottom, #f2f2f2, #e3d6a8);
+    border: 2px double var(--accent-color);
+  }
+
+  .regionCard-DetailExpandArea {
+    flex-direction: column;
+  }

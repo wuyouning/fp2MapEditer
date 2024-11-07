@@ -169,6 +169,77 @@ export class TestDashboardView {
                 type: region.type,
                 count: region.hexes.size,
                 hexes: region.hexes,
+                邻居情况: region.getNeighborHex().length,
+            };
+    
+            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
+            regionContent.appendChild(hexElement);
+
+            // 遍历 region.hexes 中的每个 hex
+            region.hexes.forEach((hex) => {
+                const hexElement = document.createElement('div');
+                const hexInfo = {
+                    id: hex.id,
+                    笔刷: hex.brush,
+                    归属区域: hex.regionBelond,
+                    类型: hex.type
+                };
+                
+                hexElement.textContent = `  - Hex: ${JSON.stringify(hexInfo)}`;
+                regionContent.appendChild(hexElement);
+            });
+        });
+
+    }
+
+    consoleRegionsMore() {
+        const testDashboard = document.getElementById('testDashboard');
+        const regionContent = this.createDashboardSection(
+            testDashboard,
+            '---------------明确的分割线 打印筛选范围------------------',
+            '清除region',
+            (container) => this.cleanMe(container)
+        );
+
+        this.main.hexGrid.regions.forEach((region, index) => {
+    
+            // 仅显示 id, brush, regionbelond, 和 type 属性
+            const hexElement = document.createElement('div');
+            const hexInfo = {
+                id: region.name,
+                内效存储区: region.innerEffectArea,
+                内效区: region.getInnerEffectArea(),
+                内效细节: region.getInnerEffectDetailList(),
+                内销分类: region.getInnerEffectCountList(),
+                内效总计: region.getTotalInnerEffects(),
+            };
+    
+            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
+            regionContent.appendChild(hexElement);
+        });
+
+    }
+
+    consoleRegionsNebohor() {
+        const testDashboard = document.getElementById('testDashboard');
+
+        const regionContent = this.createDashboardSection(
+            testDashboard,
+            '---------------明确的分割线 打印筛选范围------------------',
+            '清除region',
+            (container) => this.cleanMe(container)
+        );
+
+        this.main.hexGrid.regions.forEach((region, index) => {
+    
+            // 仅显示 id, brush, regionbelond, 和 type 属性
+            const hexElement = document.createElement('div');
+            const hexInfo = {
+                id: region.name,
+                type: region.type,
+                count: region.hexes.size,
+                hexes: region.hexes,
+                邻居情况: region.getNeighborHex().length,
             };
     
             hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
@@ -192,7 +263,6 @@ export class TestDashboardView {
     }
 
 
-
     testButton() {
         const testDashboard = document.getElementById('testDashboard')
         this.createButton(testDashboard, '打印Brush', () => this.BrushInfo());
@@ -200,6 +270,7 @@ export class TestDashboardView {
         this.createButton(testDashboard, '打印hexGrid 筛选范围', () => this.hexGridInfoSimaple());
         this.createButton(testDashboard, '打印Hubs', () => this.hubsContent());
         this.createButton(testDashboard, '打印region', () => this.consoleRegions());
+        this.createButton(testDashboard, '打印region显示材料', () => this.consoleRegionsMore());
     }
 
     cleanMe(content) {

@@ -1,5 +1,6 @@
 import { brushMap } from "../module.js";
 import { mainView } from "../../index.js";
+import {initRegionsCard} from "../../Component/regionInfoCard.js"
 export class Hex {
     constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size, ctx) {
         this.q = q;
@@ -75,7 +76,6 @@ export class Hex {
                     console.log("清除了区域内的格子")
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
-                    initRegionsCard(mainView.hexGrid);
 
                 }
                 break;
@@ -85,7 +85,6 @@ export class Hex {
                     this.applyHubBrush(selectedBrush, hexGrid);
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
-                    initRegionsCard(mainView.hexGrid);
 
                 } else if (this.type === '属地') {
                     this.clearRegion(hexGrid, selectedBrush);
@@ -106,8 +105,6 @@ export class Hex {
                     this.clearHex(selectedBrush);
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
-                    initRegionsCard(mainView.hexGrid);
-
                 }
                 break;
     
@@ -130,15 +127,16 @@ export class Hex {
         this.brush = selectedBrush.name;
         this.type = selectedBrush.type;
         this.createHub(hexGrid.hubs, selectedBrush.name);
-        // this.updateEffectedRegions();
-        // updateRegionCards();
+        this.updateEffectedRegions();
+        initRegionsCard(mainView.hexGrid);
     }
     
     removeHub(hexGrid) {
         this.removeEffectFromRegion();
         hexGrid.removeHubById(this.id);
-        // updateRegionCards();
         this.clearHex(mainView.selectedBrush);
+        this.removeEffectFromRegion();
+        initRegionsCard(mainView.hexGrid);
     }
     
     //建立枢纽
@@ -205,7 +203,7 @@ export class Hex {
     }
 
     // 计算枢纽影响到的区域
-    get findEffectedArea() {
+    get findHubsEffectedRegion() {
         const twoRingHexes = this.getTwoRing(); // 获取两圈内的邻居Hex对象
         const allowedAreas = brushMap[this.brush]?.allowArea || []; // 获取当前brush的allowArea，如果不存在则为空集
         const effectedArea = {};
@@ -231,7 +229,7 @@ export class Hex {
 
 
     updateEffectedRegions() {
-        const effectedAreaList = this.findEffectedArea;
+        const effectedAreaList = this.findHubsEffectedRegion;
         if (effectedAreaList) {
             for (const areaName of effectedAreaList) {
                 const region = this.findRegionByName(areaName);
@@ -243,7 +241,7 @@ export class Hex {
     }
     
     removeEffectFromRegion() {
-        const effectedAreaList = this.findEffectedArea;
+        const effectedAreaList = this.findHubsEffectedRegion;
         if (effectedAreaList) {
             for (const areaName of effectedAreaList) {
                 const region = this.findRegionByName(areaName);
@@ -255,7 +253,7 @@ export class Hex {
     }
 
     findRegionByName(name) {
-        for (const region of hexGrid.regions) {
+        for (const region of mainView.hexGrid.regions) {
             if (region.name === name) {
                 return region; // 找到匹配项，返回该区域
             }
