@@ -5,20 +5,11 @@ import { initalzeBrushToolCard } from "./Component/sliderCard.js";
 import { AsideCard } from "./Component/aside.js";
 import { TestDashboardView } from "./TESTdashboard.js"
 import { initRegionsCard } from "./Component/regionInfoCard.js"
+import { initAnnouncementCard } from "./Component/AnnouncementCard.js";
 
 // let layers; //画布组
 export let mainView;
 initializeNavBarButtons(); //创建左侧按钮
-
-//其他内容区域创建完毕后，再创建画布区域
-// document.addEventListener('DOMContentLoaded', () => {
-//     // layers = initializeCanvasLayers();
-//     mainView = new MainView();
-//     initializeSliderCard();
-//     initalzeBrushToolCard(mainView.selectedBrush, mainView.hexGrid, mainView.layers);
-
-// });
-
 mainView = new MainView();
 initializeSliderCard();
 initalzeBrushToolCard(mainView.selectedBrush, mainView.hexGrid, mainView.layers);
@@ -26,6 +17,19 @@ export let asideCard = new AsideCard(mainView.selectedBrush, mainView.layers, ma
 asideCard.initCard();
 export let testDashboardView = new TestDashboardView(mainView);
 initRegionsCard(mainView.hexGrid);
+initAnnouncementCard();
+centerbutton(mainView);
+window.onload = () => {
+    mainView.updateCanvasOrigin(); // 设置绘制原点在画布中心
+    mainView.scrollToCenter(); // 确保视窗显示在绘制原点位置
+};
+
+window.onresize = () => {
+    if (mainView) {
+        mainView.scrollToCenter(); // 当窗口调整大小时，保持画布的原点居中
+    }
+};
+
 function initializeNavBarButtons() {
     const navBar = document.getElementById('navBar');
 
@@ -46,7 +50,7 @@ function initializeNavBarButtons() {
         },
         {
             id: 'toggleButton',
-            cardId: 'Announcement',
+            cardId: 'announcement',
             iconSrc: '/images/提示说明.png',
             altText: '冰汽时代地图编辑器 - 关于与支持图标',
             buttonText: '学院公告',
@@ -104,6 +108,20 @@ function initializeNavBarButtons() {
     });
 }
 
+function centerbutton(mainView) {
+    const centerButton = document.getElementById('back-center-button');
+    centerButton.classList.add('back-center-button');
+    centerButton.innerText = '返回原点';
+
+    centerButton.addEventListener('click', () => {
+        console.log("回城按钮被按");
+        mainView.scrollToCenter();
+        centerButton.classList.remove('activated');
+        console.log("回城完毕");
+
+    });
+
+}
 
 
 

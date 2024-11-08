@@ -37,7 +37,7 @@ export function initializeSliderCard() {
             width: '450px'
         },
         {
-            id: 'Announcement',
+            id: 'announcement',
             width: '350px'
         },
         {

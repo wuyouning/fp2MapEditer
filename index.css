@@ -97,14 +97,15 @@ aside {
 
 
 #main {
-    display: block;
+    display: flex;
     position: absolute;
     z-index: var(--z-index-main);
     left: var(--navbar-width);
     top: var(--header-height);
-    width: calc(100% - var(--navbar-width));
-    height: calc(100% - var(--header-height));
-    overflow: hidden; /* 防止滚动条出现 */
+    min-width: calc(100% - var(--navbar-width));
+    min-height: calc(100% - var(--header-height));
+    overflow: auto;    /* 修改 overflow 以允许滚动条显示 */
+    background-color: #cdd8ec38; /* 背景颜色可以让扩展的区域更加可见 */
 }
 
 footer {
@@ -114,4 +115,42 @@ footer {
     width: 100%;
     border-bottom: var(--border-color);
     box-shadow: 10px 5px 5px var(--border-color);
+}
+
+
+.back-center-button {
+    position: absolute;
+    z-index: calc(var(--z-index-main) + 1);
+    right: 3%;  /* 距离容器右侧 20 像素 */
+    bottom: 3%; /* 距离容器底部 20 像素 */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 12px;
+    color: #333;
+    padding: 8px 8px;
+    background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 0 #fff;
+    font-weight: bold;
+}
+
+.back-center-button:hover {
+    background: linear-gradient(to bottom, #f2f2f2, #e3d6a8);
+    border: 2px double var(--accent-color);
+}
+
+#back-center-button.activated {
+    transform: scale(1.2); /* 激活状态下变大 */
+    animation: glow 1s infinite alternate; /* 闪烁光芒 */
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px #ffdd44;
+    }
+    to {
+        box-shadow: 0 0 20px #ffdd44;
+    }
 }

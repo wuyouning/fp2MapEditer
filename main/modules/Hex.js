@@ -16,6 +16,8 @@ export class Hex {
         this.size = size;
         this.ctx = ctx;
         this.intensifiedColor = 'white';
+
+        this.strokeStyle = 'rgba(168, 177, 197, 0.1)';
     }
 
     //以下是基础操作
@@ -271,7 +273,7 @@ export class Hex {
             hexGrid.layout,
                         this.setFillColor.bind(this), 
                         2, 
-                        'rgba(168, 177, 197, 0.1)'
+                        this.strokeStyle
                     );
 
         // 绘制ID信息
@@ -290,16 +292,21 @@ export class Hex {
         } 
     }
 
-    drawHoverHex(ctx, IdCtx, layout, hoverColor = '#FFDD44', alpha = 0.5) {
+    drawHoverHex(ctx, IdCtx, layout, alpha = 0.5) {
         // 设置外发光效果的属性
+        let shadowColor = 'rgba(255, 221, 68, 0.6)';
+        let edgeColor = 'rgba(255, 221, 68, 0.8)';
+        let hoverColor = '#FFDD44';
+
         ctx.shadowBlur = 15; // 外发光模糊半径
-        ctx.shadowColor = 'rgba(255, 221, 68, 0.6)'; // 外发光的颜色
+        ctx.shadowColor = shadowColor; // 外发光的颜色
     
         // 使用通用绘制多边形的方法，指定悬停状态的线条宽度和颜色
+
         this.drawPolygon(ctx, layout, () => {
             ctx.fillStyle = hoverColor;
             ctx.globalAlpha = alpha;
-        }, 1.5, 'rgba(255, 221, 68, 0.8)'); // 使用更浅的线条
+        }, 1.5, edgeColor); // 使用更浅的线条
     
         ctx.globalAlpha = 1.0; // 恢复透明度
     
@@ -340,7 +347,7 @@ export class Hex {
         ctx.stroke();
     }
 
-    // 形状清除
+    // 有限范围清除
     clearPolygon(ctx, layout) {
         const corners = this.polygonCorners(layout);
         ctx.beginPath();
@@ -546,6 +553,7 @@ export class Hex {
         }
         IdCtx.stroke();
     }
+
     //FIX: 这里和笔刷没有链接，查看是否会出问题，出了问题再解决一下
     setFillColor(ctx) {
         if (brushMap[this.brush]) {  // 将 this.hex.brush 修改为 this.brush
