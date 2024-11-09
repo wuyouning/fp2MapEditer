@@ -105,7 +105,7 @@ aside {
     min-width: calc(100% - var(--navbar-width));
     min-height: calc(100% - var(--header-height));
     overflow: auto;    /* 修改 overflow 以允许滚动条显示 */
-    background-color: #cdd8ec38; /* 背景颜色可以让扩展的区域更加可见 */
+    background-color: radial-gradient(#303f5d44 80%,#46535d 20%); /* 背景颜色可以让扩展的区域更加可见 */
 }
 
 footer {
@@ -154,3 +154,139 @@ footer {
         box-shadow: 0 0 20px #ffdd44;
     }
 }
+
+.login-model{
+    z-index: var(--z-index-login);
+    position: absolute;
+    left: 40%;
+    top: 25%;
+    height: 60%;
+    max-width: 20%;
+    min-width: 300px;
+    background: radial-gradient(ellipse at top, #d8caca, transparent),
+                radial-gradient(ellipse at bottom, #81819542, transparent);
+    border-radius: 10px; 
+    box-shadow: 0 0 25px 10px rgba(151, 129, 129, 0.3); 
+    padding: 5px 20px 20px 20px; 
+    backdrop-filter: blur(10px); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    align-items: center;
+
+    display: flex;
+    flex-direction: column;  
+    justify-content: center; 
+    align-items: center;     
+}
+
+
+
+.login-model h1 {
+    font-size: 32px;
+    margin-bottom: 50px;
+    color: #000; /* 设置标题颜色为黑色 */
+    text-align: start;
+    transform: translateX(-50%);
+    margin-left: 25px;
+}
+
+.login-model input{
+    box-sizing: border-box;
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #8483643c;
+    border-radius: 5px;
+    font-size: 1.3em;
+    background: linear-gradient(180deg, #82a8c85b 2%, #f8faff36);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    color: var(--font-color);
+}
+
+.login-model input:hover {
+    background-color: #E9ECEF;
+}
+
+.login-model input:focus {
+    background: linear-gradient(45deg, #e6e8ea, #ffffff); /* 在聚焦时稍微改变背景颜色 */
+    outline: none; /* 去掉默认的聚焦外框 */
+    box-shadow: 0 0 5px rgba(81, 203, 238, 1); /* 增加一点阴影效果以增强聚焦感 */
+}
+
+.password-container {
+    position: relative;
+    width: 100%;
+    padding: 0px;
+    padding: 10px;
+    height: auto;
+}
+
+#passwordInput {
+    width: 100%; /* 与父容器一致 */
+}
+
+.button-area{
+    display: flex;
+    flex-direction: column;  /* 纵向排列子元素 */
+    justify-content: center; /* 垂直方向居中对齐 */
+    align-items: center;     /* 水平方向居中对齐 */
+    justify-content: space-between; /* 子元素之间平分可用空间 */
+}
+
+#togglePassButton {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#togglePassButton img {
+    width: 20px;
+    height: 20px;
+}
+
+.login-button-area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 100px;
+    gap: 15px; /* 设置按钮之间的间距 */
+}
+
+.login-button-area button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    transition: background-color 1s;
+}
+
+.login-button-area button:hover {
+    background: linear-gradient(to top, #f2f2f2, #e3d6a895 98%);
+    border: 2px double var(--accent-color);
+}
+
+#login-message {
+    /* width: 100%; */
+    font-size: 0.9em;
+    color: rgb(152, 74, 74);
+    margin-top: 10px;
+    margin-left: 15px;
+    text-align: left;
+    font-size: small;
+    word-wrap: break-word;  /* 自动换行，长词也会被拆分 */
+    word-break: break-word; /* 确保长单词也会自动换行 */
+    overflow-wrap: break-word; /* 使长单词在需要时换行 */
+}
+

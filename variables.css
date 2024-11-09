@@ -1,6 +1,7 @@
 :root {
     /* z-index 变量 */
     --z-index-header: 70;
+    --z-index-login: 65;
     --z-index-navbar: 60;
     --z-index-sidebar: 50;
     --z-index-status-bar: 40;

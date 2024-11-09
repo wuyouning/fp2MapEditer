@@ -16,7 +16,6 @@ export class Hex {
         this.size = size;
         this.ctx = ctx;
         this.intensifiedColor = 'white';
-
         this.strokeStyle = 'rgba(168, 177, 197, 0.1)';
     }
 

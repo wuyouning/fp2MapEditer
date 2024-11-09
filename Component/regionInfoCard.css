@@ -13,7 +13,8 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* 模糊的阴影效果 */
     padding: 5px 20px 20px 20px; /* 内容的内边距 */
     backdrop-filter: blur(10px); /* 模糊效果，可以让背景更加柔和 */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* 模拟边框的细微高光 */}
+    border: 1px solid rgba(255, 255, 255, 0.2); /* 模拟边框的细微高光 */
+}
     
 
 .regioncard-region-title {
@@ -27,6 +28,7 @@
 .regionInfoCard h1 {
     color: var(--text-h1-color);
 }
+
 .regionscard-label-content {
     display: flex;            /* 使用 flexbox 布局 */
     flex-direction: row;      /* 横向排列子元素 */

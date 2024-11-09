@@ -1,8 +1,12 @@
 import { brushMap } from "../main/module.js";
-import {createSquareColorButton} from "../Component/buttonComponent.js";
+import { createSquareColorButton } from "../Component/buttonComponent.js";
 import { SliderToggleButton } from "../Component/buttonComponent.js";
 import { CustomSlider } from "../Component/buttonComponent.js";
 import { asideCard } from "../index.js";
+import { initRegionsCard } from "../Component/regionInfoCard.js"
+import { initAnnouncementCard } from "../Component/AnnouncementCard.js";
+import { userinfoView } from "./userinfoView.js";
+
 class SliderCard {
     constructor(cardID, cardWidth) {
         this.cardID = cardID; // 卡片 ID
@@ -24,7 +28,7 @@ class SliderCard {
     }
 }
 
-export function initializeSliderCard() {
+export function initializeSliderCard(mainView) {
     const sliderGroup = document.getElementById('sliderGroup');
 
     const CardsData = [
@@ -50,7 +54,7 @@ export function initializeSliderCard() {
         },
         {
             id: 'loginCard',
-            width: '350px'
+            width: '380px'
         },
         {
             id: 'infoCard',
@@ -71,9 +75,14 @@ export function initializeSliderCard() {
         card.appendTo(sliderGroup);
     });
 
+    initalzeBrushToolCard(mainView.selectedBrush, mainView.hexGrid, mainView.layers);
+    initRegionsCard(mainView.hexGrid);
+    initAnnouncementCard();
+    userinfoView.init();
+    userinfoView.updateInfoArea();
 }
 
-export function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
+function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     // 创建外层容器
     const brushToolCard = document.getElementById('brushToolCard');
     const container = document.createElement('div');

@@ -1,3 +1,4 @@
+import { userinfoView } from "../Component/userinfoView.js";
 class User {
     constructor(userId, uuid, username, password, createdAt = new Date(), last_login = new Date()) {
         this.userId = userId;            // 用户的唯一标识符 (数据库的自增 ID)
@@ -56,6 +57,7 @@ class UserManager {
         this.mockUsers = [
             { username: 'testuser' }
         ];
+        this.apiUrl = 'http://127.0.0.1:3000/api';
     }
 
     login(username, password) {
@@ -63,7 +65,7 @@ class UserManager {
         if (!this.validateInputs(username, password)) return;
     
         // 发送登录请求到服务器
-        fetch('http://127.0.0.1:3000/api/login', {
+        fetch(`${this.apiUrl}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -71,39 +73,14 @@ class UserManager {
             body: JSON.stringify({ username, password})
         })
 
-        .then(response => response.text()) // 获取服务器的响应文本
-        .then(text => {
-            console.log('手动解析服务器响应:', text); // 打印服务器响应到控制台
-            const data = JSON.parse(text); // 手动解析 JSON
-
-            const message = data.message;
-            const userId = data.userId;
-            const uuid = data.uuid;
-    
-            this.displayMessage(message);
-            if (message === '登录成功！' || message === '用户创建成功！') {
-                // 存储登录信息
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', username);
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('uuid', uuid);
-                this.setUserLogin();
-                //用户登陆后按钮变化 // 更新消息并开始倒计时
-                this.displayMessage('');
-
-                let n = 3; 
-                const countdownInterval = setInterval(() => {
-                    this.displayMessage(`${message} ${n}秒后关闭...`);
-                    n--;
-    
-                    // 当倒计时结束时，执行 loginToggle 并清除定时器
-                    if (n < 0) {
-                        clearInterval(countdownInterval);
-                        loginToggle(); // 执行 loginToggle()
-                        this.clearInputs();
-                    }
-                }, 1000); // 每秒更新
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('网络连接失败');
             }
+            return response.json();  // 解析 JSON 格式的响应
+        })
+        .then(data => {
+            this.handleLoginResponse(data, username);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -111,16 +88,126 @@ class UserManager {
         });
     }
 
+    // 处理登录响应
+    handleLoginResponse(data, username) {
+        const { message, userId, uuid } = data;
+    
+        if (!message) {
+            this.displayMessage('服务器返回的信息不完整，请稍后再试。');
+            return;
+        }
+    
+        this.displayMessage(message);
+        if (message === '登录成功！' || message === '用户创建成功！') {
+            // 存储登录信息
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('username', username);
+            if (userId) localStorage.setItem('userId', userId);
+            if (uuid) localStorage.setItem('uuid', uuid);
+            
+            this.setUserLogin();
+                        
+            // 登录成功后清空输入框并刷新视图
+            this.displayMessage('欢迎登录!');
+            userinfoView.updateInfoArea();
+            setTimeout(() => {
+                this.clearInputs();
+            }, 500);
+            setTimeout(() => {
+                this.clearInputs();
+                this.displayMessage('');
+                // 在 2 秒后隐藏登录视图
+                const loginModel = document.getElementById('login-model');
+                if (loginModel) {
+                    loginModel.style.display = 'none';
+                }
+            }, 2000); // 2 秒延迟
+        }
+    }
+
+
+    // 验证原密码
+    verifyOriginalPassword(userId, inputPassword, successCallback, errorCallback) {
+        fetch(`${this.apiUrl}/verify-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, password: inputPassword })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === '原密码验证成功') {
+                successCallback(true);
+            } else {
+                errorCallback(data.message || '原密码验证失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorCallback('服务器请求失败，请稍后再试。');
+        });
+    }
+    // 修改密码
+    changePassword(userId, newPassword, successCallback, errorCallback) {
+        fetch(`${this.apiUrl}/change-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, newPassword })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === '密码修改成功') {
+                console.log('密码修改成功了');
+                successCallback(); // 注意，这里直接调用成功回调，不再传递 `data.message`
+            } else {
+                errorCallback(data.message || '修改密码失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorCallback('服务器请求失败，请稍后再试。');
+        });
+    }
+    // 修改用户名
+    changeUsername(uuid, newUsername, successCallback, errorCallback) {
+        fetch(`${this.apiUrl}/change-username`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ uuid, newUsername })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === '用户名修改成功') {
+                console.log('用户名修改成功');
+                successCallback();
+            } else {
+                errorCallback(data.message || '修改用户名失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorCallback('服务器请求失败，请稍后再试。');
+        });
+    }
+
     // 退出登录
-    logout() {
+    logout(all) {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('username');
         localStorage.removeItem('userId');
         localStorage.removeItem('uuid');
         localStorage.removeItem('hexGridId');
-        this.displayMessage('已成功退出登录。');
-        this.displayMessage('')
+        if(!all){
+            this.displayMessage('已成功退出登录。');
+        }
+        // this.displayMessage('')
         this.setUserLogin();
+        this.users = [];
     }
 
     cancel() {
@@ -131,27 +218,20 @@ class UserManager {
 
     setUserLogin() {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-        const username = localStorage.getItem('username'); // 获取存储的用户名
-        const loginButton = document.getElementById('loginButton');
+        const username = localStorage.getItem('username');
+
         const infoButton = document.getElementById('infoButton');
-        const privateHexGrids = document.getElementById('privateHexGrids');
-        //TODO:  修改按钮的文本和图标
-        const loginedName = document.getElementById('loginedName');
-        // const loginedIcon = document.getElementById('loginedIcon');
+        const spanElement = infoButton.querySelector('span');
 
         if (isLoggedIn) {
-            loginButton.style.display = "none";
-            infoButton.style.display = "flex"
-            privateHexGrids.style.display = "flex"
-            loginedName.textContent = username; // 修改文字
-            // loginedIcon.src = '/images/个人信息图标.png'; // 修改图标路径
-
+            document.getElementById('loginButton').style.display = 'none';
+            document.getElementById('infoButton').style.display = 'flex';
+            spanElement.textContent = username;
+            document.getElementById('PrivateHexGridsButton').style.display = 'flex';
         } else {
-            loginButton.style.display = "flex";
-            infoButton.style.display = "none"
-            privateHexGrids.style.display = "none"  
-            loginedName.textContent = '登录'; // 修改文字
-            // loginedIcon.src = '/images/个人信息图标.png'; // 修改图标路径
+            document.getElementById('loginButton').style.display = 'flex';
+            document.getElementById('infoButton').style.display = 'none';
+            document.getElementById('PrivateHexGridsButton').style.display = 'none';
 
         }
     }
@@ -186,15 +266,16 @@ class UserManager {
     }
 
     displayMessage(message) {
-        document.getElementById('message').innerText = message;
+        document.getElementById('login-message').innerText = message;
     }
 
     clearInputs() {
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
+        document.getElementById('usernameInput').value = '';
+        document.getElementById('passwordInput').value = '';
         this.displayMessage('');
     }
+
 }
 
 // 实例化用户管理对象
-const userManager = new UserManager();
+export const userManager = new UserManager();
