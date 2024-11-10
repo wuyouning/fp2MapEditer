@@ -1,6 +1,6 @@
 import { createNavbarButton } from "./buttonComponent.js";
 import { userLoginView } from "../Component/loginView.js";
-
+import { hexGridGalley } from "./publicHexGridsView.js";
 export function initializeNavBarButtons() {
     const navBar = document.getElementById('navBar');
 
@@ -82,9 +82,29 @@ export function initializeNavBarButtons() {
             button.onclick = () => userLoginView.showToggle(); // 使用 userLoginView.init() 代替默认行为
         }
 
-        // if (buttonData.id === 'infoButton') {
-        //     button.onclick = () => userLoginView.showToggle(); // 使用 userLoginView.init() 代替默认行为
-        // }
+        if (buttonData.id === 'publicHexGridsButton') {
+            const originalOnClick = button.onclick;
+            // 增加新的行为
+            button.onclick = function (event) {
+                // 如果有原始的事件处理程序，先执行它
+                if (originalOnClick) {
+                    originalOnClick.call(button, event);
+                }
+                hexGridGalley.initPublic();
+            };
+        }
+
+        if (buttonData.id === 'PrivateHexGridsButton') {
+            const originalOnClick = button.onclick;
+            // 增加新的行为
+            button.onclick = function (event) {
+                // 如果有原始的事件处理程序，先执行它
+                if (originalOnClick) {
+                    originalOnClick.call(button, event);
+                }
+                hexGridGalley.initPrivate();
+            };
+        }
 
         navBar.appendChild(button);
     });

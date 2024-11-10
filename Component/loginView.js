@@ -47,9 +47,9 @@ class UserLoginView {
         loginModel.id = 'login-model';
 
 
-        const loginTitle = document.createElement('h1')
-        loginTitle.classList.add('loginTitle')
-        loginTitle.textContent = '欢迎 请登录'
+        const loginTitle = document.createElement('h1');
+        loginTitle.classList.add('loginTitle');
+        loginTitle.textContent = '欢迎 请登录';
 
 
         const usernameInputArea = this.createLoginInput();

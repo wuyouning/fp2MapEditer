@@ -2,6 +2,8 @@ import { SliderToggleButton } from "../Component/buttonComponent.js";
 import { MainStyledButton } from "../Component/buttonComponent.js";
 import { Region } from "../main/modules/Region.js";
 import {initRegionsCard } from "../Component/regionInfoCard.js"
+import { saveModelView } from "./saveModelView.js";
+
 
 export class AsideCard {
     constructor(brush, layers, hexGrid) {
@@ -50,7 +52,7 @@ export class AsideCard {
         const saveHexGridButton = new MainStyledButton(
             gridBtnContainer,
             "保存规划",
-            () => { console.log("我已经保存了") },
+            () => { saveModelView.show(); },
             
         );
 
@@ -84,6 +86,12 @@ export class AsideCard {
             
         );
 
+        //画布名称追踪
+        const hexGridName = document.createElement('p');
+        hexGridName.id = 'hexGridName-aside'
+        hexGridName.textContent = `现在的画布： ${this.hexGrid.name}`;
+        asideCard.appendChild(hexGridName);
+
         const brushTextTitle = document.createElement("p");
         brushTextTitle.textContent = "待建格子"
         brushTextTitle.style.fontSize = "16px";
@@ -92,7 +100,7 @@ export class AsideCard {
         const brushTextContent = document.createElement("div");
         brushTextContent.classList.add("brush-text-content");
         asideCard.appendChild(brushTextContent);
-
+        
         const brushType = document.createElement("p");
         brushType.textContent = this.brush.name;
         brushType.style.fontSize = "12px";
@@ -151,6 +159,9 @@ export class AsideCard {
                 pedingHexesTypeList.appendChild(t);
             });
         }
+
+        const hexGridName = document.getElementById('hexGridName-aside');
+        hexGridName.textContent = this.hexGrid.name;
     }
 
     handleBrushModelToggle() {

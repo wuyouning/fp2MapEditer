@@ -37,7 +37,7 @@ class CanvasLayer {
 
 //五个画布
 
-export class CanvasLayersManager {
+class CanvasLayersManager {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         if (!this.container) {
@@ -116,3 +116,5 @@ export class CanvasLayersManager {
         });
     }
 }
+
+export const layers = new CanvasLayersManager('main');

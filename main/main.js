@@ -1,21 +1,22 @@
-import { CanvasLayersManager } from "../Component/canvasLayer.js";
-
+import { layers } from "../Component/canvasLayer.js";
 import { asideCard } from "../index.js";
 import { Brush } from "./module.js";
 import { HexGrid } from "./module.js";
 import { Point } from "./modules/Hex.js";
+import { hexGrid } from "./module.js";
+
 export class MainView {
     constructor () {
         // 初始化选中的笔刷
         this.selectedBrush = new Brush('居住区');
         this.isPromptShow = false;
 
-        this.layers = new CanvasLayersManager('main'); // 初始化层
+        this.layers = layers; // 初始化层
         if (!this.layers) {
             throw new Error('Failed to initialize layers');
         }
 
-        this.hexGrid = new HexGrid(this.layers);
+        this.hexGrid = hexGrid;
         this.hexGrid.drawHexagons();
         // 绑定事件监听器
         this.addCanvasListeners();

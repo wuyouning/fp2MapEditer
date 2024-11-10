@@ -4,6 +4,7 @@ import { initializeSliderCard } from "./Component/sliderCard.js";
 import { AsideCard } from "./Component/aside.js";
 import { TestDashboardView } from "./TESTdashboard.js"
 import { userLoginView } from "./Component/loginView.js"
+import { saveModelView } from "./Component/saveModelView.js";
 //画布组
 export let mainView;
 
@@ -40,6 +41,8 @@ window.onresize = () => {
 //用户弹窗
 userLoginView.toggleVisibility();
 
+saveModelView.create();
+saveModelView.hide();
 
 function centerbutton(mainView) {
     const centerButton = document.getElementById('back-center-button');

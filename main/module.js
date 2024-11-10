@@ -1,6 +1,8 @@
 import { Hex } from "./modules/Hex.js";
 import { Point } from "./modules/Hex.js";
-
+import { layers } from "../Component/canvasLayer.js";
+import { userLoginView } from "../Component/loginView.js";
+import { saveModelView } from "../Component/saveModelView.js";
 export const brushMap = {
     '居住区': {
         color: 'rgb(118, 190, 186)',
@@ -254,7 +256,7 @@ export class Brush {
 }
 
 export class HexGrid {
-    constructor(layers, hexSize = 45, maxRadius = 6, showID = true, showLabel = true) {
+    constructor(hexSize = 45, maxRadius = 6, showID = true, showLabel = true) {
         this.layers = layers;
         this.hexes = new Set(); //新建后的格子存储
         this.regions = new Set(); //存储区域
@@ -308,9 +310,11 @@ export class HexGrid {
         this.isShowLabel = true;
 
         //画布的名称描述
-        this.canvasName = "规划"; // 画布名称
+        this.name = "规划师的得意之作"; // 画布名称
         this.description = ""; // 描述
         this.isPublic = false; // 是否公开
+        this.ownerId = '';
+        this.hexGridid = '';
     }
 
     //基础操作
@@ -575,153 +579,161 @@ export class HexGrid {
             }
         }
     }
-
-        //更新名称、描述和公开性
-    updateProperties(edit = false) {
-        const spellNameInput = document.getElementById('savingPopup-spellName');
-        const descriptionInput = document.getElementById('savingPopup-description');
-        const isPublicToggle = document.getElementById('savingPopup-toggleButton');
+    /*
+    * 数据库交互
+    */
+    //更新名称、描述和公开性
+    async updateProperties(edit = false) {
+        const spellNameInput = document.getElementById('savemodel-titleEdit');
+        const descriptionInput = document.getElementById('saveModel-desp');
         const hexGridId = localStorage.getItem('hexGridId');
-
+    
         // 确保元素存在后再获取值，避免空引用错误
         if (spellNameInput) {
-            this.canvasName = spellNameInput.value.trim(); // 去除前后空格
+            this.name = spellNameInput.value.trim(); // 去除前后空格
         }
         if (descriptionInput) {
             this.description = descriptionInput.value.trim(); // 去除前后空格
         }
-        if (isPublicToggle) {
-            this.isPublic = isPublicToggle.classList.contains('on'); // 获取是否公开的状态
-        }
 
-        // 更新数据库
+        // 如果是编辑模式且存在 hexGridId，则调用更新描述的方法
         if (edit && hexGridId) {
-            this.updateDescription(hexGridId);
+            await this.updateDescription(hexGridId);
         }
     }
 
-    get ownerId() {
+    get myOwnerId() {
         return localStorage.getItem('uuid');
     }
 
-    async updateDescription(hexGridId, ownerId = this.ownerId) {
+    async updateDescription(hexGridId, ownerId = this.myOwnerId) {
         try {
-            const response = await fetch('http://127.0.0.1:3000/api/update-hexgrid', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    hexGridId: hexGridId,
-                    ownerId: ownerId, // 传递要更新的 ownerId（0 表示执行软删除）
-                    canvasName: this.canvasName,
-                    description: this.description,
-                    isPublic: this.isPublic
-                })
+            const response = await this.sendRequest('PUT', 'update-hexgrid', {
+                hexGridId,
+                name: this.name,
+                ownerId,
+                description: this.description,
+                isPublic: this.isPublic
             });
-
-            const result = await response.json();
-
+    
             if (response.ok) {
-                showError(`HexGrid 数据更新成功`, true);
+                saveModelView.showError('HexGrid 数据更新成功', true);
             } else {
-                showError(`更新 HexGrid 数据时出错：${result.message}`);
+                const result = await response.json();
+                saveModelView.showError(`更新 HexGrid 数据时出错：${result.message}`);
             }
         } catch (error) {
-            showError(`更新 HexGrid 数据时出错：${error}`);
+            saveModelView.showError(`更新 HexGrid 数据时出错：${error}`);
         }
     }
+    
 
-    async save() {
+    async save(isNew = false) {
         try {
-            this.updateProperties();
-            const ownerId = localStorage.getItem('uuid');
-
+            // 更新属性并保存 HexGrid
+            await this.updateProperties();
+            const ownerId = this.myOwnerId;
+    
             if (!ownerId) {
-                loginToggle();
-                showError("无法保存数据: 找不到本地存储的用户ID (UUID)");
+                saveModelView.showError('无法保存数据: 找不到本地存储的用户ID (UUID)');
+                userLoginView.showToggle();
                 return;
             }
-
-            const thumbnail = this.generateThumbnail();
-
-            if (!thumbnail) {
-                // 缩略图生成失败，已经显示了报错信息，直接返回
-                return;
+    
+            // 根据 isNew 决定请求类型和处理逻辑
+            let endpoint = isNew ? 'save-hexgrid' : 'update-hexgrid';
+            let method = isNew ? 'POST' : 'PUT';
+    
+            // 创建请求体
+            let requestBody = {
+                ownerId,
+                name: this.name,
+                hexSize: this.hexSize,
+                maxRadius: this.maxRadius,
+                description: this.description,
+                isPublic: this.isPublic
+            };
+    
+            // 如果不是新建操作，则需要包含 hexGridId
+            if (!isNew && this.hexGridid) {
+                requestBody.hexGridId = this.hexGridid;
             }
-
-            const response = await fetch('http://127.0.0.1:3000/api/save-hexgrid', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ownerId: ownerId,
-                    hexSize: this.hexSize,
-                    maxRadius: this.maxRadius,
-                    canvasName: this.canvasName,
-                    description: this.description,
-                    isPublic: this.isPublic,
-                    coverImage: thumbnail // 将缩略图传递到后端
-                })
-            });
-
-            const result = await response.json();
-
+    
+            // 发出请求
+            const response = await this.sendRequest(method, endpoint, requestBody);
+    
             if (response.ok) {
-                showError('HexGrid 数据保存成功', close = true);
-                const hexGridId = result.hexGridId; // 获取 hexGrid 保存后的 ID
-
-
-                localStorage.removeItem('hexGridId');
-
-                localStorage.setItem('hexGridId', hexGridId);
-
-                showEditBtn();
-                // 保存 hexes
-                for (const hex of Object.values(this.hexes)) {
-
-                    // 排除 brush 为 "擦除" 的格子
-                    if (hex.brush === "擦除") {
-                        continue;
-                    }
-
-                    const hexResponse = await fetch('http://127.0.0.1:3000/api/save-hex', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            hexgridId: hexGridId,
-                            q: hex.q,
-                            r: hex.r,
-                            s: hex.s,
-                            brush: hex.brush,
-                            region: hex.region,
-                            type: hex.type
-                        })
-                    });
-
-                    if (!hexResponse.ok) {
-                        const hexError = await hexResponse.json();
-                        showError(`保存单个 Hex 数据时出错：${hexError.message}`);
-                        return;
-                    }
+                const result = await response.json();
+                if (isNew) {
+                    saveModelView.showError('HexGrid 数据另存为成功', true);
+                    // 从服务器响应中获取新的 hexGridId
+                    const hexGridId = result.hexGridId;
+                    console.log('请求新建出来的hexGridId是？', hexGridId)
+                    // 更新本地存储的 hexGridId
+                    localStorage.setItem('hexGridId', hexGridId);
+                    this.hexGridid = hexGridId;
+    
+                    // 保存所有 Hexes 到新的 HexGrid
+                    await this.saveHexes(hexGridId);
+                } else {
+                    saveModelView.showError('HexGrid 数据更新成功', true);
                 }
-
-                showError('所有 hex 数据保存成功');
-                // hideError();
             } else {
-                showError(`保存 HexGrid 数据时出错：, ${result.message}`);
+                const result = await response.json();
+                saveModelView.showError(`保存 HexGrid 数据时出错：${result.message}`);
             }
         } catch (error) {
-            showError(`保存 HexGrid 和 Hex 数据时出错：,${error} `);
+            saveModelView.showError(`保存 HexGrid 和 Hex 数据时出错：${error}`);
         }
+    }
+    
+    
+    async saveHexes(hexGridId) {
+        try {
+            for (const hex of this.hexes) {
+                // 排除 brush 为 "擦除" 的格子
+                if (hex.brush === '擦除') {
+                    continue;
+                }
+                console.log('我是被保存的格子',hex)
+                const hexResponse = await this.sendRequest('POST', 'save-hex', {
+                    hexgridId: hexGridId,
+                    q: hex.q,
+                    r: hex.r,
+                    s: hex.s,
+                    brush: hex.brush,
+                    region: hex.region,
+                    type: hex.type
+                });
+    
+                if (!hexResponse.ok) {
+                    const hexError = await hexResponse.json();
+                    saveModelView.showError(`保存单个 Hex 数据时出错：${hexError.message}`);
+                    return;
+                }
+            }
+    
+            saveModelView.showError('所有 hex 数据保存成功');
+        } catch (error) {
+            saveModelView.showError(`保存 Hex 数据时出错：${error}`);
+        }
+    }
+    
+    async sendRequest(method, endpoint, body) {
+        console.log('Sending request:', method, endpoint, body); // 用于调试
+        const response = await fetch(`http://127.0.0.1:3000/api/${endpoint}`, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+        return response;
     }
 
 }
 
-
+export let hexGrid = new HexGrid();
 
 
 

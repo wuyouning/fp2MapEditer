@@ -16,6 +16,7 @@ header {
     justify-content: space-between;
     padding: 0 20px;
     box-shadow: 0 2px 5px var(--border-color);
+    background: linear-gradient(230deg, #789fbe 9%, #f8faff);
 }
 
 header h1{
@@ -199,7 +200,7 @@ footer {
     border-radius: 5px;
     font-size: 1.3em;
     background: linear-gradient(180deg, #82a8c85b 2%, #f8faff36);
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0px -1px 5px 0px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s;
     color: var(--font-color);
 }
@@ -290,3 +291,108 @@ footer {
     overflow-wrap: break-word; /* 使长单词在需要时换行 */
 }
 
+
+
+.save-model{
+    z-index: var(--z-index-saveModel);
+    position: absolute;
+    left: 40%;
+    top: 25%;
+    height: 60%;
+    width: 30%;
+    background: radial-gradient(ellipse at top, #d8caca, transparent),
+                radial-gradient(ellipse at bottom, #81819542, transparent);
+    border-radius: 10px; 
+    box-shadow: 0 0 25px 10px rgba(151, 129, 129, 0.3); 
+    padding: 20px 20px 20px 20px; 
+    backdrop-filter: blur(10px); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    display: block;
+    flex-direction: column;  
+    justify-content: start; 
+    align-items: start;     
+}
+
+
+
+.save-model h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #000; /* 设置标题颜色为黑色 */
+    text-align: start;
+}
+
+.save-model input, textarea{
+    width: 96%;
+    height: calc( 1.2em * 1.3);
+    padding: 10px;
+    margin: 0px 0px 0px 0px;
+    border: 1px solid #8483643c;
+    border-radius: 5px;
+    font-size: 1.2em;
+    background: linear-gradient(180deg, #82a8c85b 2%, #f8faff36);
+    box-shadow: inset 0px -1px 5px 0px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    color: var(--font-color);
+}
+
+.save-model input:hover, textarea:hover{
+    background-color: #E9ECEF;
+}
+
+.save-model input:focus, textarea:focus{
+    background: linear-gradient(45deg, #e6e8ea, #ffffff); /* 在聚焦时稍微改变背景颜色 */
+    outline: none; /* 去掉默认的聚焦外框 */
+    box-shadow: 0 0 5px rgba(81, 203, 238, 1); /* 增加一点阴影效果以增强聚焦感 */
+}
+
+
+.savemodel-button-area {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-top: 40px;
+    gap: 15px; /* 设置按钮之间的间距 */
+}
+
+.savemodel-button-area button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    transition: background-color 1s;
+}
+
+.savemodel-button-area button:hover {
+    background: linear-gradient(to top, #f2f2f2, #e3d6a895 98%);
+    border: 2px double var(--accent-color);
+}
+
+#saveModel-desp {
+    display: flex;
+    height: calc(1.2em * 15);
+    width: 100%; /* 可以根据需要调整宽度 */
+    padding: 10px; /* 内边距，确保从左上角开始输入 */
+    box-sizing: border-box; /* 确保 padding 不会影响宽度 */
+    text-align: left; /* 文本从左对齐 */
+    resize: none; /* 禁止用户调整大小 */
+    overflow-wrap: break-word; /* 超长单词换行 */
+    word-wrap: break-word;
+    margin-bottom: 10px;
+}
+
+#savemodel-titleEdit {
+    margin-bottom: 20px;
+}
+
+.ispubil-btn {
+    margin: 20px 20px 20px 20px;
+}

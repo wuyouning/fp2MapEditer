@@ -41,7 +41,7 @@ function toggleNavbarButton(cardId, button) {
     // 切换当前卡片
     const slider = document.getElementById(cardId);
     const isActive = slider.classList.toggle('open');
-    
+
     if (isActive) {
         button.classList.add('active');
     } else {
@@ -50,41 +50,41 @@ function toggleNavbarButton(cardId, button) {
 }
 
 //方块形状的按钮
-export function createSquareColorButton(button, key, selectedKey, onBrushSelect) { 
-    const btnElement = document.createElement('div'); 
-    btnElement.className = 'square-button'; 
-    btnElement.style.backgroundColor = button.color; 
+export function createSquareColorButton(button, key, selectedKey, onBrushSelect) {
+    const btnElement = document.createElement('div');
+    btnElement.className = 'square-button';
+    btnElement.style.backgroundColor = button.color;
 
     // 勾选色块 
-    const checkmark = document.createElement('span'); 
-    checkmark.className = 'checkmark'; 
-    checkmark.textContent = '✔'; 
-    checkmark.style.color = button.color === '#FFF' ? 'black' : 'white'; 
-    btnElement.appendChild(checkmark); 
+    const checkmark = document.createElement('span');
+    checkmark.className = 'checkmark';
+    checkmark.textContent = '✔';
+    checkmark.style.color = button.color === '#FFF' ? 'black' : 'white';
+    btnElement.appendChild(checkmark);
 
-    if (key === selectedKey) { 
-        btnElement.classList.add('selected'); 
-        checkmark.style.display = 'block'; 
-    } else { 
-        checkmark.style.display = 'none'; 
-    } 
+    if (key === selectedKey) {
+        btnElement.classList.add('selected');
+        checkmark.style.display = 'block';
+    } else {
+        checkmark.style.display = 'none';
+    }
 
-    btnElement.onclick = () => { 
-        const previousSelected = document.querySelector('.square-button.selected'); 
-        if (previousSelected) { 
-            previousSelected.classList.remove('selected'); 
-            previousSelected.querySelector('.checkmark').style.display = 'none'; 
-        } 
-        onBrushSelect(key); 
-        btnElement.classList.add('selected'); 
-        checkmark.style.display = 'block'; 
-    }; 
+    btnElement.onclick = () => {
+        const previousSelected = document.querySelector('.square-button.selected');
+        if (previousSelected) {
+            previousSelected.classList.remove('selected');
+            previousSelected.querySelector('.checkmark').style.display = 'none';
+        }
+        onBrushSelect(key);
+        btnElement.classList.add('selected');
+        checkmark.style.display = 'block';
+    };
 
     return btnElement;
 }
 
 export class SliderToggleButton {
-    constructor(containerId, visibleIdText, hiddenIdText, initialState = true, callback = null, classNames = {}) {
+    constructor(containerId, visibleIdText, hiddenIdText, initialState = true, callback = null, classNames = {}, id = '') {
         this.container = document.getElementById(containerId);
         if (!this.container) {
             throw new Error(`Cannot find container with ID: ${containerId}`);
@@ -95,6 +95,7 @@ export class SliderToggleButton {
         this.isOn = initialState;  // 初始状态（on 或 off）
         this.callback = callback;  // 保存回调函数
         this.classNames = classNames;
+        this.id = id;
         this.render();
     }
 
@@ -102,6 +103,9 @@ export class SliderToggleButton {
         // 创建组件外层容器
         const toggleContainer = document.createElement("div");
         toggleContainer.classList.add("slider-toggle-component-container");
+        if (this.id) {
+            toggleContainer.id = this.id; // 设置容器的 id 以便以后能获取到
+        }
         // 如果传入了自定义的容器类名，添加到容器
         if (this.classNames.container) {
             toggleContainer.classList.add(this.classNames.container);
@@ -167,41 +171,12 @@ export class SliderToggleButton {
             this.callback(this.isOn);
         }
     }
-    /* 样式使用说明
-    const brushModelButton = new SliderToggleButton("asideCard", "开启", "关闭", true, null, {
-    container: "my-toggle-container",  // 外层容器类名
-    visibleId: "my-visible-id",       // 左侧显示ID类名
-    hiddenId: "my-hidden-id",         // 右侧隐藏ID类名
-    circle: "my-circle"               // 圆形按钮类名
-    });
-    css配置
-    .my-toggle-container {
-        background-color: #f1f1f1;
-        padding: 10px;
-        border-radius: 20px;
-        cursor: pointer;
-    }
 
-    .my-visible-id {
-        color: green;
+    getToggleState() {
+        return this.isOn;
     }
-
-    .my-hidden-id {
-        color: red;
-    }
-
-    .my-circle {
-        width: 30px;
-        height: 30px;
-        background-color: #007bff;
-        border-radius: 50%;
-    }
-
-    .my-circle.on {
-        background-color: #28a745;
-    }
-    */
 }
+
 
 
 export class CustomSlider {

@@ -7,6 +7,7 @@ const cors = require('cors');
 
 //加密
 const bcrypt = require('bcrypt');
+// const { hexGrid } = require('./main/module');
 const SALT_ROUNDS = 10;
 
 app.use(cors());
@@ -108,25 +109,6 @@ app.post('/api/verify-password', (req, res) => {
 });
 
 
-/**
- * 查询用户是否存在
- */
-function findUser(username, callback) {
-    pool.query(
-        'SELECT * FROM users WHERE username = ?',
-        [username],
-        callback
-    );
-}
-
-
-/**
- * 验证用户密码
- */
-function verifyPassword(inputPassword, storedPassword, callback) {
-    bcrypt.compare(inputPassword, storedPassword, callback);
-}
-
 // 修改用户密码
 app.post('/api/change-password', (req, res) => {
     const { userId, newPassword } = req.body;
@@ -178,6 +160,151 @@ app.post('/api/change-username', (req, res) => {
     );
 });
 
+// 更新画布信息
+app.put('/api/update-hexgrid', (req, res) => {
+    const { hexGridId, ownerId, name, description, isPublic } = req.body;
+
+    // 参数校验
+    if (!hexGridId) {
+        return res.status(400).json({ message: '缺少 hexGridId' });
+    }
+    if (ownerId === undefined) {
+        return res.status(400).json({ message: '更新画布发现，ownerId 不存在了！' });
+    }
+
+    let updateQuery = `
+        UPDATE hexgrid 
+        SET 
+            hexgrid_name = ?, 
+            description = ?, 
+            is_public = ?, 
+            lastedit_at = NOW()
+    `;
+    const updateParams = [name, description, isPublic];
+
+    // 如果 ownerId 为 0，执行软删除逻辑（将 ownerId 设置为 -1）
+    if (ownerId === 0) {
+        updateQuery += ', owner_id = -1';
+    } else if (ownerId !== undefined) {
+        // 如果 ownerId 不为 0 且存在，则更新 ownerId
+        updateQuery += ', owner_id = ?';
+        updateParams.push(ownerId);
+    }
+
+    // 最终通过 hexGridId 进行更新
+    updateQuery += ' WHERE hexGrid_id = ?';
+    updateParams.push(hexGridId);
+
+    pool.query(updateQuery, updateParams, (err, result) => {  // 更正为 pool.query 而不是 connection.query
+        if (err) {
+            console.error('更新 HexGrid 数据时出错：', err);
+            return res.status(500).json({ message: '更新 HexGrid 数据时出错' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: '未找到要更新的 HexGrid' });
+        }
+
+        return res.status(200).json({ message: 'HexGrid 更新成功' });
+    });
+});
+
+// 保存画布
+app.post('/api/save-hexgrid', (req, res) => {
+    const { ownerId, hexSize, maxRadius, name, description, isPublic } = req.body;
+
+    // 参数校验
+    if (!ownerId || !name || !hexSize || !maxRadius) {
+        return res.status(400).json({ message: '缺少必要的字段' });
+    }
+
+    const createdAt = new Date();
+    const lasteditAt = createdAt;
+
+    // 生成 hexGridId
+    const hexGridId = uuidv4();
+
+    pool.query(
+        `INSERT INTO hexgrid
+        (hexGrid_id, owner_id, hexSize, maxRadius, hexgrid_name, description, created_at, lastedit_at, is_public) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [hexGridId, ownerId, hexSize, maxRadius, name, description, createdAt, lasteditAt, isPublic],
+        (err, result) => {
+            if (err) {
+                console.error('保存 HexGrid 数据时出错：', err);
+                return res.status(500).json({ message: '保存 HexGrid 数据时出错' });
+            }
+            return res.status(201).json({ message: 'HexGrid 保存成功', hexGridId });
+        }
+    );
+});
+
+// 保存格子信息
+app.post('/api/save-hex', (req, res) => {
+    const { hexgridId, q, r, s, brush, region, type } = req.body;
+
+    // 参数校验
+    if (!hexgridId || q === undefined || r === undefined || s === undefined || !brush) {
+        return res.status(400).json({ message: '缺少必要的字段' });
+    }
+
+    pool.query(
+        `INSERT INTO hexes 
+        (hexgrid_id, q, r, s, brush, region, type) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [hexgridId, q, r, s, brush, region, type],
+        (err, result) => {
+            if (err) {
+                console.error('保存 Hex 数据时出错：', err);
+                return res.status(500).json({ message: '保存 Hex 数据时出错' });
+            }
+            return res.status(201).json({ message: 'Hex 保存成功' });
+        }
+    );
+});
+
+//公共画布
+app.get('/api/get-public-hexgrids', (req, res) => {
+    const query = `
+        SELECT hexgrid.*, users.username AS owner_name
+        FROM hexgrid
+        LEFT JOIN users ON hexgrid.owner_id = users.uuid
+        WHERE hexgrid.is_public = true
+    `;
+
+    pool.query(query, (err, result) => {
+        if (err) {
+            console.error('获取公共HexGrid数据时候出错', err);
+            return res.status(500).json({ message: '获取公共HexGrid数据时出错' });
+        }
+        res.status(200).json(result);
+    });
+});
+
+app.get('/api/get-private-hexgrids', (req, res) => {
+    const ownerId = req.query.owner_id;
+    if (!ownerId) {
+        console.log('后端无法获得id');
+        return res.status(400).json({ message: '缺少 ownerId 参数' });
+        
+    }
+
+    const query = `
+        SELECT *
+        FROM hexgrid
+        WHERE owner_id = ? 
+    `;
+
+    pool.query(query, [ownerId], (err, results) => {
+        if (err) {
+            console.error('获取私有 HexGrid 数据时出错:', err);
+            return res.status(500).json({ message: '获取私有 HexGrid 数据时出错' });
+        }
+
+        res.status(200).json(results);
+    });
+});
+
 
 /**
  * 更新用户的最后登录时间
@@ -210,4 +337,23 @@ function createUser(username, password, callback) {
             }
         );
     });
+}
+
+/**
+ * 查询用户是否存在
+ */
+function findUser(username, callback) {
+    pool.query(
+        'SELECT * FROM users WHERE username = ?',
+        [username],
+        callback
+    );
+}
+
+
+/**
+ * 验证用户密码
+ */
+function verifyPassword(inputPassword, storedPassword, callback) {
+    bcrypt.compare(inputPassword, storedPassword, callback);
 }
