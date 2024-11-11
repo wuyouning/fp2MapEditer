@@ -98,10 +98,17 @@ export function createSquareColorButton(button, key, selectedKey, onBrushSelect)
 }
 
 export class SliderToggleButton {
-    constructor(containerId, visibleIdText, hiddenIdText, initialState = true, callback = null, classNames = {}, id = '') {
-        this.container = document.getElementById(containerId);
-        if (!this.container) {
-            throw new Error(`Cannot find container with ID: ${containerId}`);
+    constructor(containerIdOrElement, visibleIdText, hiddenIdText, initialState = true, callback = null, classNames = {}, id = '') {
+        // 检测传入的是字符串 ID 还是 DOM 元素
+        if (typeof containerIdOrElement === 'string') {
+            this.container = document.getElementById(containerIdOrElement);
+            if (!this.container) {
+                throw new Error(`Cannot find container with ID: ${containerIdOrElement}`);
+            }
+        } else if (containerIdOrElement instanceof HTMLElement) {
+            this.container = containerIdOrElement;
+        } else {
+            throw new Error("Invalid container parameter. Expected a string ID or DOM element.");
         }
 
         this.visibleIdText = visibleIdText;
@@ -190,6 +197,7 @@ export class SliderToggleButton {
         return this.isOn;
     }
 }
+
 
 
 

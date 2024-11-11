@@ -394,7 +394,7 @@ class SummaryCard {
         const regionsCountText = document.createElement('h2');
         regionsCountText.textContent = `区域总数: ${this.regionsCount}`;
         const hubsCountText = document.createElement('h2');
-        hubsCountText.textContent = `枢纽总数: ${this.regionsCount}`;
+        hubsCountText.textContent = `枢纽总数: ${this.hubsCount}`;
         const hexes = document.createElement('h2');
         hexes.textContent = `格子总数: ${this.hexes}`;
 

@@ -221,11 +221,9 @@ export class MainView {
 
     showBuildRegionPopup() {
         const count = selectedBrush.pedingHexes.size;
-        console.log('我是格子数', count);
     
         // 初始化 lastCount，如果没有定义则为 0
         const lastCount = selectedBrush.lastCount || 0;
-        console.log('我是之前格子数', lastCount);
     
         // 创建 popup 实例，如果尚未存在
         if (!this.popup) {

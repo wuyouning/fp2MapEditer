@@ -1,4 +1,4 @@
-import { hexGrid } from "../main/module.js";
+
 import { asideCard } from "../index.js";
 import { selectedBrush } from "../main/module.js";
 import { Hex } from "../main/modules/Hex.js";
@@ -6,20 +6,34 @@ import { initRegionsCard } from "./regionInfoCard.js";
 import { Region } from "../main/modules/Region.js";
 import { Popup } from "./loadingSpinner.js";
 import { closeNavBarWithSlider } from "./buttonComponent.js";
+import { SliderToggleButton } from "./buttonComponent.js";
 
+import { hexGrid } from "../main/module.js";
 class HexGridCard {
     
-    constructor(hexGrid, isPrivate) {
-        this.title = hexGrid.hexgrid_name;
-        this.desc = hexGrid.description;
-        this.ownName = hexGrid.owner_name;
-        this.updateTime = this.formatDate(hexGrid.lastedit_at);
-        this.creatTime = this.formatDate(hexGrid.created_at);
+    constructor(hexGridFromData, isPrivate) {
+        this.title = hexGridFromData.hexgrid_name;
+        this.desc = hexGridFromData.description;
+        this.ownName = hexGridFromData.owner_name;
+        this.updateTime = this.formatDate(hexGridFromData.lastedit_at);
+        this.creatTime = this.formatDate(hexGridFromData.created_at);
         this.isPrivate = isPrivate;
-        this.newHexGrid = hexGrid;
+        this.newHexGrid = hexGridFromData;
         this.loadingPopup = new Popup();
+        this.isPublicGrid = this.booleanIt();
+        
     }
 
+    booleanIt() {
+        if (this.newHexGrid.is_public === 1) {
+            return true;
+        } else if (this.newHexGrid.is_public === 0) {
+            return false;
+        } else {
+            return "没解出来"
+        }
+    }
+    
     formatDate(dateString) {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -40,10 +54,17 @@ class HexGridCard {
 
 
         const inputArea = this.inputArea();
+        const togglePublicBtn = this.togglePublicBtn();
         const infoArea = this.infoArea();
         const buttonArea = this.buttonArea();
 
-        container.append(inputArea, infoArea, buttonArea);
+        if (this.isPrivate) {
+            container.append(inputArea, togglePublicBtn, infoArea, buttonArea);
+
+        } else {
+            container.append(inputArea, infoArea, buttonArea);
+
+        }
         return container;
     }
 
@@ -89,6 +110,31 @@ class HexGridCard {
         return container;
     }
 
+    togglePublicBtn() {
+        const container = document.createElement('div');
+        container.classList.add('gridCard-controlArea');
+        container.id = 'containerId';
+        console.log('this.importHexGrid', this.importHexGrid)
+        console.log('this.importHexGrid.isPublic',this.importHexGrid.isPublic)
+        console.log('this.isPublicGrid加工', this.isPublicGrid);
+        // 使用最新的 `this.newHexGrid.isPublic` 而不是 `this.isPublicGrid`
+        const btn = new SliderToggleButton(
+            container,
+            '私有',
+            '公开',
+            this.isPublicGrid,  // 确保为布尔值
+            (isOn) => {
+                // 更新 `this.newHexGrid.isPublic` 而不是 `this.isPublicGrid`
+                this.isPublicGrid = isOn;  // 保存为数字
+                console.log("转化为", this.isPublicGrid );
+            },
+            'hexgrid-toggle-btn',
+            'hexgrid-toggle-btn'
+        );
+        
+        return container;
+    }
+
     buttonArea(){
         const container = document.createElement('div');
         container.classList.add('gridCard-buttonArea');
@@ -108,6 +154,8 @@ class HexGridCard {
         updateBtn.textContent = '更新';
         updateBtn.addEventListener('click',() => {
             console.log('更新被按到了')
+            console.log('newHexGrid' , this.newHexGrid.is_public
+            )
         })
 
         const deletBtn = document.createElement('button');
