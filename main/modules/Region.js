@@ -75,7 +75,7 @@ export class Region {
         newRegion.drawRegionLabel(hexGrid.labelCtx);
         // TODO: 更新传导数据给其他区域和枢纽
     }
-    //TODO: 创建与拓展
+    // 创建与拓展 新建区域 重要主程
     static createRegion(hexGrid, selectedBrush) {
         // 获取待扩展的集合
         const hexes = hexGrid.hexes;
@@ -152,13 +152,8 @@ export class Region {
         // 更新 selectedBrush 中的待扩展 hexes 为一个新的 Set，以避免共享引用
         selectedBrush.pedingHexes = new Set(pedingHexes);
         initRegionsCard(hexGrid);
-        // 切换扩展模式
-        // selectedBrush.toggleExpandMode(existingRegion || newRegion);
-    
-        // 绘制区域标签
-        // (existingRegion || newRegion).drawRegionLabel(hexGrid.labelCtx);
-    
-        // TODO: 更新传导数据给其他区域和枢纽
+        mainView.hexGrid.saveLocal();
+
     }
 
     // 示例方法：添加一个 hex 到 hexes Set

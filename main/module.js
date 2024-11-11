@@ -5,6 +5,7 @@ import { userLoginView } from "../Component/loginView.js";
 import { saveModelView } from "../Component/saveModelView.js";
 import { Region } from "./modules/Region.js";
 import { asideCard } from "../index.js";
+import { Popup } from "../Component/loadingSpinner.js";
 
 export const brushMap = {
     '居住区': {
@@ -320,6 +321,8 @@ export class HexGrid {
         this.isPublic = false; // 是否公开
         this.ownerId = '';
         this.hexGridid = '';
+
+        this.loadFromLocalStorage();
     }
 
     //基础操作
@@ -488,7 +491,7 @@ export class HexGrid {
         //TODO: 是否要在这里完成统计表的更新
     }
 
-    // 绘制 可以解拆下，能够节省下性能
+    // 绘制主程 可以解拆下，能够节省下性能
     drawHexagons() {
         const centerHex = new Hex(0, 0, 0);
         const hexagons = this.generateHexagons(centerHex, this.maxRadius);
@@ -815,9 +818,133 @@ export class HexGrid {
         return response;
     }
 
+    // 异步加载数据
+    async loadFromLocalStorage() {
+        const data = localStorage.getItem('hexGridData');
+        if (!data) {
+            return;
+        }
+        const popup = new Popup();
+        popup.show("加载中，请稍候...", "progress");
+
+        try {
+            const hexGridData = await new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const data = localStorage.getItem('hexGridData');
+                    if (data) {
+                        resolve(JSON.parse(data));
+                    } else {
+                        reject(new Error("未找到任何存储数据。"));
+                    }
+                }, 0); // 模拟异步
+            });
+
+            // 初始化 HexGrid 的属性
+            this.name = hexGridData.name || this.name;
+            this.description = hexGridData.description || this.description;
+            this.isPublic = hexGridData.isPublic || this.isPublic;
+            this.hexSize = hexGridData.hexSize || this.hexSize;
+            this.maxRadius = hexGridData.maxRadius || this.maxRadius;
+            this.showID = hexGridData.showID || this.showID;
+            this.showLabel = hexGridData.showLabel || this.showLabel;
+
+            // 重新实例化 hexes, regions 和 hubs 中的对象为 Hex 类实例
+            this.hexes = new Set(hexGridData.hexes.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+            this.regions = new Set(hexGridData.regions.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+            this.hubs = new Set(hexGridData.hubs.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+
+            // 成功加载后关闭弹窗并绘制六边形网格
+            this.drawHexagons();
+            popup.close();
+        } catch (error) {
+            // 加载失败，回滚到初始状态，并在弹窗显示错误信息
+            this.resetToInitialState();
+            popup.show(`加载失败：${error.message}`, "error", 5000);
+        }
+    }
+
+    // 异步保存到本地存储
+    async saveToLocalStorage() {
+        const hexGridData = {
+            name: this.name,
+            description: this.description,
+            isPublic: this.isPublic,
+            hexSize: this.hexSize,
+            maxRadius: this.maxRadius,
+            showID: this.showID,
+            showLabel: this.showLabel,
+            hexes: Array.from(this.hexes).map(hex => ({
+                q: hex.q,
+                r: hex.r,
+                s: hex.s,
+                brush: hex.brush,
+                regionBelond: hex.regionBelond,
+                type: hex.type,
+                size: hex.size
+            })),
+            regions: Array.from(this.regions).map(hex => ({
+                q: hex.q,
+                r: hex.r,
+                s: hex.s,
+                brush: hex.brush,
+                regionBelond: hex.regionBelond,
+                type: hex.type,
+                size: hex.size
+            })),
+            hubs: Array.from(this.hubs).map(hex => ({
+                q: hex.q,
+                r: hex.r,
+                s: hex.s,
+                brush: hex.brush,
+                regionBelond: hex.regionBelond,
+                type: hex.type,
+                size: hex.size
+            }))
+        };
+
+        await new Promise(resolve => setTimeout(resolve, 0));
+        localStorage.setItem('hexGridData', JSON.stringify(hexGridData));
+    }
+    // 保存接口
+    async saveLocal() {
+        await this.saveToLocalStorage();
+    }
+
+    async clearLocalStorage() {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        localStorage.removeItem('hexGridData');
+    }
+
+    // 回滚方法，重置 HexGrid 的状态
+    resetToInitialState() {
+        this.clearLocalStorage();
+        this.name = "规划师的得意之作";
+        this.description = "";
+        this.isPublic = false;
+        this.hexSize = 45;
+        this.maxRadius = 6;
+        this.showID = true;
+        this.showLabel = true;
+        this.hexes.clear();
+        this.regions.clear();
+        this.hubs.clear();
+        this.drawHexagons();
+    }
+
+    //两个滑动条的更新
+    updateSliders() {
+        if (this.hexSizeSlider) {
+            this.hexSizeSlider.updateValue(this.hexSize); // 更新格子尺寸滑动条的值
+        }
+        if (this.maxRadiusSlider) {
+            this.maxRadiusSlider.updateValue(this.maxRadius); // 更新最大半径滑动条的值
+        }
+    }
+
 }
 
 export let hexGrid = new HexGrid();
+
 export const selectedBrush = new Brush('居住区');
 
 

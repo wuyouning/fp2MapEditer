@@ -64,6 +64,7 @@ export class AsideCard {
                 this.layers.clearAllLayers(); 
                 this.hexGrid.cleanGrid(this.brush);
                 initRegionsCard(this.hexGrid);
+                this.hexGrid.clearLocalStorage();
             },
             
         );

@@ -41,6 +41,9 @@ export class Popup {
         this.closeButton.addEventListener('click', () => this.close());
         this.popup.appendChild(this.closeButton);
 
+        // 添加加载指示器
+        this.loadingSpinner = new LoadingSpinner();
+        this.content.appendChild(this.loadingSpinner.getElement());
         // 添加到文档主体
         document.body.appendChild(this.popup);
     }
@@ -58,11 +61,12 @@ export class Popup {
         this.popup.className = 'popup'; // 清除其他类型样式
         this.popup.classList.add('popup-window');
         this.popup.classList.add(`popup-${type}`); // 添加新类型样式
-        // 显示弹窗
         this.popup.style.display = 'flex';
+
         if (type === 'progerss') {
-            const loadingSpinner = new LoadingSpinner();
-            this.addLoadingSpinner(loadingSpinner);
+            this.loadingSpinner.show();
+        } else {
+            this.loadingSpinner.hide();
         }
 
         if (confirmCallback) {
@@ -80,10 +84,10 @@ export class Popup {
         }
     }
 
-    // 向弹窗中加入加载指示器
-    addLoadingSpinner(loadingSpinner) {
-        this.content.appendChild(loadingSpinner.getElement());
-    }
+    // // 向弹窗中加入加载指示器
+    // addLoadingSpinner(loadingSpinner) {
+    //     this.content.appendChild(loadingSpinner.getElement());
+    // }
 
     confirmBtn(confirmCallback, btnText) {
         const confirmBtn = document.createElement('button');
@@ -102,6 +106,6 @@ export class Popup {
     // 关闭弹窗
     close() {
         this.popup.style.display = 'none';
-        // document.body.removeChild(promptElement);
+        this.loadingSpinner.hide();
     }
 }

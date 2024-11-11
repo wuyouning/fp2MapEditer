@@ -21,6 +21,7 @@ export class MainView {
 
         this.hexGrid = hexGrid;
         this.hexGrid.drawHexagons();
+
         // 绑定事件监听器
         this.addCanvasListeners();
 
@@ -202,7 +203,7 @@ export class MainView {
                     }
                 }
                 asideCard.updateBrushInfo();
-
+                hexGrid.saveLocal();
 
                 //自动模式监测
                 
@@ -210,6 +211,9 @@ export class MainView {
                     console.log("排查-能触发自动建造")
                     this.showBuildRegionPopup();
                 }
+
+                //存储本地
+
             }
             this.isDragging = false; // 重置拖动状态
         });
@@ -229,7 +233,7 @@ export class MainView {
         }
         //   很麻烦
     
-        // 检查是否为逐个增加的情况
+        // 检查是否为逐个增加的情况 新建区域 
         if ([6, 9, 12].includes(count) && count === lastCount + 1) {
             console.log('可以执行的');
             this.popup.show(
@@ -241,6 +245,7 @@ export class MainView {
                     Region.createRegion(this.hexGrid, selectedBrush);
                     asideCard.updateBrushInfo();
                     initRegionsCard(hexGrid);
+                    hexGrid.saveLocal();
                 }
             );
         } else {

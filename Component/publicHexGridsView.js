@@ -101,6 +101,7 @@ class HexGridCard {
             asideCard.updateBrushInfo();
             hexGrid.refreshMe();
             initRegionsCard(hexGrid);
+            hexGrid.updateSliders();
         })
         
         const updateBtn = document.createElement('button');
@@ -122,7 +123,7 @@ class HexGridCard {
         };
         return container;
     }
-
+    //主程: 导入 加载 画布
     async importHexGrid() {
         try {
             this.loadingPopup.show('加载规划图中....', 'progress');

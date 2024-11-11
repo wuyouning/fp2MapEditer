@@ -1,3 +1,5 @@
+import { hexGrid } from "../main/module.js";
+
 export class RegionInfoCard { 
     constructor(region, regionsCard) { 
         this.region = region; 
@@ -356,7 +358,9 @@ export class HubCard {
 export function initRegionsCard(hexGrid) { 
     const regionsCard = document.getElementById('regionsCard'); 
     regionsCard.innerHTML= '';
-
+    const summaryCard = new SummaryCard(hexGrid);
+    const suCard = summaryCard.updateCard();
+    regionsCard.append(suCard);
     const regions = hexGrid.regions;
     regions.forEach(region => { 
         const regionCard = new RegionInfoCard(region, regionsCard); 
@@ -370,3 +374,32 @@ export function initRegionsCard(hexGrid) {
     });
 }
 
+class SummaryCard {
+    constructor(hexGrid) {
+        this.hexesGrid = hexGrid;
+        this.regionsCount = hexGrid.regions.size;
+        this.hubsCount = hexGrid.hubs.size;
+        this.hexes = hexGrid.hexes.size;
+    }
+
+    updateCard() {
+        const content = document.createElement('div'); 
+        content.classList.add('regionInfoCard');
+        // 标题区
+        const title = document.createElement('h1'); 
+        title.textContent = `规划总计`;
+        title.classList.add('regioncard-region-title')
+        content.append(title); 
+
+        const regionsCountText = document.createElement('h2');
+        regionsCountText.textContent = `区域总数: ${this.regionsCount}`;
+        const hubsCountText = document.createElement('h2');
+        hubsCountText.textContent = `枢纽总数: ${this.regionsCount}`;
+        const hexes = document.createElement('h2');
+        hexes.textContent = `格子总数: ${this.hexes}`;
+
+        content.append(regionsCountText, hubsCountText, hexes);
+
+        return content;
+    }
+}
