@@ -62,17 +62,16 @@ class UserManager {
 
     login(username, password) {
         // 验证输入
-        if (!this.validateInputs(username, password)) return;
+        if (!this.validateInputs(username, password)) return Promise.reject("输入验证失败");
     
-        // 发送登录请求到服务器
-        fetch(`${this.apiUrl}/login`, {
+        // 发送登录请求到服务器并返回 Promise
+        return fetch(`${this.apiUrl}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password})
+            body: JSON.stringify({ username, password })
         })
-
         .then(response => {
             if (!response.ok) {
                 throw new Error('网络连接失败');
@@ -85,6 +84,7 @@ class UserManager {
         .catch(error => {
             console.error('Error:', error);
             this.displayMessage('服务器请求失败，请稍后再试。');
+            throw error;  // 抛出错误以便上层捕获
         });
     }
 

@@ -1,4 +1,6 @@
 import { userManager } from "../controllers/user.js";
+import { loadingSpinner } from "../index.js";
+
 class UserLoginView {
     constructor() {
         this.logined = this.getLoginStatu();
@@ -11,7 +13,6 @@ class UserLoginView {
     //给主页使用的
     toggleVisibility() {
         const loginModel = document.getElementById('login-model');
-        
         // 如果本地存储中存在 'username'，隐藏登录视图；否则显示
         if (this.getLoginStatu()) {
             if (loginModel) {
@@ -161,13 +162,25 @@ class UserLoginView {
         }
     }
     // 登录按钮点击事件
-    handleLogin() {
+    async handleLogin() {
         if (!this.validatePassword()) {
             return; // 如果密码格式不正确，则不进行登录操作
         }
+        
+        loadingSpinner.show();
+    
         const username = document.getElementById('usernameInput').value;
         const password = document.getElementById('passwordInput').value;
-        userManager.login(username, password);  // 调用 UserManager 的 login 方法
+    
+        try {
+            // 等待 login 方法完成
+            await userManager.login(username, password);
+        } catch (error) {
+            console.error("登录失败:", error);
+            this.displayMessage("登录失败，请重试");
+        } finally {
+            loadingSpinner.hide();
+        }
     }
 
     // 编辑信息按钮点击事件

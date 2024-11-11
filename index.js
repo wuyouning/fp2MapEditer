@@ -5,6 +5,8 @@ import { AsideCard } from "./Component/aside.js";
 import { TestDashboardView } from "./TESTdashboard.js"
 import { userLoginView } from "./Component/loginView.js"
 import { saveModelView } from "./Component/saveModelView.js";
+import { LoadingSpinner } from "./Component/loadingSpinner.js";
+
 //画布组
 export let mainView;
 
@@ -23,6 +25,8 @@ export let testDashboardView = new TestDashboardView(mainView);
 
 // 返回中心
 centerbutton(mainView);
+
+
 
 //窗口调整会被拉回画布中心
 window.onload = () => {
@@ -43,6 +47,12 @@ userLoginView.toggleVisibility();
 
 saveModelView.create();
 saveModelView.hide();
+
+// 创建加载指示器实例
+export const loadingSpinner = new LoadingSpinner();
+// 将加载指示器元素添加到页面中
+document.body.appendChild(loadingSpinner.getElement());
+
 
 function centerbutton(mainView) {
     const centerButton = document.getElementById('back-center-button');

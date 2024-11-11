@@ -4,6 +4,7 @@ export class LoadingSpinner {
         this.spinner = document.createElement('div');
         this.spinner.classList.add('loading-spinner');
         this.spinner.style.display = 'none'; // 默认隐藏
+        this.spinner.style.zIndex = '999'
     }
 
     // 显示加载指示器
@@ -109,3 +110,5 @@ export class Popup {
         this.loadingSpinner.hide();
     }
 }
+
+

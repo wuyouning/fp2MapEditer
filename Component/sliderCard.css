@@ -388,24 +388,11 @@
     user-select: none; /* 防止文本被选中，增加状态的感觉 */
 }
 
-.loading-spinner {
-    border: 4px solid #edd4d4;
-    border-top: 4px solid #6ba2c7;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-    margin: 20px auto; /* 根据布局调整 */
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
 
 
 #publicCard {
     height: auto;
+    min-height: calc(100% - var(--header-height));
     /* width: 90%; */
     display: flex;
     flex-direction: column;
@@ -415,6 +402,9 @@
 
 #privateCard {
     height: auto;
+    min-height: calc(100% - var(--header-height));
+    align-items: center; /* 居中对齐 */
+
 }
 .hexgrid-galley {
     display: grid;

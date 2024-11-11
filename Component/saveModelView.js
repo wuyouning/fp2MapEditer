@@ -1,6 +1,7 @@
 import { SliderToggleButton } from '../Component/buttonComponent.js'
 import { hexGrid } from './../main/module.js';
 import { asideCard } from '../index.js';
+import { loadingSpinner } from '../index.js';
 class SaveModelView {
     constructor() {
         this.messageElement = null;
@@ -94,14 +95,26 @@ class SaveModelView {
         // 添加保存按钮的点击事件，更新属性后保存 HexGrid
         saveBtn.addEventListener('click', async () => {
             try {
+                const saveSuccessful = await hexGrid.save(false);
+
+                loadingSpinner.show();
                 // 先更新属性
                 await hexGrid.updateProperties();
 
                 // 然后保存 HexGrid
                 await hexGrid.save(true);
+
+                if (saveSuccessful) {
+                    asideCard.updateBrushInfo();
+                    setTimeout(() => {
+                        this.hide();
+                    }, 6000);
+                }
             } catch (error) {
                 console.error('保存 HexGrid 数据时出错：', error);
                 this.showError(`保存 HexGrid 数据时出错：${error}`);
+            } finally {
+                loadingSpinner.hide();
             }
         });
     
@@ -127,6 +140,7 @@ class SaveModelView {
         // 添加保存按钮的点击事件，负责更新现有的 HexGrid
         saveBtn.addEventListener('click', async () => {
             try {
+                loadingSpinner.show();
                 // 更新现有的 HexGrid
                 const saveSuccessful = await hexGrid.save(false);
                 if (saveSuccessful) {
@@ -138,6 +152,9 @@ class SaveModelView {
             } catch (error) {
                 console.error('保存 HexGrid 数据时出错：', error);
                 this.showError(`保存 HexGrid 数据时出错：${error}`);
+            } finally {
+                loadingSpinner.hide();
+
             }
             
         });
@@ -149,6 +166,7 @@ class SaveModelView {
         // 添加另存为按钮的点击事件，负责创建一个新的 HexGrid 并上传到服务器
         saveAsBtn.addEventListener('click', async () => {
             try {
+                loadingSpinner.show();
                 // 另存为新的 HexGrid
                 const saveSuccessful = await hexGrid.save(true);
                 if (saveSuccessful) {
@@ -160,6 +178,8 @@ class SaveModelView {
             } catch (error) {
                 console.error('另存为 HexGrid 数据时出错：', error);
                 this.showError(`另存为 HexGrid 数据时出错：${error}`);
+            } finally {
+                loadingSpinner.hide();
             }
         });
     
