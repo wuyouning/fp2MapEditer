@@ -1,0 +1,546 @@
+.sliderCard {
+    display: block;
+    position: absolute;
+    z-index: var(--z-index-sidebar);
+    top: var(--header-height);
+    height: calc(100% - var(--header-height) - 42px);
+    background-color: var(--background-color);
+    box-shadow: 5px 0px 10px rgba(30, 125, 183, 0.4);
+    transition: transform 0.3s ease;
+    padding: 20px;
+}
+
+
+.sliderCard {
+    transform: translateX(-105%); 
+}
+
+.sliderCard.open {
+    transform: translateX(calc(0% + var(--navbar-width)));
+}
+
+#brushToolCard {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 1% 1.5%;
+    border-radius: 8px;
+}
+/* 要关掉的哦 */
+
+
+.brush-tool-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    margin: 5px 5px 5px 5px;
+}
+
+.brush-row-container {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.brush-button-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.brush-color-name {
+    margin-top: 5px;
+    font-size: 14px;
+    text-align: center;
+}
+
+
+/* 滑动条整体容器 */
+.custom-slider-container {
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center; 
+    gap: 10px; 
+    padding: 10px; 
+}
+
+.topArea, .bottomArea {
+    display: flex;  
+    justify-content: space-between;  
+    align-items: center;  
+    width: 100%;  
+}
+
+.slider-label {
+    font-size: 18px;
+    margin-right: 10px; 
+    font-weight: bold;
+}
+
+.slider-value-display {
+    font-size: 14px;
+    margin-left: 10px; 
+}
+
+/* 左右按钮的样式 */
+.slider-button {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(45deg, #999b9d, #f8faff);
+    border: 2px solid #c0c0c0;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.slider-button:hover {
+    background-color: #d0d0d0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 滑动条的样式 */
+.custom-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 75%;
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    border: 1px solid #c0c0c0;
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s;
+    
+}
+
+.custom-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 12px;
+    cursor: pointer;
+    background: linear-gradient(to right, #e6e6e6, #ffffff);
+    border-radius: 10px;
+    border: 1px solid #c0c0c0;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 30%;
+    border: 2px solid #c0c0c0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.1);
+}
+
+/* Firefox */
+.custom-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    border: 2px solid #c0c0c0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.custom-slider::-moz-range-thumb:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.1);
+}
+
+/* 公告栏的样式 */
+
+.annc-image-section {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    max-width: 300px;
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.annc-support-image {
+    display: flex;
+    max-width: 40%;
+    height: auto;
+    flex: 1;
+    border: 2px solid #bdc3c7;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.annc-support-image:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.annc-link-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    margin-top: 15px;
+}
+.linkStyle {
+    margin: 0 0px;
+    width: 28%;
+    height: auto;
+}
+
+.linkStyle:hover {
+    transform: scale(1.55);
+    transition: transform 0.3s ease;
+}
+
+.linkStyle img {
+    display: flex;
+    margin: 0 auto;
+    width: 28%;
+    height: auto;
+    flex: 1;
+}
+
+.linkStyle p {
+    font-size: 8px;
+}
+
+.annc-content-section {
+    margin-bottom: 0px;
+}
+
+.annc-content-section h2 {
+    font-size: 20px;
+    color: #2c3e50;
+    /* margin-bottom: 10px; */
+}
+
+.annc-content-section p {
+    font-size: 14px;
+    color: #34495e;
+    line-height: 1.6;
+}
+
+#infoCard {
+    display: flex;
+    flex-direction: column;
+    gap: 5%;
+    padding: 20px 40px 40px 40px;
+}
+
+
+
+#infoCard button, #loginCard button {
+    border: none;
+    border-radius: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    transition: background-color 1s;
+}
+
+#infoCard button:hover, #loginCard button:hover {
+    background: linear-gradient(to top, #f2f2f2, #e3d6a895 98%);
+    border: 2px double var(--accent-color);
+}
+#infoCard h1{
+    font-size: 32px;
+}
+
+#infoCard input, #loginCard input {
+
+    display: flex; /* 使用 flex 布局使文字水平和垂直居中 */
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    margin: 10px auto; /* 水平居中，使其在页面中居中显示 */
+    box-sizing: border-box;
+    width: 350px;
+    height: 50px;
+    padding: 10px;
+    border: 1px solid #8483643c;
+    border-radius: 5px;
+    font-size: 1.3em;
+    background: linear-gradient(180deg, #82a8c85b 2%, #f8faff36);
+    box-shadow: inset 0px -1px 5px 0px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    color: var(--font-color);
+}
+
+#loginCard input:hover {
+    background-color: #E9ECEF;
+}
+
+#loginCard input:focus {
+    background: linear-gradient(45deg, #e6e8ea, #ffffff); /* 在聚焦时稍微改变背景颜色 */
+    outline: none; /* 去掉默认的聚焦外框 */
+    box-shadow: 0 0 5px rgba(81, 203, 238, 1); /* 增加一点阴影效果以增强聚焦感 */
+}
+
+/* 错误输入框样式 */
+.input-error {
+    border: 2px solid rgb(120, 74, 74) !important; /* 使用红色边框表示输入错误 */
+    background-color: #ffe6e6; /* 淡红色背景 */
+}
+
+/* 错误提示信息样式 */
+.error-message {
+    color: rgb(184, 91, 91); /* 提示信息颜色为红色 */
+    font-size: 0.9em; /* 较小的字体 */
+    margin-top: 5px; /* 提示信息距离输入框的间距 */
+}
+
+.infoCard-button-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.infoCard-infoArea {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.infoCard-button-area {
+    gap: 30px;
+}
+.infoCard-button {
+    width: 100%;
+    padding: 10px;
+}
+
+
+
+#loginCard {
+    z-index: calc(var(--z-index-sidebar) + 2);
+}
+
+
+
+.closeEditBtn-userinfo {
+    -webkit-appearance: none !important; 
+    appearance: none !important;
+    background: linear-gradient(45deg, #999b9d, #f8faff) !important;
+    border: 2px solid #c0c0c0 !important;
+    border-radius: 50% !important;
+    width: 30px;
+    height: 30px;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    color: #333;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2) !important;
+    transition: background-color 0.3s, box-shadow 0.3s !important;
+}
+
+.closeEditBtn-userinfo:hover {
+    background-color: #7c7650 !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3) !important; 
+}
+
+.editPage-buttonArea {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 40px 20px 20px 20px;
+}
+
+.editPage-buttonArea button{
+    width: 40%;
+    height: 40px;
+}
+
+.username-status {
+    display: flex; /* 使用 flex 布局使文字水平和垂直居中 */
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    height: 50px; /* 调整高度 */
+    width: 350px; /* 调整宽度 */
+    margin: 10px auto; /* 水平居中，使其在页面中居中显示 */
+    border-radius: 10px; /* 圆角边框 */
+    background: linear-gradient(to right, #b3d9ff, #e6f2ff); /* 设置柔和的背景渐变 */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* 减少阴影强度，去掉按钮的立体感 */
+    font-size: 1.5em; /* 增大字体 */
+    font-weight: bold; /* 加粗字体 */
+    color: #333; /* 设置合适的文本颜色 */
+    border: none; /* 去掉边框，使其不像按钮 */
+    cursor: default; /* 去掉指针的变化，防止看起来像可以点击 */
+    user-select: none; /* 防止文本被选中，增加状态的感觉 */
+}
+
+.loading-spinner {
+    border: 4px solid #edd4d4;
+    border-top: 4px solid #6ba2c7;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto; /* 根据布局调整 */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+#publicCard {
+    height: auto;
+    /* width: 90%; */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 居中对齐 */
+    padding: 20px; /* 增加内边距，给容器内部空间 */
+}
+
+#privateCard {
+    height: auto;
+}
+.hexgrid-galley {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 使用自适应的网格列 */
+    gap: 20px; /* 格子间的间距 */
+    width: 97%; /* 宽度为父级容器的100% */
+    height: 100%;
+    padding: 10px; /* 增加内边距，保证格子与边界不紧贴 */
+
+}
+
+
+
+
+.hexgrid-card {
+    z-index: var(--z-index-saveModel);
+    padding: 10px 10px;
+    display: block;
+    flex-direction: column;
+    background: radial-gradient(ellipse at top, #ebe7e7, transparent),
+                radial-gradient(ellipse at bottom, #81819542, transparent);
+    border-radius: 10px; 
+    box-shadow: 0 0 2px 2px rgba(221, 206, 206, 0.3); 
+    border: 1px solid rgba(230, 221, 221, 0.961);
+    height: auto;
+    min-height: calc(100% - var(--header-height));
+}
+
+.hexgrid-card:hover {
+    border: 1px double var(--accent-color);
+}
+
+
+.hexgrid-card input, textarea{
+    width: 96%;
+    height: calc( 0.8em * 1.3);
+    padding: 10px;
+    margin: 5px 0px 0px 0px;
+    border: 0px solid #8483643c;
+    border-radius: 5px;
+    font-size: 0.8em;
+    background: linear-gradient(45deg, #82a8c865 2%, #f8faff0e);
+    box-shadow: inset 0px -1px 5px 0px rgba(0, 0, 0, 0.0);
+    transition: background-color 0.3s;
+    color: var(--font-color);
+}
+
+.hexgrid-card input:hover textarea:hover{
+    background-color: #E9ECEF;
+}
+
+.hexgrid-card input:focus, textarea:focus{
+    background: linear-gradient(45deg, #e6e8ea, #ffffff);
+    outline: none; 
+    box-shadow: inset 0px -1px 5px 0px rgba(0, 0, 0, 0.0);
+}
+
+/* 描述框框 */
+.gridCard-desc {
+    display: flex;
+    height: calc(1.2em * 15);
+    width: 100%; /* 可以根据需要调整宽度 */
+    padding: 10px; /* 内边距，确保从左上角开始输入 */
+    box-sizing: border-box; /* 确保 padding 不会影响宽度 */
+    text-align: left; /* 文本从左对齐 */
+    resize: none; /* 禁止用户调整大小 */
+    overflow-wrap: break-word; /* 超长单词换行 */
+    word-wrap: break-word;
+    margin-bottom: 10px;
+}
+
+.gridCard-infoArea {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 2px;
+    font-size: 0.7em;
+}
+/* 按钮类 */
+.gridCard-buttonArea{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.hexgrid-card button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.8em;
+    cursor: pointer;
+    background: var(--button-background);
+    border: var(--button-border);
+    border-radius: 10px;
+    box-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    transition: background-color 1s;
+}
+
+.hexgrid-card button:hover, .galley-pagenav:hover {
+    background: var(--button-backgournd-hover);
+}
+
+
+.galley-pagenav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    gap: 30px;
+}
+
+.galley-pagenav {
+    width: 30%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #e6e6e6, #f2f2f2);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    transition: background-color 1s;
+}
