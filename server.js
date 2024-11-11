@@ -7,7 +7,6 @@ const cors = require('cors');
 
 //加密
 const bcrypt = require('bcrypt');
-// const { hexGrid } = require('./main/module');
 const SALT_ROUNDS = 10;
 
 app.use(cors());
@@ -242,7 +241,6 @@ app.post('/api/save-hexgrid', (req, res) => {
 // 保存格子信息
 app.post('/api/save-hex', (req, res) => {
     const { hexgridId, q, r, s, brush, region, type } = req.body;
-
     // 参数校验
     if (!hexgridId || q === undefined || r === undefined || s === undefined || !brush) {
         return res.status(400).json({ message: '缺少必要的字段' });
@@ -265,17 +263,22 @@ app.post('/api/save-hex', (req, res) => {
 
 //公共画布
 app.get('/api/get-public-hexgrids', (req, res) => {
+    const limit = parseInt(req.query.limit, 10) || 20;  // 获取每页条数，默认为20
+    const offset = parseInt(req.query.offset, 10) || 0;  // 获取偏移量，默认为0
+
     const query = `
         SELECT hexgrid.*, users.username AS owner_name
         FROM hexgrid
         LEFT JOIN users ON hexgrid.owner_id = users.uuid
         WHERE hexgrid.is_public = true
+        ORDER BY hexgrid.lastedit_at DESC
+        LIMIT ? OFFSET ?
     `;
 
-    pool.query(query, (err, result) => {
+    pool.query(query, [limit, offset], (err, result) => {
         if (err) {
-            console.error('获取公共HexGrid数据时候出错', err);
-            return res.status(500).json({ message: '获取公共HexGrid数据时出错' });
+            console.error('获取公共 HexGrid 数据时出错', err);
+            return res.status(500).json({ message: '获取公共 HexGrid 数据时出错' });
         }
         res.status(200).json(result);
     });
@@ -283,19 +286,23 @@ app.get('/api/get-public-hexgrids', (req, res) => {
 
 app.get('/api/get-private-hexgrids', (req, res) => {
     const ownerId = req.query.owner_id;
+    const limit = parseInt(req.query.limit, 10) || 20;  // 获取每页条数，默认为20
+    const offset = parseInt(req.query.offset, 10) || 0;  // 获取偏移量，默认为0
+
     if (!ownerId) {
-        console.log('后端无法获得id');
+        console.log('后端无法获得 id');
         return res.status(400).json({ message: '缺少 ownerId 参数' });
-        
     }
 
     const query = `
         SELECT *
         FROM hexgrid
-        WHERE owner_id = ? 
+        WHERE owner_id = ?
+        ORDER BY lastedit_at DESC
+        LIMIT ? OFFSET ?
     `;
 
-    pool.query(query, [ownerId], (err, results) => {
+    pool.query(query, [ownerId, limit, offset], (err, results) => {
         if (err) {
             console.error('获取私有 HexGrid 数据时出错:', err);
             return res.status(500).json({ message: '获取私有 HexGrid 数据时出错' });
@@ -303,6 +310,30 @@ app.get('/api/get-private-hexgrids', (req, res) => {
 
         res.status(200).json(results);
     });
+});
+
+app.get('/api/hexes/:hexgrid_id', (req, res) => {
+    const { hexgrid_id } = req.params;
+
+    try {
+        const query = 'SELECT q, r, s, brush, region, type FROM hexes WHERE hexgrid_id = ?';
+        pool.query(query, [hexgrid_id], (err, rows) => {
+            if (err) {
+                console.error('没有获取格子们', err);
+                res.status(500).json({ message: '网络错误'});
+                return;
+            }
+
+            if (Array.isArray(rows) && rows.length > 0) {
+                res.json(rows);
+            } else {
+                res.status(404).json({ message: `这个hexgrid没有找到对应的记录哦 ${hexgrid_id}`});
+            }
+        });
+    } catch (error) {
+        console.error('未能如期获取格子', error);
+        res.status(500).json({ message: '网络错误'});
+    }
 });
 
 

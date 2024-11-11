@@ -9,6 +9,7 @@ class SaveModelView {
     create() {
         // 创建并配置 saveModel 元素
         const saveModel = document.createElement('div');
+        saveModel.classList.add('popup');
         saveModel.classList.add('save-model');
         saveModel.id = 'save-model';
         document.body.appendChild(saveModel);
@@ -41,7 +42,6 @@ class SaveModelView {
         console.log('请求出来的hexGrid是？',hexGridId)
         if (hexGridId) {
             buttonArea = this.createButtonArea2();
-            console.log('Area2我来执行')
         } else {
             buttonArea = this.createButtonArea();
             console.log('Area1我来执行')
@@ -128,8 +128,13 @@ class SaveModelView {
         saveBtn.addEventListener('click', async () => {
             try {
                 // 更新现有的 HexGrid
-                await hexGrid.save(false);
-                asideCard.updateBrushInfo();
+                const saveSuccessful = await hexGrid.save(false);
+                if (saveSuccessful) {
+                    asideCard.updateBrushInfo();
+                    setTimeout(() => {
+                        this.hide();
+                    }, 6000);
+                }
             } catch (error) {
                 console.error('保存 HexGrid 数据时出错：', error);
                 this.showError(`保存 HexGrid 数据时出错：${error}`);
@@ -145,8 +150,13 @@ class SaveModelView {
         saveAsBtn.addEventListener('click', async () => {
             try {
                 // 另存为新的 HexGrid
-                await hexGrid.save(true);
-                asideCard.updateBrushInfo();
+                const saveSuccessful = await hexGrid.save(true);
+                if (saveSuccessful) {
+                    asideCard.updateBrushInfo();
+                    setTimeout(() => {
+                        this.hide();
+                    }, 6000);
+                }
             } catch (error) {
                 console.error('另存为 HexGrid 数据时出错：', error);
                 this.showError(`另存为 HexGrid 数据时出错：${error}`);

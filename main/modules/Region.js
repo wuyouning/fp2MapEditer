@@ -117,6 +117,8 @@ export class Region {
                 }
             });
             existingRegion.drawRegionLabel(hexGrid.labelCtx);
+            //不是很完美的清除和重建方案
+            hexGrid.regionEdgeRedraw();
             console.log(`已将格子合并到现有区域: ${existingRegion.name}`);
         } else {
             // 如果没有现有的区域，创建一个新的区域
@@ -181,10 +183,10 @@ export class Region {
             this.clearAllHexes(hexGrid);
         }
         //FIX: 事实上是很不节省算力的行为，但是一直没有研究出来正确的局部处理方法，尤其是边缘，很难解决，所以没有办法只能用这个全局配置来解决了。
+        hexGrid.regions.delete(this);
         hexGrid.drawHexagons();
         // this.updateRegion();
         // updateRegionCards();
-        hexGrid.regions.delete(this);
     }
 
     clearSingleHex(hex, hexGrid) {
@@ -203,14 +205,30 @@ export class Region {
     }
 
     clearAllHexes(hexGrid) {
+        // 1. 清空当前区域的 hexes
         this.hexes.forEach(regionHex => {
             regionHex.brush = "擦除";
-            regionHex.region = null;
+            regionHex.regionBelond = null;
             regionHex.type = "空白";
             regionHex.drawHex(hexGrid);
         });
+    
         this.hexes.clear();
+    
+        // 2. 识别需要从 hexGrid 中删除的 hex，并将其收集到一个数组中
+        const hexesToDelete = [];
+        hexGrid.hexes.forEach(hex => {
+            if (hex.regionBelond === this.name) {
+                hexesToDelete.push(hex);
+            }
+        });
+    
+        // 3. 从 hexGrid.hexes 中逐一删除
+        hexesToDelete.forEach(hex => hexGrid.hexes.delete(hex));
+    
+        // 4. 从 hexGrid 的 regions 中删除当前区域
         hexGrid.regions.delete(this);
+        initRegionsCard(hexGrid);
     }
 
     //绘制区域标签
@@ -768,6 +786,7 @@ export class Region {
 
         // 在路径的中心绘制文字
         this._drawCenteredText(ctx, path, this.name);
+        console.log('单个区域绘制完毕!')
     }
 
     // 判断是否到达路径的尽头
@@ -905,7 +924,6 @@ export class Region {
     getInnerEffectDetailList(formatted = false) {
         const innerEffectArea = this.getInnerEffectArea();
         const innerEffectDetailList = [];
-        console.log('开始运行细节了')
         innerEffectArea.forEach(reg => {
             // let region = mainView.hexGrid.regions.find(r => r.name === reg);
             let region = null;

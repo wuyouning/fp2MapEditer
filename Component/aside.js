@@ -3,7 +3,7 @@ import { MainStyledButton } from "../Component/buttonComponent.js";
 import { Region } from "../main/modules/Region.js";
 import {initRegionsCard } from "../Component/regionInfoCard.js"
 import { saveModelView } from "./saveModelView.js";
-
+import { selectedBrush } from "../main/module.js";
 
 export class AsideCard {
     constructor(brush, layers, hexGrid) {
@@ -11,6 +11,7 @@ export class AsideCard {
         this.layers = layers;
         this.title = '施工面板';
         this.hexGrid = hexGrid;
+        this.brushModeButton = null;
     }
 
     initCard() {
@@ -33,16 +34,16 @@ export class AsideCard {
             'asideCard',
             '选择工具模式',
             '',
-            true,
-            () => this.handleBrushModelToggle()
+            false,
+            () => this.handleBrushModelToggle(brushModeButton)
         )
-
+        this.brushModeButton = brushModeButton;
         const autoBuildRegionMode = new SliderToggleButton(
             'asideCard',
             '自动建区模式',
             '',
             true,
-            () => this.handleBrushModelToggle()
+            () => this.handleAutoBuildRegioToggle(autoBuildRegionMode)
         )
 
         const gridBtnContainer = document.createElement("div");
@@ -164,10 +165,21 @@ export class AsideCard {
         hexGridName.textContent = this.hexGrid.name;
     }
 
-    handleBrushModelToggle() {
-        console.log('Brush model toggled!');
-        // 你可以在这里执行与刷子模型相关的操作
+    handleBrushModelToggle(brushModeButton) {
+        const toggleState = brushModeButton.getToggleState();
+    
+        // 设置 selectedBrush.autoBuildRegion 为按钮状态
+        selectedBrush.selectMode = toggleState;
     }
+
+    handleAutoBuildRegioToggle(autoBuildRegionMode) {
+        // 获取自动建区模式按钮的当前状态
+        const toggleState = autoBuildRegionMode.getToggleState();
+    
+        // 设置 selectedBrush.autoBuildRegion 为按钮状态
+        selectedBrush.autoBuildRegion = toggleState;
+    }
+
 
 }
 

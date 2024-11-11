@@ -49,6 +49,20 @@ function toggleNavbarButton(cardId, button) {
     }
 }
 
+export function closeNavBarWithSlider() {
+    const sliders = document.querySelectorAll('.sliderCard');
+    sliders.forEach(slider => {
+            slider.classList.remove('open');
+        
+    });
+
+    const buttons = document.querySelectorAll('.navBar-button');
+    buttons.forEach(btn => {
+            btn.classList.remove('active');
+    });
+
+}
+
 //方块形状的按钮
 export function createSquareColorButton(button, key, selectedKey, onBrushSelect) {
     const btnElement = document.createElement('div');

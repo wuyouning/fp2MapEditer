@@ -2,7 +2,7 @@ import { brushMap } from "../module.js";
 import { mainView } from "../../index.js";
 import {initRegionsCard} from "../../Component/regionInfoCard.js"
 export class Hex {
-    constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size, ctx) {
+    constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size) {
         this.q = q;
         this.r = r;
         this.s = s;
@@ -14,7 +14,6 @@ export class Hex {
         this.regionBelond = regionName;
         this.type = type;
         this.size = size;
-        this.ctx = ctx;
         this.intensifiedColor = 'white';
         this.strokeStyle = 'rgba(168, 177, 197, 0.1)';
     }
@@ -228,7 +227,7 @@ export class Hex {
         return effectedAreaList;
     }
 
-
+    //推给所有区域性能
     updateEffectedRegions() {
         const effectedAreaList = this.findHubsEffectedRegion;
         if (effectedAreaList) {
@@ -366,7 +365,7 @@ export class Hex {
         ctx.clearRect(minX, minY, maxX - minX, maxY - minY);
     }
 
-    drawHexEdges(ctx, layout, lineWidth = 5) {
+    drawHexEdges(ctx, layout, lineWidth = 5, dash = null) {
         const corners = this.polygonCorners(layout);
         
         
@@ -420,6 +419,10 @@ export class Hex {
 
             // 绘制每条边
             ctx.beginPath();
+            if (dash){
+                ctx.setLineDash(dash);
+                ctx.strokeStyle = '#ffffff';
+            }
             ctx.moveTo(startCorner.x, startCorner.y);
             ctx.lineTo(endCorner.x, endCorner.y);
             ctx.stroke();

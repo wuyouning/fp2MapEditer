@@ -43,6 +43,7 @@ class UserLoginView {
 
     init() {
         const loginModel = document.createElement('div');
+        loginModel.classList.add('popup');
         loginModel.classList.add('login-model');
         loginModel.id = 'login-model';
 

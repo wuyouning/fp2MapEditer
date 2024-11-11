@@ -1,4 +1,4 @@
-class RegionInfoCard { 
+export class RegionInfoCard { 
     constructor(region, regionsCard) { 
         this.region = region; 
         this.regionsCard = regionsCard; 
@@ -147,7 +147,6 @@ class RegionInfoCard {
         effectHubsCount.textContent = `枢纽总数: ${this.region.effectHubs.size}`; 
         content.append(effectHubsCount); 
 
-        console.log('hub总计表单是什么样的',this.hubsTotalList)
         this.hubsTotalList.forEach(r => {
             const title = document.createElement('p');
             title.textContent = `${r.effect}: ${r.effectValue} `
@@ -282,7 +281,7 @@ function listArea(titleText, items, tagName) {
     return container; 
 } 
 
-class HubCard {
+export class HubCard {
     constructor(hub) {
         this.name = hub.regionBelond;
         this.type = hub.brush;
@@ -370,3 +369,4 @@ export function initRegionsCard(hexGrid) {
         hubCard.updateCard();
     });
 }
+
