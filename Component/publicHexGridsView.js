@@ -7,10 +7,11 @@ import { Region } from "../main/modules/Region.js";
 import { Popup } from "./loadingSpinner.js";
 import { closeNavBarWithSlider } from "./buttonComponent.js";
 import { SliderToggleButton } from "./buttonComponent.js";
-
 import { hexGrid } from "../main/module.js";
+
+
 class HexGridCard {
-    
+
     constructor(hexGridFromData, isPrivate) {
         this.title = hexGridFromData.hexgrid_name;
         this.desc = hexGridFromData.description;
@@ -19,11 +20,19 @@ class HexGridCard {
         this.creatTime = this.formatDate(hexGridFromData.created_at);
         this.isPrivate = isPrivate;
         this.newHexGrid = hexGridFromData;
+
         this.loadingPopup = new Popup();
+
         this.isPublicGrid = this.booleanIt();
-        
+
+        // 保存初始值
+        this.initialTitle = this.title;
+        this.initialDesc = this.desc;
+        this.initialIsPublic = this.isPublicGrid;
+        this.myOwnid = localStorage.getItem('uuid');
     }
 
+    //后端解决会不会好一点?
     booleanIt() {
         if (this.newHexGrid.is_public === 1) {
             return true;
@@ -33,7 +42,7 @@ class HexGridCard {
             return "没解出来"
         }
     }
-    
+
     formatDate(dateString) {
         const date = new Date(dateString);
         const year = date.getFullYear();
@@ -77,12 +86,22 @@ class HexGridCard {
         titleArea.readOnly = !this.isPrivate;
         titleArea.disabled = !this.isPrivate;
 
+        // 添加更改监听
+        titleArea.addEventListener('input', (e) => {
+            this.title = e.target.value;
+        });
+
 
         const descArea = document.createElement('textarea');
         descArea.classList.add('gridCard-desc');
         descArea.value = this.desc;
         descArea.readOnly = !this.isPrivate;
         descArea.disabled = !this.isPrivate;
+
+        // 添加更改监听
+        descArea.addEventListener('input', (e) => {
+            this.desc = e.target.value;
+        });
 
         inputArea.append(titleArea, descArea);
 
@@ -94,9 +113,9 @@ class HexGridCard {
         container.classList.add('gridCard-infoArea');
 
         const leftText = document.createElement('p');
-        
+
         const rightText = document.createElement('p');
-        
+
         if (this.isPrivate) {
             leftText.textContent = `创建日期：${this.creatTime}`;
             rightText.textContent = `更新日期：${this.updateTime}`;
@@ -114,34 +133,29 @@ class HexGridCard {
         const container = document.createElement('div');
         container.classList.add('gridCard-controlArea');
         container.id = 'containerId';
-        console.log('this.importHexGrid', this.importHexGrid)
-        console.log('this.importHexGrid.isPublic',this.importHexGrid.isPublic)
-        console.log('this.isPublicGrid加工', this.isPublicGrid);
-        // 使用最新的 `this.newHexGrid.isPublic` 而不是 `this.isPublicGrid`
+
         const btn = new SliderToggleButton(
             container,
             '私有',
             '公开',
-            this.isPublicGrid,  // 确保为布尔值
+            this.isPublicGrid,
             (isOn) => {
-                // 更新 `this.newHexGrid.isPublic` 而不是 `this.isPublicGrid`
-                this.isPublicGrid = isOn;  // 保存为数字
-                console.log("转化为", this.isPublicGrid );
+                this.isPublicGrid = isOn;
             },
             'hexgrid-toggle-btn',
             'hexgrid-toggle-btn'
         );
-        
+
         return container;
     }
 
-    buttonArea(){
+    buttonArea() {
         const container = document.createElement('div');
         container.classList.add('gridCard-buttonArea');
 
         const importBtn = document.createElement('button');
         importBtn.textContent = '导入';
-        importBtn.addEventListener('click',() => {
+        importBtn.addEventListener('click', () => {
             console.log('导入被按到了', this.newHexGrid)
             this.importHexGrid();
             asideCard.updateBrushInfo();
@@ -149,19 +163,18 @@ class HexGridCard {
             initRegionsCard(hexGrid);
             hexGrid.updateSliders();
         })
-        
+
         const updateBtn = document.createElement('button');
         updateBtn.textContent = '更新';
-        updateBtn.addEventListener('click',() => {
-            console.log('更新被按到了')
-            console.log('newHexGrid' , this.newHexGrid.is_public
-            )
+        updateBtn.addEventListener('click', () => {
+            this.handleUpdate();
         })
 
         const deletBtn = document.createElement('button');
         deletBtn.textContent = '删除';
-        deletBtn.addEventListener('click',() => {
+        deletBtn.addEventListener('click', () => {
             console.log('删除被按到了')
+            this.handleDelete();
         })
 
         if (this.isPrivate) {
@@ -177,13 +190,24 @@ class HexGridCard {
             this.loadingPopup.show('加载规划图中....', 'progress');
 
             const h = this.newHexGrid;
-            // hexGrid.cleanGrid(selectedBrush);
-            // hexGrid.drawHexagons();
+            hexGrid.cleanGrid();
 
             hexGrid.name = h.hexgrid_name;
             hexGrid.description = h.description;
-            hexGrid.ownerId = '';
-            hexGrid.hexGridid = '';
+
+            const owner_id = localStorage.getItem('uuid')
+            hexGrid.ownerId = owner_id;
+
+            if (this.isPrivate) {
+                console.log('私有域,我依然用原来的gridid',h.hexgrid_id)
+                hexGrid.hexgrid_id = h.hexgrid_id;
+            } else {
+                hexGrid.hexgrid_id = await hexGrid.fetchUUID();
+                console.log('公有域,我用新的grid', hexGrid.hexgrid_id)
+
+            }
+
+            hexGrid.saveLocal();
 
             this.importHexes(h.hexgrid_id);
             hexGrid.setHexSize(h.hexSize);
@@ -191,7 +215,7 @@ class HexGridCard {
 
             console.log('成功更新了')
             this.loadingPopup.show('成功更新了', 'success', 2000)
-
+            // hexGrid.drawHexagons();
         } catch (error) {
             this.loadingPopup.show(`出现错误导致终端了 ${error.message}`, 'error', 3000)
             console.error('下载hexGrid出错了', error);
@@ -200,7 +224,6 @@ class HexGridCard {
 
     async importHexes(hexgrid_id) {
         try {
-
             this.loadingPopup.show('加载小格子中...', 'progress');
 
             const response = await fetch(`http://127.0.0.1:3000/api/hexes/${hexgrid_id}`);
@@ -223,7 +246,8 @@ class HexGridCard {
 
 
             this.ogana(hexList);
-            this.loadingPopup.show('成功加载全部格子啦','success', 10000)
+
+            this.loadingPopup.show('成功加载全部格子啦', 'success', 10000)
             setTimeout(() => {
                 closeNavBarWithSlider();
             }, 1000);
@@ -232,6 +256,9 @@ class HexGridCard {
         } catch (error) {
             this.loadingPopup.show(`加载小格子失败了: ${error.message}`, 'error', 5000);
             console.error('hexes下载失败', error);
+        } finally {
+            initRegionsCard(hexGrid);
+            asideCard.updateBrushInfo();
         }
     }
 
@@ -282,45 +309,114 @@ class HexGridCard {
         hexGrid.drawHexagons();
     }
 
-    ogana2(hexList) {
-        const regionMap = {};
-        const hubMap = [];
-        hexList.forEach(hex => {
-            if (hex.type === '属地') {
-                console.log('处理的对象是', hex)
-                const region = hex.regionBelond;
-                console.log('排查 - 获得表名',region)
-
-                if (!regionMap[region]) {
-                    regionMap[region] = [];
-                }
-
-                regionMap[region].push(hex);
-                console.log('排查 - 建立映射',regionMap[region])
-                console.log('总表呢', regionMap)
-            }
-
-            if (hex.type === '枢纽') {
-                hex.createHub(hexGrid.hubs, hex.brush);
-                hubMap.push(hex);
-            }
-        });
-
-        for (const region in regionMap) {
-            const hexesList = regionMap[region];
-
-            const newRegion = new Region(hexesList[0].region, hexesList, hexesList[0].brush);
-            hexGrid.regions.add(newRegion);
 
 
+    // 更新按钮点击事件
+    async handleUpdate() {
+        // 检查是否有更改
+        const isModified = (
+            this.title !== this.initialTitle ||
+            this.desc !== this.initialDesc ||
+            this.isPublicGrid !== this.initialIsPublic
+        );
+        const owner_id = localStorage.getItem('uuid');
+        console.warn('我在这里获得了owner_id',owner_id)
+        if (!isModified) {
+            this.loadingPopup.show(
+                '没有任何更改，无需更新。',
+                'info',
+                0,
+                '确认',
+                'default'
+            );
+            return;
         }
 
-        hubMap.forEach(hex => {
-            hex.updateEffectedRegions();
-        })
+        try {
+            this.loadingPopup.show('更新中,请稍后', 'progress');
+            const response = await fetch('http://localhost:3000/api/update-hexgrid', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    hexgrid_id: this.newHexGrid.hexgrid_id,
+                    owner_id: owner_id,
+                    hexgrid_name: this.title,
+                    description: this.desc,
+                    is_public: this.isPublicGrid ? 1 : 0
+                })
+            });
+            if (!response.ok) {
+                this.loadingPopup.show('更新失败', 'error');
+                throw new Error('更新失败');
+            }
 
-        // hexGrid.updateAllRegions();
-        initRegionsCard(hexGrid);
+            const result = await response.json();
+            this.loadingPopup.show(`更新成功: ${result.message}`, 'success', 5000);
+
+            // 更新初始值
+            this.initialTitle = this.title;
+            this.initialDesc = this.desc;
+            this.initialIsPublic = this.isPublicGrid;
+        } catch (error) {
+            this.loadingPopup.show(`更新出错: ${error}`, 'success');
+            console.error('更新出错啦', error);
+        } finally {
+            // 刷新私有画廊数据，确保界面显示最新内容
+            // hexGridGalley.currentOffsetPrivate = 0;  
+            // hexGridGalley.initPrivate();
+        }
+    }
+
+    async handleDelete() {
+        this.loadingPopup.show(
+            '您确认要删掉规划吗?',
+            'warning',
+            0,
+            '确认删除',
+            this.confirmDelete.bind(this)
+        );
+    }
+
+    async confirmDelete() {
+        try {
+            this.loadingPopup.show('正在删除,请稍后...', 'progress');
+
+            const response = await fetch('http://localhost:3000/api/update-hexgrid', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    hexgrid_id: this.newHexGrid.hexgrid_id,
+                    owner_id: 0,  // 0 表示执行软删除，将 owner_id 设置为 -1
+                    hexgrid_name: this.title,
+                    description: this.desc,
+                    is_public: 0  // 设置为私有
+                })
+            });
+
+            if (!response.ok) {
+                this.loadingPopup.show('删除失败', 'error');
+                throw new Error('删除失败');
+            }
+
+            const result = await response.json();
+            this.loadingPopup.show(`删除成功: ${result.message}`, 'success');
+
+            // 更新本地状态
+            this.newHexGrid.owner_id = -1;  // 标记为已删除
+            this.isPublicGrid = false;
+
+        } catch (error) {
+            this.loadingPopup.show(`删除出错: ${error}`, 'error');
+            console.error('删除出错啦', error);
+        } finally {
+            hexGridGalley.clearGallery();
+            hexGridGalley.initPrivate();
+            hexGridGalley.initPublic();
+        }
     }
 }
 
@@ -334,9 +430,24 @@ class HexGridGalley {
         this.loadingPopup = new Popup();
     }
 
+    clearGallery() {
+        const privateCard = document.getElementById('privateCard');
+        const publicCard = document.getElementById('publicCard');
+        privateCard.innerHTML = '';  // 清除私有画廊内容
+        publicCard.innerHTML = '';
+        this.currentOffsetPrivate = 0;  // 重置偏移量
+        this.currentOffsetPublic = 0;
+    }
+
     async initPublic() {
         try {
-            this.loadingPopup.show('数据加载中,请等待.....', 'progress');
+            this.loadingPopup.show(
+                '数据加载中,请等待.....',
+                'progress',
+                0,
+                null,
+                null
+            );
 
             const response = await fetch(`http://127.0.0.1:3000/api/get-public-hexgrids?offset=${this.currentOffsetPublic}&limit=${this.limit}`, {
                 method: 'GET',
@@ -377,7 +488,7 @@ class HexGridGalley {
                 loadMoreBtn.classList.add('galley-pagenav');
                 loadMoreBtn.textContent = '更多';
                 loadMoreBtn.addEventListener('click', () => {
-                    this.initPublic();  
+                    this.initPublic();
                 });
                 publicCard.append(loadMoreBtn);
             }
@@ -397,7 +508,13 @@ class HexGridGalley {
 
     async initPrivate() {
         try {
-            this.loadingPopup.show('私有画廊加载中,请等待...', 'progress');
+            this.loadingPopup.show(
+                '画廊加载中,请等待...',
+                'progress',
+                0,
+                null,
+                null
+            );
 
             const owner_id = localStorage.getItem('uuid');
             if (!owner_id) {
@@ -421,7 +538,7 @@ class HexGridGalley {
             this.loadingPopup.close();
             // 获取私有容器元素
             const privateCard = document.getElementById('privateCard');
-
+            // 清除之前的内容
             const galley = privateCard.querySelector('.hexgrid-galley') || document.createElement('div');
             galley.classList.add('hexgrid-galley');
 
@@ -459,8 +576,12 @@ class HexGridGalley {
         } catch (error) {
             this.loadingPopup.show(`加载出错: ${error.message}`, 'error', 3000);
             console.error('展示私有 HexGrid 时出错啦', error);
+        } finally {
+            console.log('刷新额')
         }
     }
+
+
 }
 
 export const hexGridGalley = new HexGridGalley();

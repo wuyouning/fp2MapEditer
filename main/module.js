@@ -6,7 +6,7 @@ import { saveModelView } from "../Component/saveModelView.js";
 import { Region } from "./modules/Region.js";
 import { asideCard } from "../index.js";
 import { Popup } from "../Component/loadingSpinner.js";
-
+import { initRegionsCard } from "../Component/regionInfoCard.js";
 export const brushMap = {
     '居住区': {
         color: 'rgb(118, 190, 186)',
@@ -233,15 +233,15 @@ class Brush {
     }
 
     joinPedingHexes(hex, hexGrid) {
-            // 检查当前待建格子数量是否小于阈值，且 hex 是否是邻居
-            if (this.pendingHexesCount < this.threshold && this.isNeighborOfPendingHexes(hex, hexGrid)) {
-                this.pedingHexes.add(hex); // 在满足条件时，添加 hex
-            } else {
-                if (this.autoBuildRegion) {
-                    this.pedingHexes.clear(); // 自动构建区域时清空
-                }
-                this.pedingHexes.add(hex); // 添加新 hex
+        // 检查当前待建格子数量是否小于阈值，且 hex 是否是邻居
+        if (this.pendingHexesCount < this.threshold && this.isNeighborOfPendingHexes(hex, hexGrid)) {
+            this.pedingHexes.add(hex); // 在满足条件时，添加 hex
+        } else {
+            if (this.autoBuildRegion) {
+                this.pedingHexes.clear(); // 自动构建区域时清空
             }
+            this.pedingHexes.add(hex); // 添加新 hex
+        }
     }
 
     removeHexFromPending(hex) {
@@ -250,9 +250,9 @@ class Brush {
     }
 
     expandMode(region) {
-        this.pedingHexes.clear();  
+        this.pedingHexes.clear();
         region.hexes.forEach(hex => {
-            this.pedingHexes.add(hex);  
+            this.pedingHexes.add(hex);
         });
         this.selectMode = false;
         asideCard.updateBrushInfo();
@@ -320,9 +320,7 @@ export class HexGrid {
         this.description = ""; // 描述
         this.isPublic = false; // 是否公开
         this.ownerId = '';
-        this.hexGridid = '';
-
-        this.loadFromLocalStorage();
+        this.hexgrid_id = '';
     }
 
     //基础操作
@@ -448,7 +446,7 @@ export class HexGrid {
         for (const hex of this.hexes) {
             if (hex.type === '属地') {
                 hex.drawHexEdges(this.edgeCtx, this.layout);
-            } 
+            }
         }
     }
 
@@ -516,12 +514,12 @@ export class HexGrid {
             }
         }
 
-        if (this.regions.size > 1) {
+        if (this.regions.size > 0) {
             this.updateAllRegionsLabels();
         }
     }
 
-    cleanGrid(selectedBrush) {
+    cleanGrid() {
         const centerHex = new Hex(0, 0, 0);
         this.initData();
         selectedBrush.pedingHexes.clear();
@@ -626,6 +624,18 @@ export class HexGrid {
         return this.getStatistics(this.regions, 'type');
     }
 
+    drwaedHexCount() {
+        let hexCount = 0;
+
+        this.hexes.forEach((hex) => {
+            if (!(hex.brush === '擦除' && hex.type === '空白' && hex.regionBelond === null)) {
+                hexCount += 1;
+            }
+        });
+    
+        return hexCount;
+    }
+
     // 获取相同类型枢纽的统计信息
     hubsStatistics() {
         return this.getStatistics(this.hubs, 'brush');
@@ -641,7 +651,6 @@ export class HexGrid {
         })
     }
 
-    //TODO: 建立一个传导机制在这里
 
     //重整绘制
     updateAllRegionsLabels(ctx = this.labelCtx) {
@@ -650,14 +659,14 @@ export class HexGrid {
             console.error("Canvas context is not defined.");
             return;
         }
-    
+
         // 清空整个画布
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         // 如果没有区域或者标签不应该显示，则直接返回
         if (this.regions.size === 0 || !this.isShowLabel) {
             return;
         }
-    
+
         // 如果有区域且标签应该显示，则重绘标签
         this.regions.forEach(region => {
             region.drawRegionLabel(ctx);
@@ -671,7 +680,7 @@ export class HexGrid {
     async updateProperties(edit = false) {
         const spellNameInput = document.getElementById('savemodel-titleEdit');
         const descriptionInput = document.getElementById('saveModel-desp');
-        const hexGridId = localStorage.getItem('hexGridId');
+        const hexgrid_id = this.hexgrid_id;
 
         // 确保元素存在后再获取值，避免空引用错误
         if (spellNameInput) {
@@ -682,8 +691,8 @@ export class HexGrid {
         }
 
         // 如果是编辑模式且存在 hexGridId，则调用更新描述的方法
-        if (edit && hexGridId) {
-            await this.updateDescription(hexGridId);
+        if (edit && hexgrid_id) {
+            await this.updateDescription(hexgrid_id);
         }
     }
 
@@ -691,10 +700,10 @@ export class HexGrid {
         return localStorage.getItem('uuid');
     }
 
-    async updateDescription(hexGridId, ownerId = this.myOwnerId) {
+    async updateDescription(hexgrid_id, ownerId = this.myOwnerId) {
         try {
             const response = await this.sendRequest('PUT', 'update-hexgrid', {
-                hexGridId,
+                hexgrid_id,
                 name: this.name,
                 ownerId,
                 description: this.description,
@@ -739,9 +748,9 @@ export class HexGrid {
                 isPublic: this.isPublic
             };
 
-            // 如果不是新建操作，则需要包含 hexGridId
-            if (!isNew && this.hexGridid) {
-                requestBody.hexGridId = this.hexGridid;
+            // 如果不是新建操作，则需要包含 hexgrid_id
+            if (!isNew && this.hexgrid_id) {
+                requestBody.hexgrid_id = this.hexgrid_id;
             }
 
             // 发出请求
@@ -750,17 +759,15 @@ export class HexGrid {
             if (response.ok) {
                 const result = await response.json();
                 if (isNew) {
-                    saveModelView.showError('HexGrid 数据另存为成功', true);
-                    // 从服务器响应中获取新的 hexGridId
-                    const hexGridId = result.hexGridId;
-                    console.log('请求新建出来的hexGridId是？', hexGridId)
-                    // 更新本地存储的 hexGridId
-                    localStorage.setItem('hexGridId', hexGridId);
-                    this.hexGridid = hexGridId;
-
+                    const hexgrid_id = result.hexgrid_id;
+                    this.hexgrid_id = hexgrid_id;
+                    localStorage.setItem('isNewGrid', false);
+                    this.updateLocalStorageInfo(this.name, this.description, hexgrid_id);
                     // 保存所有 Hexes 到新的 HexGrid
-                    await this.saveHexes(hexGridId);
+                    await this.saveHexes(hexgrid_id);
+                    saveModelView.showError('HexGrid 数据另存为成功', true);
                 } else {
+                    this.updateLocalStorageInfo(this.name, this.description, this.hexgrid_id);
                     saveModelView.showError('HexGrid 数据更新成功', true);
                 }
             } else {
@@ -775,7 +782,7 @@ export class HexGrid {
     }
 
 
-    async saveHexes(hexGridId) {
+    async saveHexes(hexgrid_id) {
         try {
             for (const hex of this.hexes) {
                 // 排除 brush 为 "擦除" 的格子
@@ -783,8 +790,9 @@ export class HexGrid {
                     continue;
                 }
                 console.log('我是被保存的格子', hex)
+                console.log('难道没有id', hexgrid_id)
                 const hexResponse = await this.sendRequest('POST', 'save-hex', {
-                    hexgridId: hexGridId,
+                    hexgrid_id: hexgrid_id,
                     q: hex.q,
                     r: hex.r,
                     s: hex.s,
@@ -792,7 +800,6 @@ export class HexGrid {
                     region: hex.regionBelond,
                     type: hex.type
                 });
-                console.log('我是加工好的传送体',hexResponse)
                 if (!hexResponse.ok) {
                     const hexError = await hexResponse.json();
                     saveModelView.showError(`保存单个 Hex 数据时出错：${hexError.message}`);
@@ -818,106 +825,290 @@ export class HexGrid {
         return response;
     }
 
-    // 异步加载数据
-    async loadFromLocalStorage() {
-        const data = localStorage.getItem('hexGridData');
-        if (!data) {
-            return;
-        }
-        const popup = new Popup();
-        popup.show("加载中，请稍候...", "progress");
-
+    async fetchUUID() {
         try {
-            const hexGridData = await new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    const data = localStorage.getItem('hexGridData');
-                    if (data) {
-                        resolve(JSON.parse(data));
-                    } else {
-                        reject(new Error("未找到任何存储数据。"));
-                    }
-                }, 0); // 模拟异步
+            const response = await fetch('http://localhost:3000/api/generate-uuid', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
 
-            // 初始化 HexGrid 的属性
-            this.name = hexGridData.name || this.name;
-            this.description = hexGridData.description || this.description;
-            this.isPublic = hexGridData.isPublic || this.isPublic;
-            this.hexSize = hexGridData.hexSize || this.hexSize;
-            this.maxRadius = hexGridData.maxRadius || this.maxRadius;
-            this.showID = hexGridData.showID || this.showID;
-            this.showLabel = hexGridData.showLabel || this.showLabel;
+            if (!response.ok) {
+                throw new Error('无法获取 UUID');
+            }
 
-            // 重新实例化 hexes, regions 和 hubs 中的对象为 Hex 类实例
-            this.hexes = new Set(hexGridData.hexes.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
-            this.regions = new Set(hexGridData.regions.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
-            this.hubs = new Set(hexGridData.hubs.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+            const data = await response.json();
+            const uuid = data.uuid;
+            console.log('生成的 UUID:', uuid);
 
-            // 成功加载后关闭弹窗并绘制六边形网格
-            this.drawHexagons();
-            popup.close();
+            return uuid; // 返回生成的 UUID
         } catch (error) {
-            // 加载失败，回滚到初始状态，并在弹窗显示错误信息
-            this.resetToInitialState();
-            popup.show(`加载失败：${error.message}`, "error", 5000);
+            console.error('获取 UUID 时出错:', error);
+            return null; // 失败时返回 null 或您想要的默认值
         }
     }
+    //本地交互
+    async createHexGrid() {
+        const newHexGridid = await this.fetchUUID();
+        this.hexgrid_id = newHexGridid;
+
+        this.ownerId = localStorage.getItem('uuid')
+        this.cleanGrid();
+        console.log('我在运行新建了啦',this.hexgrid_id)
+        this.drawHexagons();
+
+        localStorage.removeItem('hexgrid_data');
+        localStorage.removeItem('hexes_data');
+        localStorage.setItem('isNewGrid', true);
+    }
+
+    async initializeHexGrid() {
+        const isLoaded = this.loadFromLocalStorage();
+        if (!isLoaded) {
+            // 如果加载失败或本地无数据，创建新的画布
+            await this.createHexGrid();
+        }
+    }
+    // 异步加载数据
+    // async loadFromLocalStorage() {
+    //     const data = localStorage.getItem('hexGridData');
+    //     if (!data) {
+    //         return;
+    //     }
+    //     const popup = new Popup();
+    //     popup.show("加载中，请稍候...", "progress");
+
+    //     try {
+    //         const hexGridData = await new Promise((resolve, reject) => {
+    //             setTimeout(() => {
+    //                 const data = localStorage.getItem('hexGridData');
+    //                 if (data) {
+    //                     resolve(JSON.parse(data));
+    //                 } else {
+    //                     reject(new Error("未找到任何存储数据。"));
+    //                 }
+    //             }, 0); // 模拟异步
+    //         });
+
+    //         // 初始化 HexGrid 的属性
+    //         this.name = hexGridData.name || this.name;
+    //         this.description = hexGridData.description || this.description;
+    //         this.isPublic = hexGridData.isPublic || this.isPublic;
+    //         this.hexSize = hexGridData.hexSize || this.hexSize;
+    //         this.maxRadius = hexGridData.maxRadius || this.maxRadius;
+    //         this.showID = hexGridData.showID || this.showID;
+    //         this.showLabel = hexGridData.showLabel || this.showLabel;
+
+    //         // 重新实例化 hexes, regions 和 hubs 中的对象为 Hex 类实例
+    //         this.hexes = new Set(hexGridData.hexes.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+    //         this.regions = new Set(hexGridData.regions.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+    //         this.hubs = new Set(hexGridData.hubs.map(hexData => new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexData.size)));
+
+    //         // 成功加载后关闭弹窗并绘制六边形网格
+    //         this.drawHexagons();
+    //         popup.close();
+
+    //     } catch (error) {
+    //         // 加载失败，回滚到初始状态，并在弹窗显示错误信息
+    //         this.resetToInitialState();
+    //         popup.show(`加载失败：${error.message}`, "error", 5000);
+    //     }
+    // }
 
     // 异步保存到本地存储
-    async saveToLocalStorage() {
-        const hexGridData = {
-            name: this.name,
-            description: this.description,
-            isPublic: this.isPublic,
-            hexSize: this.hexSize,
-            maxRadius: this.maxRadius,
-            showID: this.showID,
-            showLabel: this.showLabel,
-            hexes: Array.from(this.hexes).map(hex => ({
-                q: hex.q,
-                r: hex.r,
-                s: hex.s,
-                brush: hex.brush,
-                regionBelond: hex.regionBelond,
-                type: hex.type,
-                size: hex.size
-            })),
-            regions: Array.from(this.regions).map(hex => ({
-                q: hex.q,
-                r: hex.r,
-                s: hex.s,
-                brush: hex.brush,
-                regionBelond: hex.regionBelond,
-                type: hex.type,
-                size: hex.size
-            })),
-            hubs: Array.from(this.hubs).map(hex => ({
-                q: hex.q,
-                r: hex.r,
-                s: hex.s,
-                brush: hex.brush,
-                regionBelond: hex.regionBelond,
-                type: hex.type,
-                size: hex.size
-            }))
-        };
+    // async saveToLocalStorage() {
+    //     const hexGridData = {
+    //         name: this.name,
+    //         description: this.description,
+    //         isPublic: this.isPublic,
+    //         hexSize: this.hexSize,
+    //         maxRadius: this.maxRadius,
+    //         showID: this.showID,
+    //         showLabel: this.showLabel,
+    //         hexes: Array.from(this.hexes).map(hex => ({
+    //             q: hex.q,
+    //             r: hex.r,
+    //             s: hex.s,
+    //             brush: hex.brush,
+    //             regionBelond: hex.regionBelond,
+    //             type: hex.type,
+    //             size: hex.size
+    //         })),
+    //         regions: Array.from(this.regions).map(hex => ({
+    //             q: hex.q,
+    //             r: hex.r,
+    //             s: hex.s,
+    //             brush: hex.brush,
+    //             regionBelond: hex.regionBelond,
+    //             type: hex.type,
+    //             size: hex.size
+    //         })),
+    //         hubs: Array.from(this.hubs).map(hex => ({
+    //             q: hex.q,
+    //             r: hex.r,
+    //             s: hex.s,
+    //             brush: hex.brush,
+    //             regionBelond: hex.regionBelond,
+    //             type: hex.type,
+    //             size: hex.size
+    //         }))
+    //     };
 
-        await new Promise(resolve => setTimeout(resolve, 0));
-        localStorage.setItem('hexGridData', JSON.stringify(hexGridData));
+    //     await new Promise(resolve => setTimeout(resolve, 0));
+    //     localStorage.setItem('hexGridData', JSON.stringify(hexGridData));
+    // }
+
+    async saveToLocalStorage() {
+        try {
+            // 1. 保存画布信息
+            const hexGridData = {
+                name: this.name,
+                description: this.description,
+                // isPublic: hexGrid.isPublic,
+                ownerId: this.ownerId,
+                hexgrid_id: this.hexgrid_id,
+                hexSize: this.hexSize,
+                maxRadius: this.maxRadius,
+                createdAt: this.createdAt || new Date().toISOString(),
+                lastEditAt: new Date().toISOString(),
+            };
+            localStorage.setItem('hexgrid_data', JSON.stringify(hexGridData));
+
+            // 2. 保存格子信息
+            const hexesData = Array.from(this.hexes).map(hex => ({
+                q: hex.q,
+                r: hex.r,
+                s: hex.s,
+                brush: hex.brush,
+                regionBelond: hex.regionBelond,
+                type: hex.type,
+            }));
+            localStorage.setItem('hexes_data', JSON.stringify(hexesData));
+
+            console.log('HexGrid 和 Hexes 数据已成功保存到本地存储。');
+        } catch (error) {
+            console.error('保存到本地存储时出错:', error);
+        }
     }
     // 保存接口
     async saveLocal() {
         await this.saveToLocalStorage();
     }
+    async updateLocalStorageInfo(name, description, hexgrid_id) {
+        try {
+            // 获取当前存储在本地的 hexgrid_data
+            const hexGridData = JSON.parse(localStorage.getItem('hexgrid_data')) || {};
+    
+            // 更新所需的字段
+            hexGridData.name = name || hexGridData.name;  // 如果传入 name 则更新，否则保留原来的
+            hexGridData.description = description || hexGridData.description;  // 同样的逻辑
+            hexGridData.hexgrid_id = hexgrid_id || hexGridData.hexgrid_id;
+    
+            // 更新 lastEditAt 字段为当前时间
+            hexGridData.lastEditAt = new Date().toISOString();
+    
+            // 保存更新后的对象到本地存储
+            localStorage.setItem('hexgrid_data', JSON.stringify(hexGridData));
+    
+            console.log('HexGrid 数据的 name、description 和 hexgrid_id 已成功更新到本地存储。');
+        } catch (error) {
+            console.error('更新本地存储信息时出错:', error);
+        }
+    }
+    
+    loadFromLocalStorage() {
+        try {
+            // 1. 加载画布信息
+            const hexGridData = localStorage.getItem('hexgrid_data');
+            const onwnerID = localStorage.getItem('uuid');
+            if (hexGridData) {
+                const parsedData = JSON.parse(hexGridData);
+                this.name = parsedData.name;
+                this.description = parsedData.description;
+                this.isPublic = false;
+                this.ownerId = parsedData.ownerId;
+                //看下是怎么获得才行
+                this.hexgrid_id = parsedData.hexgrid_id;
+                this.hexSize = parsedData.hexSize;
+                this.maxRadius = parsedData.maxRadius;
+                this.createdAt = parsedData.createdAt;
+                this.lastEditAt = parsedData.lastEditAt;
 
-    async clearLocalStorage() {
+                console.log('画布信息已成功从本地存储加载。');
+            } else {
+                console.log('未找到本地存储中的画布信息。');
+            }
+
+            // 2. 加载格子信息并组织
+            const hexesData = localStorage.getItem('hexes_data');
+            if (hexesData) {
+                const parsedHexes = JSON.parse(hexesData);
+                this.organizeHexes(parsedHexes);
+                console.log('格子数据已成功从本地存储加载并组织。');
+            } else {
+                console.log('未找到本地存储中的格子数据。');
+            }
+
+            this.drawHexagons(); // 调用渲染方法，更新视图
+            return true;
+        } catch (error) {
+            console.error('从本地存储加载数据时出错:', error);
+            return false;
+        }
+    }
+
+    organizeHexes(hexList) {
+        // 清空 hexGrid 的 hexes, regions, hubs 等属性
+        this.hexes.clear();
+        this.regions.clear();
+        this.hubs.clear();
+
+        const regionMap = {};
+        const hubMap = [];
+
+        hexList.forEach(hexData => {
+            const hex = new Hex(hexData.q, hexData.r, hexData.s, hexData.brush, hexData.regionBelond, hexData.type, hexGrid.hexSize);
+            this.hexes.add(hex);
+
+            if (hex.type === '属地') {
+                const region = hex.regionBelond;
+
+                if (!regionMap[region]) {
+                    regionMap[region] = [];
+                }
+                regionMap[region].push(hex);
+            }
+
+            if (hex.type === '枢纽') {
+                hex.createHub(this.hubs, hex.brush);
+                hubMap.push(hex);
+            }
+        });
+
+        // 创建和添加 Region 实例
+        for (const region in regionMap) {
+            const hexesList = regionMap[region];
+            const newRegion = new Region(hexesList[0].regionBelond, hexesList, hexesList[0].brush);
+            this.regions.add(newRegion);
+        }
+
+        // 更新枢纽的影响区域
+        hubMap.forEach(hex => {
+            hex.updateEffectedRegions();
+        });
+
+        initRegionsCard(this); // 更新 UI 中的区域信息
+    }
+
+    async clearLocalStorageData() {
         await new Promise(resolve => setTimeout(resolve, 0));
-        localStorage.removeItem('hexGridData');
+        localStorage.removeItem('hexgrid_data');
     }
 
     // 回滚方法，重置 HexGrid 的状态
     resetToInitialState() {
-        this.clearLocalStorage();
+        this.clearLocalStorageData();
         this.name = "规划师的得意之作";
         this.description = "";
         this.isPublic = false;

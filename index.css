@@ -25,6 +25,17 @@ header h1{
     font-family: Arial, sans-serif;
 }
 
+#navBar {
+    background-color: #f0f4f8; /* 浅灰白底色 */
+    color: #4a4a4a; /* 深灰色文字 */
+    border: 1px solid #d1d9e6; /* 浅灰蓝色边框 */
+    backdrop-filter: blur(10px);
+    border-image: initial;
+    box-shadow: 0 0 25px 5px rgba(151, 129, 129, 0.3);
+    background: var(--top-background)
+}
+
+
 nav {
     position: fixed;
     z-index: var(--z-index-navbar);
@@ -50,25 +61,33 @@ nav {
     width: 100%;
     height: auto;
     border: none;
-    background-color: var(--button-bg-color);
-    border-bottom: 1px solid var(--border-color); /* 按钮底部分隔线 */
     cursor: pointer;
     transition: background-color 0.3s;
+
+    backdrop-filter: blur(10px); 
+    background: var(--top-button-background);
+    /* background-color: #383c435b;  */
+    color: #293147; /* 深蓝色文字 */
+    border: 1px solid #cfe0fc; /* 边框 */
 }
 
 .navBar-button.active {
-    background-color: var(--accent-color);
-    color: var(--accent-color-secondary);
+    background-color: #f9eaea; /* 淡红灰色背景 */
+    color: #8a2b2b; /* 深红色文字 */
+    border: 1px solid #e6c9c9; /* 边框 */
 }
 
 .navBar-button:hover {
-    background-color: var(--accent-color);  
+    background-color: #f9f7f0; /* 米色背景 */
+    color: #725b2f; /* 暖灰色文字 */
+    border: 1px solid #e0d9c8; /* 边框 */
 }
 
 .navBar-button-icon {
     width: 24px;
     height: 24px;
     margin-bottom: 5px; /* 图标与文字间的距离 */
+    filter: sepia(50%) saturate(10%) brightness(50%);
 }
 
 .navBar-button-text {
@@ -85,16 +104,22 @@ aside {
     top: var(--header-height);
     min-width: 10%;
     max-height: calc(100% - var(--header-height) - var(--header-height) - var(--header-height));
-    box-shadow: var(--box-shadow-default);
     margin: 15px 15px 15px 15px;
     border-radius: var(--border-radius);
-    background-color: var(--background-color);
     font-size: 12px;
     color: #333;
-    text-shadow: 0 1px 0 #fff;
+    text-shadow: 0.3px 0.3px 0.5px #6391e6;
     font-weight: bold;
     padding: 2px 10px 2px 10px;
     overflow-y: auto;
+    background: radial-gradient(ellipse at top, #abc3d8, transparent), 
+    radial-gradient(ellipse at bottom, #8ba1b5, transparent);
+    background-color: #c7e8ee;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    box-shadow: 0 0 25px 10px rgba(151, 129, 129, 0.3);
+
+    backdrop-filter:blur(10px);
 }
 
 
@@ -116,9 +141,35 @@ footer {
     top: 95%;
     width: 100%;
     border-bottom: var(--border-color);
-    box-shadow: 10px 5px 5px var(--border-color);
+    box-shadow: 5px 5px 1px var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: rgba(248, 249, 250, 0.1);
+    width: 100%;
+    text-align: center;
+    text-shadow: none;
 }
 
+
+.beian {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.beian-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.beian-text {
+    font-size: 14px;
+    color: #333;
+}
 
 .back-center-button {
     position: absolute;

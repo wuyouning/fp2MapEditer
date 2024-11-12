@@ -8,7 +8,7 @@
     --z-index-sidebar: 50;
     --z-index-status-bar: 40;
     --z-index-main: 30;
-    --z-index-footer: 0;
+    --z-index-footer: 35;
 
     /* 尺寸变量 */
     --header-height: 80px;
@@ -48,7 +48,10 @@
     /* 弹窗出来 */
     --popup-background: radial-gradient(ellipse at top, #d8caca, transparent),
                             radial-gradient(ellipse at bottom, #81819542, transparent);
-
+    --top-background: radial-gradient(ellipse at top, #919ea9, transparent),
+    radial-gradient(ellipse at bottom, #eff4fa, transparent);
+    --top-button-background: radial-gradient(ellipse at left, #919ea9, transparent),
+    radial-gradient(ellipse at right, #eff4fa, transparent);
                             
 }
 
@@ -65,7 +68,7 @@
     z-index: var(--z-index-popup);
     position: fixed;
     left: 50%;
-    top: 50%;
+    top: 40%;
     transform: translateX(-50%);
     height: 20%;
     width: 20%;
@@ -76,6 +79,7 @@
     justify-content: center; 
     align-items: center;    
     text-align: center;
+    font-size: large;
 }
 .popup-content {
     margin-bottom: 10px;
@@ -92,9 +96,9 @@
 }
 
 .popup-error {
-    background-color: #f8d7da;
+    background-color: #f8d7dab5;
     color: #721c24;
-    border: 1px solid #f5c6cb;
+    border: 1px solid #f5c6cb73;
 }
 
 .popup-warning {

@@ -208,7 +208,6 @@ export class MainView {
                 //自动模式监测
                 
                 if (this.selectedBrush.autoBuildRegion) {
-                    console.log("排查-能触发自动建造")
                     this.showBuildRegionPopup();
                 }
 
@@ -243,7 +242,6 @@ export class MainView {
                     Region.createRegion(this.hexGrid, selectedBrush);
                     asideCard.updateBrushInfo();
                     initRegionsCard(hexGrid);
-                    hexGrid.saveLocal();
                 }
             );
         } else {
@@ -292,6 +290,7 @@ export class MainView {
         } else if (hex.type === '枢纽') {
             const infoArea = new HubCard(hex, this.infoCard);
             infoArea.updateCard();
+            console.log('无法建立枢纽卡片')
         } else {
             this.infoCard.style.display = 'none';
             return;

@@ -19,6 +19,11 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+// 生成一个新的 UUID
+app.get('/api/generate-uuid', (req, res) => {
+    const uuid = uuidv4(); 
+    res.status(200).json({ uuid }); // 将 UUID 作为 JSON 返回
+});
 
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
@@ -161,10 +166,10 @@ app.post('/api/change-username', (req, res) => {
 
 // 更新画布信息
 app.put('/api/update-hexgrid', (req, res) => {
-    const { hexGridId, ownerId, name, description, isPublic } = req.body;
+    const { hexgrid_id, ownerId: ownerId, hexgrid_name, description, is_public } = req.body;
 
     // 参数校验
-    if (!hexGridId) {
+    if (!hexgrid_id) {
         return res.status(400).json({ message: '缺少 hexGridId' });
     }
     if (ownerId === undefined) {
@@ -179,11 +184,11 @@ app.put('/api/update-hexgrid', (req, res) => {
             is_public = ?, 
             lastedit_at = NOW()
     `;
-    const updateParams = [name, description, isPublic];
+    const updateParams = [hexgrid_name, description, is_public];
 
     // 如果 ownerId 为 0，执行软删除逻辑（将 ownerId 设置为 -1）
     if (ownerId === 0) {
-        updateQuery += ', owner_id = -1';
+        updateQuery += ', owner_id = "deleted_user"';
     } else if (ownerId !== undefined) {
         // 如果 ownerId 不为 0 且存在，则更新 ownerId
         updateQuery += ', owner_id = ?';
@@ -192,9 +197,9 @@ app.put('/api/update-hexgrid', (req, res) => {
 
     // 最终通过 hexGridId 进行更新
     updateQuery += ' WHERE hexGrid_id = ?';
-    updateParams.push(hexGridId);
+    updateParams.push(hexgrid_id);
 
-    pool.query(updateQuery, updateParams, (err, result) => {  // 更正为 pool.query 而不是 connection.query
+    pool.query(updateQuery, updateParams, (err, result) => {  
         if (err) {
             console.error('更新 HexGrid 数据时出错：', err);
             return res.status(500).json({ message: '更新 HexGrid 数据时出错' });
@@ -221,36 +226,47 @@ app.post('/api/save-hexgrid', (req, res) => {
     const lasteditAt = createdAt;
 
     // 生成 hexGridId
-    const hexGridId = uuidv4();
+    const hexgrid_id = uuidv4();
 
     pool.query(
         `INSERT INTO hexgrid
         (hexGrid_id, owner_id, hexSize, maxRadius, hexgrid_name, description, created_at, lastedit_at, is_public) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [hexGridId, ownerId, hexSize, maxRadius, name, description, createdAt, lasteditAt, isPublic],
+        [hexgrid_id, ownerId, hexSize, maxRadius, name, description, createdAt, lasteditAt, isPublic],
         (err, result) => {
             if (err) {
                 console.error('保存 HexGrid 数据时出错：', err);
                 return res.status(500).json({ message: '保存 HexGrid 数据时出错' });
             }
-            return res.status(201).json({ message: 'HexGrid 保存成功', hexGridId });
+            return res.status(201).json({ message: 'HexGrid 保存成功', hexgrid_id: hexgrid_id });
         }
     );
 });
 
 // 保存格子信息
 app.post('/api/save-hex', (req, res) => {
-    const { hexgridId, q, r, s, brush, region, type } = req.body;
+    const { hexgrid_id, q, r, s, brush, region, type } = req.body;
+
+    // 调试日志 - 打印接收到的字段
+    console.log('Received Data:', { hexgrid_id, q, r, s, brush, region, type });
+
     // 参数校验
-    if (!hexgridId || q === undefined || r === undefined || s === undefined || !brush) {
-        return res.status(400).json({ message: '缺少必要的字段' });
+    if (!hexgrid_id || q === undefined || r === undefined || s === undefined || !brush) {
+        // 打印缺少的字段，帮助排查问题
+        console.log('检查字段 - hexgrid_id:', hexgrid_id);
+        console.log('检查字段 - q:', q);
+        console.log('检查字段 - r:', r);
+        console.log('检查字段 - s:', s);
+        console.log('检查字段 - brush:', brush);
+
+        return res.status(400).json({ message: `缺少必要的字段 - 存在? ${hexgrid_id ? '是' : '否'}` });
     }
 
     pool.query(
         `INSERT INTO hexes 
         (hexgrid_id, q, r, s, brush, region, type) 
         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [hexgridId, q, r, s, brush, region, type],
+        [hexgrid_id, q, r, s, brush, region, type],
         (err, result) => {
             if (err) {
                 console.error('保存 Hex 数据时出错：', err);
@@ -335,6 +351,7 @@ app.get('/api/hexes/:hexgrid_id', (req, res) => {
         res.status(500).json({ message: '网络错误'});
     }
 });
+
 
 
 /**

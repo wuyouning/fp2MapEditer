@@ -13,7 +13,6 @@ export class Region {
             
         } else {
             this.name = name;
-            consele.log(`生成的名字,${this.name}`);
         }
 
         this.effectHubs = new Set(); // 传输效应区域，检验计算正确与否
@@ -152,7 +151,7 @@ export class Region {
         // 更新 selectedBrush 中的待扩展 hexes 为一个新的 Set，以避免共享引用
         selectedBrush.pedingHexes = new Set(pedingHexes);
         initRegionsCard(hexGrid);
-        mainView.hexGrid.saveLocal();
+        hexGrid.saveLocal();
 
     }
 
