@@ -5,6 +5,7 @@
     align-items: center;
     padding: 5px 0px;
     margin: 0px 0px 5px 0px;
+    gap: 15PX;
 }
 
 
@@ -17,7 +18,7 @@
     border: 1px solid #ccc;
     border-radius: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    text-shadow: 0 1px 0 #fff;
+    text-shadow: 0 0.3px 0 #ffffff6d;
     position: relative;
     font-weight: bold;
     cursor: pointer;
@@ -36,7 +37,7 @@
 
   .main-styled-button:hover {
     background: linear-gradient(to bottom, #f2f2f2, #e3d6a8);
-    border: 2px double var(--accent-color);
+    /* border: 2px double var(--accent-color); */
   }
 
   .brush-text-content {

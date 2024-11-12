@@ -1,9 +1,12 @@
 import { SliderToggleButton } from '../Component/buttonComponent.js'
 import { hexGrid } from './../main/module.js';
 import { asideCard } from '../index.js';
+import { loadingSpinner } from '../index.js';
+
 class SaveModelView {
     constructor() {
         this.messageElement = null;
+        this.saveModel = null;
     }
 
     create() {
@@ -37,15 +40,14 @@ class SaveModelView {
         desp.placeholder = "请输入描述，可以为空";
 
         // 创建按钮区域和信息提示
-        let buttonArea;
-        const hexGridId = localStorage.getItem('hexGridId');
-        console.log('请求出来的hexGrid是？',hexGridId)
-        if (hexGridId) {
-            buttonArea = this.createButtonArea2();
-        } else {
-            buttonArea = this.createButtonArea();
-            console.log('Area1我来执行')
-        }
+        // let buttonArea;
+        // const isNewGrid = localStorage.getItem('isNewGrid');
+        // console.log('现在的画布是什么状态',isNewGrid);
+        // if (isNewGrid) {
+        //     buttonArea = this.createButtonArea();
+        // } else {
+        //     buttonArea = this.createButtonArea2();
+        // }
 
         // 创建并保存 message 元素的引用
         this.messageElement = document.createElement('p');
@@ -58,14 +60,31 @@ class SaveModelView {
         const isPubilBtn = new SliderToggleButton('save-model', '私有', '公开', hexGrid.isPublic, (isOn) => {
             hexGrid.isPublic = isOn; // 同步更新 hexGrid 的 isPublic 属性
         });
-        saveModel.append(this.messageElement, buttonArea)
+        saveModel.append(this.messageElement)
         // 将所有元素依次加入 saveModel
     }
 
     show() {
         const saveModel = document.getElementById('save-model');
         if (saveModel) {
-            saveModel.style.display = 'block'; // 或者直接 remove() 来移除元素
+            saveModel.style.display = 'block';
+
+            // 检查 `isNewGrid` 状态并动态创建或更新 buttonArea
+            const isNewGrid = localStorage.getItem('isNewGrid');
+            console.log('现在的画布是什么状态', isNewGrid);
+
+            let buttonArea = document.getElementById('button-area'); // 检查是否已有 buttonArea
+
+            if (buttonArea) {
+                buttonArea.remove(); // 删除旧的 buttonArea
+            }
+
+            // 根据 `isNewGrid` 状态创建新的 buttonArea
+            buttonArea = isNewGrid === 'true' ? this.createButtonArea() : this.createButtonArea2();
+            buttonArea.id = 'button-area';
+
+            // 添加新的 buttonArea 到 saveModel
+            saveModel.append(buttonArea);
         }
     }
 
@@ -92,18 +111,7 @@ class SaveModelView {
         const saveBtn = document.createElement('button');
         saveBtn.textContent = "保存";
         // 添加保存按钮的点击事件，更新属性后保存 HexGrid
-        saveBtn.addEventListener('click', async () => {
-            try {
-                // 先更新属性
-                await hexGrid.updateProperties();
-
-                // 然后保存 HexGrid
-                await hexGrid.save(true);
-            } catch (error) {
-                console.error('保存 HexGrid 数据时出错：', error);
-                this.showError(`保存 HexGrid 数据时出错：${error}`);
-            }
-        });
+        saveBtn.addEventListener('click', () => this.handleSaveClick(true));
     
 
         const cancelBtn = document.createElement('button');
@@ -125,43 +133,14 @@ class SaveModelView {
         saveBtn.textContent = "保存";
     
         // 添加保存按钮的点击事件，负责更新现有的 HexGrid
-        saveBtn.addEventListener('click', async () => {
-            try {
-                // 更新现有的 HexGrid
-                const saveSuccessful = await hexGrid.save(false);
-                if (saveSuccessful) {
-                    asideCard.updateBrushInfo();
-                    setTimeout(() => {
-                        this.hide();
-                    }, 6000);
-                }
-            } catch (error) {
-                console.error('保存 HexGrid 数据时出错：', error);
-                this.showError(`保存 HexGrid 数据时出错：${error}`);
-            }
-            
-        });
+        saveBtn.addEventListener('click', () => this.handleSaveClick(false));
     
         // 创建 "另存为" 按钮
         const saveAsBtn = document.createElement('button');
         saveAsBtn.textContent = "另存为";
     
         // 添加另存为按钮的点击事件，负责创建一个新的 HexGrid 并上传到服务器
-        saveAsBtn.addEventListener('click', async () => {
-            try {
-                // 另存为新的 HexGrid
-                const saveSuccessful = await hexGrid.save(true);
-                if (saveSuccessful) {
-                    asideCard.updateBrushInfo();
-                    setTimeout(() => {
-                        this.hide();
-                    }, 6000);
-                }
-            } catch (error) {
-                console.error('另存为 HexGrid 数据时出错：', error);
-                this.showError(`另存为 HexGrid 数据时出错：${error}`);
-            }
-        });
+        saveAsBtn.addEventListener('click', async () => this.handleSaveClick(true));
     
         const cancelBtn = document.createElement('button');
         cancelBtn.textContent = "取消";
@@ -171,6 +150,26 @@ class SaveModelView {
     
         buttonArea.append(saveBtn, saveAsBtn, cancelBtn);
         return buttonArea;
+    }
+
+    async handleSaveClick(isSaveAsNew) {
+        try {
+            loadingSpinner.show();
+            const saveSuccessful = await hexGrid.save(isSaveAsNew);
+            
+            if (saveSuccessful) {
+                asideCard.updateBrushInfo();
+                setTimeout(() => {
+                    this.hide();
+                }, 6000);
+            }
+        } catch (error) {
+            const errorMessage = isSaveAsNew ? '另存为 HexGrid 数据时出错：' : '保存 HexGrid 数据时出错：';
+            console.error(errorMessage, error);
+            this.showError(`${errorMessage}${error}`);
+        } finally {
+            loadingSpinner.hide();
+        }
     }
 
 }

@@ -100,3 +100,9 @@
   .regionCard-DetailExpandArea {
     flex-direction: column;
   }
+
+  #hexgrid-toggle-btn{
+    margin-bottom: 0px;
+    width: 140px;
+    font-size: 0.8em;
+  }

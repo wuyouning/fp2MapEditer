@@ -174,7 +174,7 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
 
 
     try {
-        new CustomSlider(
+        hexGrid.hexSizeSlider = new CustomSlider(
             "brushToolCard",   // 容器ID
             "格子尺寸:",      // 文字说明
             24,                   // 最小值
@@ -190,7 +190,7 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     }
 
     try {
-        new CustomSlider(
+        hexGrid.maxRadiusSlider = new CustomSlider(
             "brushToolCard",   // 容器ID
             "最大半径:",      // 文字说明
             1,                   // 最小值

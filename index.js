@@ -5,6 +5,8 @@ import { AsideCard } from "./Component/aside.js";
 import { TestDashboardView } from "./TESTdashboard.js"
 import { userLoginView } from "./Component/loginView.js"
 import { saveModelView } from "./Component/saveModelView.js";
+import { LoadingSpinner } from "./Component/loadingSpinner.js";
+import { hexGrid } from "./main/module.js";
 //画布组
 export let mainView;
 
@@ -22,12 +24,16 @@ asideCard.initCard();
 export let testDashboardView = new TestDashboardView(mainView);
 
 // 返回中心
-centerbutton(mainView);
+
+
 
 //窗口调整会被拉回画布中心
 window.onload = () => {
     mainView.updateCanvasOrigin(); // 设置绘制原点在画布中心
     mainView.scrollToCenter(); // 确保视窗显示在绘制原点位置
+
+    hexGrid.initializeHexGrid();
+
 };
 
 window.onresize = () => {
@@ -40,24 +46,18 @@ window.onresize = () => {
 
 //用户弹窗
 userLoginView.toggleVisibility();
-
 saveModelView.create();
 saveModelView.hide();
 
-function centerbutton(mainView) {
-    const centerButton = document.getElementById('back-center-button');
-    centerButton.classList.add('back-center-button');
-    centerButton.innerText = '返回原点';
+// 创建加载指示器实例
+export const loadingSpinner = new LoadingSpinner();
+// 将加载指示器元素添加到页面中
+document.body.appendChild(loadingSpinner.getElement());
 
-    centerButton.addEventListener('click', () => {
-        console.log("回城按钮被按");
-        mainView.scrollToCenter();
-        centerButton.classList.remove('activated');
-        console.log("回城完毕");
+import { Popup } from "./Component/loadingSpinner.js";
+export const popup = new Popup();
+// popup.show("爱你哦",'progress',0,'default')
 
-    });
-
-}
 
 
 

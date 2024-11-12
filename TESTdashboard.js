@@ -1,297 +1,129 @@
 export class TestDashboardView {
     constructor(main) {
         this.main = main;
-        this.testButton();
-        this.BrushInfo();
+        this.initDashboard();
     }
 
+    initDashboard() {
+        const testDashboard = document.getElementById('testDashboard');
+        this.createButton(testDashboard, '打印Brush', () => this.displayBrushInfo(testDashboard));
+        this.createButton(testDashboard, '打印hexGrid', () => this.displayHexGridInfo(testDashboard));
+        this.createButton(testDashboard, '打印hexGrid 筛选范围', () => this.displayHexGridSimpleInfo(testDashboard));
+        this.createButton(testDashboard, '打印Hubs', () => this.displayHubsInfo(testDashboard));
+        this.createButton(testDashboard, '打印region', () => this.displayRegionInfo(testDashboard));
+        this.createButton(testDashboard, '打印region显示材料', () => this.displayRegionDetails(testDashboard));
+        this.createButton(testDashboard, '打印本次存储的hexgrid', () => this.displayLocationHexGrid(testDashboard));
+    }
 
+    displayBrushInfo(parentElement) {
+        const brushInfoContent = this.createDashboardSection(parentElement, '打印Brush 信息', '清除Brush', () => this.cleanMe(brushInfoContent));
+        
+        const brushInfo = [
+            `笔刷形态: ${this.main.selectedBrush.name}`,
+            `自动建造模式: ${this.main.autoBuildRegion ? "开" : "关"}`,
+            `拓展模式: ${this.main.isExpandRegion ? "开" : "关"}`,
+            `等待中的六边形数: ${this.main.selectedBrush.pedingHexes.size}`
+        ];
+        
+        brushInfo.forEach(info => {
+            const infoElement = document.createElement('div');
+            infoElement.textContent = info;
+            brushInfoContent.appendChild(infoElement);
+        });
 
-    BrushInfo() {
-        const testDashboard = document.getElementById('testDashboard')
-        const brushInfoContent = document.createElement('div')
-        testDashboard.appendChild(brushInfoContent);
-
-
-
-        const fengexian = document.createElement('h1');
-        fengexian.textContent = `-------------------}`
-        brushInfoContent.appendChild(fengexian);
-
-        const cleanhexGridInfoSimapleButton = document.createElement('button');
-        cleanhexGridInfoSimapleButton.textContent = '清除brushInfo';
-        cleanhexGridInfoSimapleButton.onclick = () => {
-            this.cleanMe(brushInfoContent);
-        };
-        brushInfoContent.appendChild(cleanhexGridInfoSimapleButton);
-
-        const selectedBrush = document.createElement('div');
-        selectedBrush.textContent = `笔刷形态 ${this.main.selectedBrush.name}`
-        brushInfoContent.appendChild(selectedBrush);
-
-        const autoBuildRegion = document.createElement('div');
-        let autoBuildRegiontEXT = this.main.autoBuildRegion ? "开" : '关'
-        autoBuildRegion.textContent = `自动建造模式 ${autoBuildRegiontEXT}`
-        brushInfoContent.appendChild(autoBuildRegion);
-
-        const isExpandRegion = document.createElement('div');
-        let isExpandRegionText = this.main.isExpandRegion ? "开" : '关'
-        isExpandRegion.textContent = `拓展模式 ${isExpandRegionText}`
-        brushInfoContent.appendChild(isExpandRegion);
-
-        // 创建并显示 pedingHexes 中的所有元素
-        const pendingHexesContainer = document.createElement('div');
-        pendingHexesContainer.textContent = `正在等待的六边形数: ${this.main.selectedBrush.pedingHexes.size}`;
-
-        // 遍历 Set 中的元素并逐个显示
         this.main.selectedBrush.pedingHexes.forEach((hex, index) => {
             const hexElement = document.createElement('div');
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hex)}`;  // 假设 hex 是一个对象，如果是其他类型的数据，改成相应的格式
-            pendingHexesContainer.appendChild(hexElement);
-        });
-
-
-        brushInfoContent.appendChild(pendingHexesContainer);
-    };
-
-    hexGridInfo() {
-        const testDashboard = document.getElementById('testDashboard')
-        const hexGridInfoContent = document.createElement('div');
-        testDashboard.appendChild(hexGridInfoContent);
-
-        const fengexian = document.createElement('h1');
-        fengexian.textContent = `-------------------}`
-        hexGridInfoContent.appendChild(fengexian);
-
-        const cleanhexGridInfoSimapleButton = document.createElement('button');
-        cleanhexGridInfoSimapleButton.textContent = '清除hexGrid';
-        cleanhexGridInfoSimapleButton.onclick = () => {
-            this.cleanMe(hexGridInfoContent);
-        };
-        hexGridInfoContent.appendChild(cleanhexGridInfoSimapleButton);
-
-        const pendingHexesContainer = document.createElement('div');
-        pendingHexesContainer.textContent = `hexGrid存储的六边形数: ${this.main.hexGrid.hexes.size}`;
-
-        this.main.hexGrid.hexes.forEach((hex, index) => {
-            const hexElement = document.createElement('div');
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hex)}`;  // 假设 hex 是一个对象，如果是其他类型的数据，改成相应的格式
-            pendingHexesContainer.appendChild(hexElement);
-        });
-
-        hexGridInfoContent.appendChild(pendingHexesContainer);
-    };
-
-    hexGridInfoSimaple() {
-        const testDashboard = document.getElementById('testDashboard');
-        const hexGridfilterContent = document.createElement('div');
-        testDashboard.appendChild(hexGridfilterContent);
-    
-        const hexeslist = document.createElement('div');
-        hexeslist.textContent = `---------------明确的分割线 打印筛选范围------------------`;
-        hexGridfilterContent.appendChild(hexeslist);
-        
-        const cleanhexGridInfoSimapleButton = document.createElement('button');
-        cleanhexGridInfoSimapleButton.textContent = '清除hexGrid简单筛选';
-        cleanhexGridInfoSimapleButton.onclick = () => {
-            this.cleanMe(hexGridfilterContent);
-        };
-        hexGridfilterContent.appendChild(cleanhexGridInfoSimapleButton);
-
-        this.main.hexGrid.hexes.forEach((hex, index) => {
-            // 如果 hex 的 brush 是 '擦除'，则跳过该 hex
-            if (hex.brush === '擦除' && hex.type === '空白' && hex.regionBelond === null) {
-                return; // 跳过当前 hex
-            }
-    
-            // 仅显示 id, brush, regionbelond, 和 type 属性
-            const hexElement = document.createElement('div');
-            const hexInfo = {
-                id: hex.id,
-                brush: hex.brush,
-                regionbelond: hex.regionBelond,
-                type: hex.type
-            };
-    
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
-            hexGridfilterContent.appendChild(hexElement);
+            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hex)}`;
+            brushInfoContent.appendChild(hexElement);
         });
     }
 
-    hubsContent() {
-        const testDashboard = document.getElementById('testDashboard');
-        const HubsContent = document.createElement('div');
-        testDashboard.appendChild(HubsContent);
-    
-        const hexeslist = document.createElement('div');
-        hexeslist.textContent = `---------------明确的分割线 打印筛选范围------------------`;
-        HubsContent.appendChild(hexeslist);
-        
-        const cleanhexGridInfoSimapleButton = document.createElement('button');
-        cleanhexGridInfoSimapleButton.textContent = '清除Hubs';
-        cleanhexGridInfoSimapleButton.onclick = () => {
-            this.cleanMe(HubsContent);
-        };
-        HubsContent.appendChild(cleanhexGridInfoSimapleButton);
+    displayHexGridInfo(parentElement) {
+        const hexGridInfoContent = this.createDashboardSection(parentElement, '打印hexGrid 信息', '清除hexGrid', () => this.cleanMe(hexGridInfoContent));
+
+        const hexCountText = `hexGrid存储的六边形数: ${this.main.hexGrid.hexes.size}`;
+        const hexCountElement = document.createElement('div');
+        hexCountElement.textContent = hexCountText;
+        hexGridInfoContent.appendChild(hexCountElement);
+
+        this.main.hexGrid.hexes.forEach((hex, index) => {
+            const hexElement = this.createHexInfoElement(index, hex);
+            hexGridInfoContent.appendChild(hexElement);
+        });
+    }
+
+    displayHexGridSimpleInfo(parentElement) {
+        const hexGridSimpleContent = this.createDashboardSection(parentElement, '打印hexGrid 筛选范围', '清除hexGrid简单筛选', () => this.cleanMe(hexGridSimpleContent));
+
+        this.main.hexGrid.hexes.forEach((hex, index) => {
+            if (hex.brush === '擦除' && hex.type === '空白' && hex.regionBelond === null) return;
+            const hexElement = this.createHexInfoElement(index, hex);
+            hexGridSimpleContent.appendChild(hexElement);
+        });
+    }
+
+    displayHubsInfo(parentElement) {
+        const hubsContent = this.createDashboardSection(parentElement, '打印Hubs 信息', '清除Hubs', () => this.cleanMe(hubsContent));
 
         this.main.hexGrid.hubs.forEach((hex, index) => {
-    
-            // 仅显示 id, brush, regionbelond, 和 type 属性
-            const hexElement = document.createElement('div');
-            const hexInfo = {
-                id: hex.id,
-                brush: hex.brush,
-                regionbelond: hex.regionBelond,
-                type: hex.type
-            };
-    
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
-            HubsContent.appendChild(hexElement);
+            const hexElement = this.createHexInfoElement(index, hex);
+            hubsContent.appendChild(hexElement);
         });
     }
 
-    consoleRegions() {
-        const testDashboard = document.getElementById('testDashboard');
-
-        const regionContent = this.createDashboardSection(
-            testDashboard,
-            '---------------明确的分割线 打印筛选范围------------------',
-            '清除region',
-            (container) => this.cleanMe(container)
-        );
+    displayRegionInfo(parentElement) {
+        const regionContent = this.createDashboardSection(parentElement, '打印region 信息', '清除region', () => this.cleanMe(regionContent));
 
         this.main.hexGrid.regions.forEach((region, index) => {
-    
-            // 仅显示 id, brush, regionbelond, 和 type 属性
-            const hexElement = document.createElement('div');
-            const hexInfo = {
-                id: region.name,
+            const regionElement = document.createElement('div');
+            regionElement.textContent = `Region ${index + 1}: ${JSON.stringify({
+                name: region.name,
                 type: region.type,
-                count: region.hexes.size,
-                hexes: region.hexes,
-                邻居情况: region.getNeighborHex().length,
-            };
-    
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
-            regionContent.appendChild(hexElement);
+                hexCount: region.hexes.size,
+                neighborCount: region.getNeighborHex().length
+            })}`;
+            regionContent.appendChild(regionElement);
 
-            // 遍历 region.hexes 中的每个 hex
-            region.hexes.forEach((hex) => {
+            region.hexes.forEach(hex => {
                 const hexElement = document.createElement('div');
-                const hexInfo = {
+                hexElement.textContent = ` - Hex: ${JSON.stringify({
                     id: hex.id,
-                    笔刷: hex.brush,
-                    归属区域: hex.regionBelond,
-                    类型: hex.type
-                };
-                
-                hexElement.textContent = `  - Hex: ${JSON.stringify(hexInfo)}`;
+                    brush: hex.brush,
+                    regionBelond: hex.regionBelond,
+                    type: hex.type
+                })}`;
                 regionContent.appendChild(hexElement);
             });
         });
-
     }
 
-    consoleRegionsMore() {
-        const testDashboard = document.getElementById('testDashboard');
-        const regionContent = this.createDashboardSection(
-            testDashboard,
-            '---------------明确的分割线 打印筛选范围------------------',
-            '清除region',
-            (container) => this.cleanMe(container)
-        );
+    displayRegionDetails(parentElement) {
+        const regionDetailsContent = this.createDashboardSection(parentElement, '打印region 显示材料', '清除region', () => this.cleanMe(regionDetailsContent));
 
         this.main.hexGrid.regions.forEach((region, index) => {
-    
-            // 仅显示 id, brush, regionbelond, 和 type 属性
-            const hexElement = document.createElement('div');
-            const hexInfo = {
+            const regionDetail = {
                 id: region.name,
                 内效存储区: region.innerEffectArea,
                 内效区: region.getInnerEffectArea(),
                 内效细节: region.getInnerEffectDetailList(),
                 内销分类: region.getInnerEffectCountList(),
-                内效总计: region.getTotalInnerEffects(),
+                内效总计: region.getTotalInnerEffects()
             };
-    
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
-            regionContent.appendChild(hexElement);
+            const regionElement = document.createElement('div');
+            regionElement.textContent = `Region ${index + 1}: ${JSON.stringify(regionDetail)}`;
+            regionDetailsContent.appendChild(regionElement);
         });
-
     }
 
-    consoleRegionsNebohor() {
-        const testDashboard = document.getElementById('testDashboard');
-
-        const regionContent = this.createDashboardSection(
-            testDashboard,
-            '---------------明确的分割线 打印筛选范围------------------',
-            '清除region',
-            (container) => this.cleanMe(container)
-        );
-
-        this.main.hexGrid.regions.forEach((region, index) => {
-    
-            // 仅显示 id, brush, regionbelond, 和 type 属性
-            const hexElement = document.createElement('div');
-            const hexInfo = {
-                id: region.name,
-                type: region.type,
-                count: region.hexes.size,
-                hexes: region.hexes,
-                邻居情况: region.getNeighborHex().length,
-            };
-    
-            hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify(hexInfo)}`;
-            regionContent.appendChild(hexElement);
-
-            // 遍历 region.hexes 中的每个 hex
-            region.hexes.forEach((hex) => {
-                const hexElement = document.createElement('div');
-                const hexInfo = {
-                    id: hex.id,
-                    笔刷: hex.brush,
-                    归属区域: hex.regionBelond,
-                    类型: hex.type
-                };
-                
-                hexElement.textContent = `  - Hex: ${JSON.stringify(hexInfo)}`;
-                regionContent.appendChild(hexElement);
-            });
-        });
-
-    }
-
-
-    testButton() {
-        const testDashboard = document.getElementById('testDashboard')
-        this.createButton(testDashboard, '打印Brush', () => this.BrushInfo());
-        this.createButton(testDashboard, '打印hexGrid', () => this.hexGridInfo());
-        this.createButton(testDashboard, '打印hexGrid 筛选范围', () => this.hexGridInfoSimaple());
-        this.createButton(testDashboard, '打印Hubs', () => this.hubsContent());
-        this.createButton(testDashboard, '打印region', () => this.consoleRegions());
-        this.createButton(testDashboard, '打印region显示材料', () => this.consoleRegionsMore());
-    }
-
-    cleanMe(content) {
-        content.innerHTML = '';
-    }
-
-
-    createDashboardSection(parentElement, sectionText, buttonText, buttonCallback) {
-        const sectionContainer = document.createElement('div');
-        parentElement.appendChild(sectionContainer);
-    
-        const sectionContent = document.createElement('div');
-        sectionContent.textContent = sectionText;
-        sectionContainer.appendChild(sectionContent);
-    
-        const actionButton = document.createElement('button');
-        actionButton.textContent = buttonText;
-        actionButton.onclick = () => buttonCallback(sectionContainer);
-        sectionContainer.appendChild(actionButton);
-    
-        return sectionContainer;
+    createHexInfoElement(index, hex) {
+        const hexElement = document.createElement('div');
+        hexElement.textContent = `第 ${index + 1} 个六边形: ${JSON.stringify({
+            id: hex.id,
+            brush: hex.brush,
+            regionBelond: hex.regionBelond,
+            type: hex.type
+        })}`;
+        return hexElement;
     }
 
     createButton(parentElement, buttonText, onClickCallback) {
@@ -300,5 +132,59 @@ export class TestDashboardView {
         button.onclick = onClickCallback;
         parentElement.appendChild(button);
         return button;
+    }
+
+    displayLocationHexGrid(parentElement) {
+        // 使用变量接收 createDashboardSection 的返回值
+        const locationHexGridContent = this.createDashboardSection(
+            parentElement,
+            '打印region 显示材料',
+            '清除region',
+            () => this.cleanMe(locationHexGridContent) // 使用 locationHexGridContent 作为参数
+        );
+    
+        const hexGridData = localStorage.getItem('hexgrid_data');
+        
+        if (hexGridData) {
+            const parsedData = JSON.parse(hexGridData);
+    
+            const properties = [
+                { label: "画布名称", value: parsedData.name || "规划师的得意之作" },
+                { label: "描述", value: parsedData.description || "" },
+                { label: "是否公开", value: parsedData.isPublic ? "公开" : "私有" },
+                { label: "所有者 ID", value: parsedData.ownerId || "" },
+                { label: "画布 ID", value: parsedData.hexgrid_id || "" }
+            ];
+    
+            properties.forEach(prop => {
+                const propertyElement = document.createElement('div');
+                propertyElement.textContent = `${prop.label}: ${prop.value}`;
+                locationHexGridContent.appendChild(propertyElement);
+            });
+        } else {
+            const noDataElement = document.createElement('div');
+            noDataElement.textContent = "没有找到画布数据";
+            locationHexGridContent.appendChild(noDataElement);
+        }
+    }
+
+    cleanMe(content) {
+        content.innerHTML = '';
+    }
+
+    createDashboardSection(parentElement, sectionTitle, buttonText, buttonCallback) {
+        const sectionContainer = document.createElement('div');
+        
+        const sectionTitleElement = document.createElement('div');
+        sectionTitleElement.textContent = `---- ${sectionTitle} ----`;
+        sectionContainer.appendChild(sectionTitleElement);
+        
+        const actionButton = document.createElement('button');
+        actionButton.textContent = buttonText;
+        actionButton.onclick = () => buttonCallback(sectionContainer);
+        sectionContainer.appendChild(actionButton);
+        
+        parentElement.appendChild(sectionContainer);
+        return sectionContainer;
     }
 }

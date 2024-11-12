@@ -4,6 +4,8 @@ import { Region } from "../main/modules/Region.js";
 import {initRegionsCard } from "../Component/regionInfoCard.js"
 import { saveModelView } from "./saveModelView.js";
 import { selectedBrush } from "../main/module.js";
+import { Popup } from "./loadingSpinner.js";
+import { mainView } from "../index.js";
 
 export class AsideCard {
     constructor(brush, layers, hexGrid) {
@@ -12,6 +14,7 @@ export class AsideCard {
         this.title = '施工面板';
         this.hexGrid = hexGrid;
         this.brushModeButton = null;
+        this.loadingPopup = new Popup();
     }
 
     initCard() {
@@ -50,20 +53,52 @@ export class AsideCard {
         gridBtnContainer.classList.add("main-button-container")
         asideCard.appendChild(gridBtnContainer);
 
+
+
+        const backCenterButton = new MainStyledButton(
+            gridBtnContainer,
+            "原点",
+            () => { 
+                mainView.scrollToCenter();
+            },
+            
+        );
+
         const saveHexGridButton = new MainStyledButton(
             gridBtnContainer,
-            "保存规划",
+            "保存",
             () => { saveModelView.show(); },
+            
+        );
+
+        const createHexGridButton = new MainStyledButton(
+            gridBtnContainer,
+            "新建",
+            () => { this.loadingPopup.show(
+                    '新建后删除原有数据,请谨慎',
+                    'warning',
+                    0,
+                    '确认',
+                    async () => {
+                        this.layers.clearAllLayers();
+                        await this.hexGrid.createHexGrid();
+                        initRegionsCard(this.hexGrid);
+                        this.updateBrushInfo();
+                    }
+            ) },
             
         );
 
         const cleanHexGridButton = new MainStyledButton(
             gridBtnContainer,
-            "清除画布",
+            "清除",
             () => { 
-                this.layers.clearAllLayers(); 
-                this.hexGrid.cleanGrid(this.brush);
+                this.layers.clearAllLayers();
+                this.hexGrid.cleanGrid(); //内存空
                 initRegionsCard(this.hexGrid);
+                //本地空
+                localStorage.removeItem('hexgrid_data');
+                localStorage.removeItem('hexes_data');
             },
             
         );

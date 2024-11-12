@@ -21,6 +21,7 @@ export class MainView {
 
         this.hexGrid = hexGrid;
         this.hexGrid.drawHexagons();
+
         // 绑定事件监听器
         this.addCanvasListeners();
 
@@ -202,14 +203,16 @@ export class MainView {
                     }
                 }
                 asideCard.updateBrushInfo();
-
+                hexGrid.saveLocal();
 
                 //自动模式监测
                 
                 if (this.selectedBrush.autoBuildRegion) {
-                    console.log("排查-能触发自动建造")
                     this.showBuildRegionPopup();
                 }
+
+                //存储本地
+
             }
             this.isDragging = false; // 重置拖动状态
         });
@@ -217,11 +220,9 @@ export class MainView {
 
     showBuildRegionPopup() {
         const count = selectedBrush.pedingHexes.size;
-        console.log('我是格子数', count);
     
         // 初始化 lastCount，如果没有定义则为 0
         const lastCount = selectedBrush.lastCount || 0;
-        console.log('我是之前格子数', lastCount);
     
         // 创建 popup 实例，如果尚未存在
         if (!this.popup) {
@@ -229,7 +230,7 @@ export class MainView {
         }
         //   很麻烦
     
-        // 检查是否为逐个增加的情况
+        // 检查是否为逐个增加的情况 新建区域 
         if ([6, 9, 12].includes(count) && count === lastCount + 1) {
             console.log('可以执行的');
             this.popup.show(
@@ -289,6 +290,7 @@ export class MainView {
         } else if (hex.type === '枢纽') {
             const infoArea = new HubCard(hex, this.infoCard);
             infoArea.updateCard();
+            console.log('无法建立枢纽卡片')
         } else {
             this.infoCard.style.display = 'none';
             return;

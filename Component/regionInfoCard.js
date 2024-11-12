@@ -1,3 +1,5 @@
+import { hexGrid } from "../main/module.js";
+
 export class RegionInfoCard { 
     constructor(region, regionsCard) { 
         this.region = region; 
@@ -67,21 +69,23 @@ export class RegionInfoCard {
         // 最后将父容器添加到主内容
         content.appendChild(detailExpandContent);
 
-        // 创建扩展按钮
-        const expandBtn = document.createElement('button'); 
-        expandBtn.textContent = `更多信息`; 
-        expandBtn.classList.add('region-styled-button');
+        // 创建扩展按钮（仅当 hubDetailList 和 innerEffectDetailList 有内容时显示）
+        if (this.hubDetailList.length > 0 || this.innerEffectDetailList.length > 0) {
+            const expandBtn = document.createElement('button'); 
+            expandBtn.textContent = `更多信息`; 
+            expandBtn.classList.add('region-styled-button');
 
-        // 使用布尔变量管理按钮状态
-        let isExpanded = false;
-        expandBtn.addEventListener('click', () => {
-            isExpanded = !isExpanded;
-            detailExpandContent.style.display = isExpanded ? 'flex' : 'none';
-            expandBtn.textContent = isExpanded ? '收起' : '更多信息';
-        });
+            // 使用布尔变量管理按钮状态
+            let isExpanded = false;
+            expandBtn.addEventListener('click', () => {
+                isExpanded = !isExpanded;
+                detailExpandContent.style.display = isExpanded ? 'flex' : 'none';
+                expandBtn.textContent = isExpanded ? '收起' : '更多信息';
+            });
 
-        // 将按钮追加到内容中
-        content.appendChild(expandBtn);
+            // 将按钮追加到内容中
+            content.appendChild(expandBtn);
+        }
 
 
         // Append the complete content to regionsCard
@@ -282,7 +286,7 @@ function listArea(titleText, items, tagName) {
 } 
 
 export class HubCard {
-    constructor(hub) {
+    constructor(hub, regionsCard) {
         this.name = hub.regionBelond;
         this.type = hub.brush;
         this.hubEffect = hub.hubEffect;
@@ -356,7 +360,9 @@ export class HubCard {
 export function initRegionsCard(hexGrid) { 
     const regionsCard = document.getElementById('regionsCard'); 
     regionsCard.innerHTML= '';
-
+    const summaryCard = new SummaryCard(hexGrid);
+    const suCard = summaryCard.updateCard();
+    regionsCard.append(suCard);
     const regions = hexGrid.regions;
     regions.forEach(region => { 
         const regionCard = new RegionInfoCard(region, regionsCard); 
@@ -370,3 +376,33 @@ export function initRegionsCard(hexGrid) {
     });
 }
 
+class SummaryCard {
+    constructor(hexGrid) {
+        this.hexesGrid = hexGrid;
+        this.regionsCount = hexGrid.regions.size;
+        this.hubsCount = hexGrid.hubs.size;
+        this.hexes = hexGrid.hexes.size;
+        this.drawedHexes = hexGrid.drwaedHexCount();
+    }
+
+    updateCard() {
+        const content = document.createElement('div'); 
+        content.classList.add('regionInfoCard');
+        // 标题区
+        const title = document.createElement('h1'); 
+        title.textContent = `规划总计`;
+        title.classList.add('regioncard-region-title')
+        content.append(title); 
+
+        const regionsCountText = document.createElement('h2');
+        regionsCountText.textContent = `区域总数: ${this.regionsCount}`;
+        const hubsCountText = document.createElement('h2');
+        hubsCountText.textContent = `枢纽总数: ${this.hubsCount}`;
+        const hexes = document.createElement('h2');
+        hexes.textContent = `绘制 / 总格子数: ${this.drawedHexes} / ${this.hexes}`;
+
+        content.append(regionsCountText, hubsCountText, hexes);
+
+        return content;
+    }
+}

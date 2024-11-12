@@ -145,7 +145,7 @@ export class Hex {
         let newName = `${brush}-${index}`;
     
         // 使用 while 循环来确保 newName 是唯一的
-        while ([...hubs].some(hub => hub.region === newName)) {
+        while ([...hubs].some(hub => hub.regionBelond === newName)) {
             index++;
             newName = `${brush}-${index}`;
         }
