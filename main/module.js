@@ -408,7 +408,6 @@ export class HexGrid {
 
     setShowID(showID) {
         this.showID = showID;
-        // this.drawHexagons();
         // 显示画布
         if (!this.IdCanvas) {
             console.error("IdCanvas is undefined");
@@ -426,15 +425,14 @@ export class HexGrid {
 
     setShowLabel(showLabel) {
         this.showLabel = showLabel;
-        // this.drawHexagons();
         if (!this.labelCanvas) {
-            console.error("labelCanvas is undefined");
             return;
         }
         if (showLabel) {
             this.labelCanvas.classList.remove("hidden");
             this.labelCanvas.classList.add("visible");
             this.drawHexagons();
+
         } else {
             this.labelCanvas.classList.remove("visible");
             this.labelCanvas.classList.add("hidden");
@@ -660,8 +658,6 @@ export class HexGrid {
             return;
         }
 
-        // 清空整个画布
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         // 如果没有区域或者标签不应该显示，则直接返回
         if (this.regions.size === 0 || !this.isShowLabel) {
             return;
@@ -1045,14 +1041,15 @@ export class HexGrid {
             if (hexesData) {
                 const parsedHexes = JSON.parse(hexesData);
                 this.organizeHexes(parsedHexes);
-                console.log('格子数据已成功从本地存储加载并组织。');
             } else {
+                //补充pop
                 console.log('未找到本地存储中的格子数据。');
             }
 
             this.drawHexagons(); // 调用渲染方法，更新视图
             return true;
         } catch (error) {
+            //TODO：补充pop
             console.error('从本地存储加载数据时出错:', error);
             return false;
         }
