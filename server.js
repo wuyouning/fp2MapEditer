@@ -12,7 +12,15 @@ const SALT_ROUNDS = 10;
 app.use(cors());
 app.use(express.json());
 
+const path = require('path');
 
+// 设置静态文件目录
+app.use(express.static(path.join(__dirname)));
+
+// 根路径路由，返回 index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 // 启动服务器
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
