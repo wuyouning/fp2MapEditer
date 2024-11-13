@@ -7,13 +7,10 @@ export class SuperSumCard {
 
     updateCard() {
         const hubsResult = this.processList(this.hubs, hub => hub.findHubsEffectedRegion.length);
-        console.log("hubsResult:", hubsResult);
 
         const regionsResult = this.processList(this.regions, region => region.totalHubsCount);
-        console.log("regionsResult:", regionsResult);
 
         const regionsEffectResult = this.processList(this.regions, region => region.innerEffectAreaCount);
-        console.log("regionsEffectResult:", regionsEffectResult);
 
         // 创建并插入卡片
         const hubsArea = this.numberListCard(hubsResult, '枢纽加成区域统计');
@@ -73,7 +70,6 @@ export class SuperSumCard {
         });
     
         container.append(title, listArea);
-        console.log("numberListCard 生成的容器:", container);
         return container;
     }
 
@@ -86,7 +82,6 @@ export class SuperSumCard {
         bottomArea.textContent = info.count;
 
         container.append(topArea, bottomArea);
-        console.log("numberInfoCard 生成的卡片:", container);
         return container;
     }
 

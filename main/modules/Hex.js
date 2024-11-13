@@ -2,7 +2,7 @@ import { brushMap } from "../module.js";
 import { mainView } from "../../index.js";
 import {initRegionsCard} from "../../Component/regionInfoCard.js"
 import { superSumCard } from "../../index.js";
-
+import { hexGrid } from "../module.js";
 export class Hex {
     constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size) {
         this.q = q;
@@ -163,6 +163,7 @@ export class Hex {
         this.type = '空白';
         this.regionBelond = null;
         //TODO: 更新画面
+        this.clearPolygon(mainView.labelCtx, hexGrid.layout)
     }
 
     clearRegion(hexGrid, selectedBrush) {
@@ -492,30 +493,32 @@ export class Hex {
     drawHexLabel(labelCtx, layout, isShowLabel) {
         // 计算六边形的中心位置
         const center = this.hexToPixel(layout);
-
+    
         // 清除当前六边形区域
-
-
-
         if (this.type === '属地') {
             this.clearPolygon(labelCtx, layout);
         }
+    
         // 如果 type 是空白，则不显示任何文本
         if (this.type === '空白' || this.type === '属地') {
             return;
-        } 
-
+        }
+    
         // 如果 isShowLabel 为 true，绘制文本
         if (isShowLabel) {
-            labelCtx.fillStyle = "rgb(74, 81, 57)";
+            // 根据 brushMap 获取对应的字体颜色
+            const brush = this.brush; // 假设 this.brush 包含当前的笔刷类型
+            const brushInfo = brushMap[brush];
+            const fontColor = brushInfo ? brushInfo.fontColor : 'rgb(74, 81, 57)';
+    
+            labelCtx.fillStyle = fontColor;
             labelCtx.font = `${Math.max(10, this.size / 3)}px Arial`; // 根据 size 调整字体大小
             labelCtx.textAlign = "center";
             labelCtx.textBaseline = "middle";
-            
+    
             // 如果 region 为 null，显示 "自由"，否则显示 region 信息
             const text = this.regionBelond === null ? "自由" : this.regionBelond;
             labelCtx.fillText(text, center.x, center.y);
-
         }
     }
 

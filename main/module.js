@@ -7,157 +7,178 @@ import { Region } from "./modules/Region.js";
 import { asideCard } from "../index.js";
 // import { Popup } from "../Component/loadingSpinner.js";
 import { initRegionsCard } from "../Component/regionInfoCard.js";
+import { handleBrushSelection } from "../Component/buttonComponent.js";
+
 export const brushMap = {
     '居住区': {
         color: 'rgb(118, 190, 186)',
         borderColor: 'rgb(198, 255, 215)',
         icon: '🏠',
         threshold: 12,
-        type: '自由'
+        type: '自由',
+        fontColor: 'black'
     },
     '食品区': {
         color: 'rgb(120, 146, 107)',
         borderColor: 'rgb(200, 230, 195)',
         icon: '🍽️',
         threshold: 9,
-        type: '自由'
+        type: '自由',
+        fontColor: 'white'
     },
     '开采区': {
         color: 'rgb(214, 201, 175)',
         borderColor: 'rgb(230, 250, 220)',
         icon: '⛏️',
         threshold: 9,
-        type: '自由'
+        type: '自由',
+        fontColor: 'black'
     },
     '工业区': {
         color: 'rgb(169, 125, 134)',
         borderColor: 'rgb(220, 210, 200)',
         icon: '🏭',
         threshold: 9,
-        type: '自由'
+        type: '自由',
+        fontColor: 'white'
     },
     '后勤区': {
         color: 'rgb(124, 192, 216)',
         borderColor: 'rgb(204, 252, 255)',
         icon: '🚚',
         threshold: 9,
-        type: '自由'
+        type: '自由',
+        fontColor: 'black'
     },
     '供热枢纽': {
-        color: 'rgb(204, 102, 0)', // 暖橙色，和工业区有一定关联性
+        color: 'rgb(204, 102, 0)',
         icon: '🔥',
         threshold: 1,
         type: '枢纽',
         allowArea: ['开采区', '工业区', '食品区', '后勤区', '居住区'],
         effect: '热能增加',
         effectValue: 40,
+        fontColor: 'white'
     },
     '维护枢纽': {
-        color: 'rgb(80, 80, 80)', // 深灰色，代表维护、修理的坚固感
+        color: 'rgb(80, 80, 80)',
         icon: '🔧',
         threshold: 1,
         type: '枢纽',
         allowArea: ['开采区', '工业区', '食品区', '后勤区', '居住区'],
         effect: '材料需求',
         effectValue: 40,
+        fontColor: 'white'
     },
     '铁路枢纽': {
-        color: 'rgb(99, 71, 54)', // 棕色，象征铁轨和土地
+        color: 'rgb(99, 71, 54)',
         icon: '🚂',
         threshold: 1,
         type: '枢纽',
         allowArea: ['开采区', '工业区', '食品区'],
         effect: '效率提升',
         effectValue: 15,
+        fontColor: 'white'
     },
     '交通枢纽': {
-        color: 'rgb(173, 216, 230)', // 浅蓝色，与天空的颜色相呼应
+        color: 'rgb(173, 216, 230)',
         icon: '✈️',
         threshold: 1,
         type: '枢纽',
         allowArea: ['开采区', '工业区', '食品区', '后勤区', '居住区'],
         effect: '劳动力需求',
         effectValue: 0.15,
+        fontColor: 'black'
     },
     '监控中心': {
-        color: 'rgb(183, 128, 154)', // 紫色，代表科技感和神秘
+        color: 'rgb(183, 128, 154)',
         icon: '📹',
         threshold: 1,
         type: '枢纽',
         allowArea: ['居住区'],
         effect: '犯罪下降',
         effectValue: 2,
+        fontColor: 'white'
     },
     '医疗中心': {
-        color: 'rgb(255, 188, 202)', // 红色，代表紧急医疗和紧急服务
+        color: 'rgb(255, 188, 202)',
         icon: '🚑',
         threshold: 1,
         type: '枢纽',
         allowArea: ['居住区'],
         effect: '医疗上升',
         effectValue: 2,
+        fontColor: 'black'
     },
     '交流中心': {
-        color: 'rgb(87, 131, 141)', // 深蓝色，代表沟通和稳定
+        color: 'rgb(87, 131, 141)',
         icon: '💬',
         threshold: 1,
         type: '枢纽',
         allowArea: ['居住区'],
         effect: '信任上升',
         effectValue: 2,
+        fontColor: 'white'
     },
     '格斗中心': {
-        color: 'rgb(165, 42, 42)', // 棕红色，象征力量和对抗
+        color: 'rgb(165, 42, 42)',
         icon: '🥊',
         threshold: 1,
         type: '枢纽',
         allowArea: ['居住区'],
         effect: '紧张下降',
         effectValue: 2,
+        fontColor: 'white'
     },
     '燃料储备': {
-        color: 'rgb(246, 210, 90)', // 橙色，象征燃料和能量
+        color: 'rgb(246, 210, 90)',
         icon: '⛽',
         threshold: 1,
         type: '枢纽',
         allowArea: ['开采区'],
         effect: '劳动力需求',
         effectValue: 0.10,
+        fontColor: 'black'
     },
     '材料储备': {
-        color: 'rgb(160, 82, 45)', // 棕色，代表材料和储存
+        color: 'rgb(160, 82, 45)',
         icon: '📦',
         threshold: 1,
         type: '枢纽',
         allowArea: ['开采区', '工业区'],
         effect: '劳动力需求',
         effectValue: 0.10,
+        fontColor: 'white'
     },
     '商品储备': {
-        color: 'rgb(78, 94, 69)', // 深绿色，象征产品和繁荣
+        color: 'rgb(78, 94, 69)',
         icon: '🏷️',
         threshold: 1,
         type: '枢纽',
         allowArea: ['工业区'],
         effect: '劳动力需求',
         effectValue: 0.10,
+        fontColor: 'white'
     },
     '食物储备': {
-        color: 'rgb(141, 147, 100)', // 金黄色，代表丰收和食物储存
+        color: 'rgb(141, 147, 100)',
         icon: '🥫',
         threshold: 1,
         type: '枢纽',
         allowArea: ['食品区'],
         effect: '劳动力需求',
         effectValue: 0.10,
+        fontColor: 'black'
     },
     '擦除': {
         color: '#ecf1fe',
         icon: '🗑️',
         threshold: 0,
-        type: '空白'
+        type: '空白',
+        fontColor: 'black'
     }
 }
+
 
 class Brush {
     constructor(name, autoBuildRegion = true, selectMode = false) {
@@ -250,12 +271,27 @@ class Brush {
     }
 
     expandMode(region) {
-        this.pedingHexes.clear();
+        this.name = region.type;
+    
         region.hexes.forEach(hex => {
             this.pedingHexes.add(hex);
         });
         this.selectMode = false;
         asideCard.updateBrushInfo();
+    
+        // 使用 data-key 来找到对应的按钮
+        const buttonElement = document.querySelector(`.square-button[data-key="${region.type}"]`);
+        console.log('笔刷元素:', buttonElement);
+    
+        // 如果找到对应的按钮元素，则调用 handleBrushSelection
+        if (buttonElement) {
+            handleBrushSelection(buttonElement, region.type, key => {
+                this.name = key;
+                asideCard.updateBrushInfo();
+            });
+        } else {
+            console.error(`未找到与类型 "${region.type}" 匹配的按钮`);
+        }
     }
 
 

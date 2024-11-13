@@ -69,6 +69,9 @@ export function createSquareColorButton(button, key, selectedKey, onBrushSelect)
     btnElement.className = 'square-button';
     btnElement.style.backgroundColor = button.color;
 
+    // 添加 data-key 属性，便于查找
+    btnElement.setAttribute('data-key', key);
+
     // 勾选色块 
     const checkmark = document.createElement('span');
     checkmark.className = 'checkmark';
@@ -83,18 +86,21 @@ export function createSquareColorButton(button, key, selectedKey, onBrushSelect)
         checkmark.style.display = 'none';
     }
 
-    btnElement.onclick = () => {
-        const previousSelected = document.querySelector('.square-button.selected');
-        if (previousSelected) {
-            previousSelected.classList.remove('selected');
-            previousSelected.querySelector('.checkmark').style.display = 'none';
-        }
-        onBrushSelect(key);
-        btnElement.classList.add('selected');
-        checkmark.style.display = 'block';
-    };
+    // 使用独立出来的点击处理逻辑
+    btnElement.onclick = () => handleBrushSelection(btnElement, key, onBrushSelect);
 
     return btnElement;
+}
+
+export function handleBrushSelection(buttonElement, key, onBrushSelect) {
+    const previousSelected = document.querySelector('.square-button.selected');
+    if (previousSelected) {
+        previousSelected.classList.remove('selected');
+        previousSelected.querySelector('.checkmark').style.display = 'none';
+    }
+    onBrushSelect(key);
+    buttonElement.classList.add('selected');
+    buttonElement.querySelector('.checkmark').style.display = 'block';
 }
 
 export class SliderToggleButton {
