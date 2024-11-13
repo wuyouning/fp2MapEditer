@@ -69,7 +69,6 @@ export class MainView {
         let isLeftMouseDown = false;
         let startX = 0;
         let startY = 0;
-        let dragCount = 0; // 拖动次数计数器
         let dragStartTime = null; // 拖动开始时间
 
         // 获取当前画布的偏移量
@@ -118,20 +117,7 @@ export class MainView {
                 isLeftMouseDown = false;
                 document.body.style.cursor = 'default'; // 恢复默认光标
 
-                    // 计算拖拽的时长
-                const dragDuration = Date.now() - dragStartTime;
 
-                // 更新拖动次数计数器
-                dragCount++;
-                const centerButton = document.getElementById('back-center-button');
-                // // 如果拖动时间超过 5 秒或拖动次数超过 3 次，激活按钮效果
-                if (dragDuration > 30000 || dragCount >= 9) {
-                    centerButton.classList.add('activated');
-                    dragCount = 0;
-                    setTimeout(() => {
-                        centerButton.classList.remove('activated');
-                    }, 8000);
-                }
             }
         });
 
