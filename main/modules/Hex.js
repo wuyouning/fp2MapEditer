@@ -1,6 +1,8 @@
 import { brushMap } from "../module.js";
 import { mainView } from "../../index.js";
 import {initRegionsCard} from "../../Component/regionInfoCard.js"
+import { superSumCard } from "../../index.js";
+
 export class Hex {
     constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size) {
         this.q = q;
@@ -152,6 +154,7 @@ export class Hex {
         this.regionBelond = newName;
         this.type = "枢纽";
         hubs.add(this); 
+        superSumCard.updateCard();
     }
     //清理格子
     clearHex(selectedBrush) {

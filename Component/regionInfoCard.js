@@ -406,3 +406,4 @@ class SummaryCard {
         return content;
     }
 }
+

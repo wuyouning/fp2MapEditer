@@ -41,6 +41,10 @@ export function initializeSliderCard(mainView) {
             width: '450px'
         },
         {
+            id: 'superSumCard',
+            width: '350px'
+        },
+        {
             id: 'announcement',
             width: '350px'
         },
@@ -80,6 +84,7 @@ export function initializeSliderCard(mainView) {
     initAnnouncementCard();
     userinfoView.init();
     userinfoView.updateInfoArea();
+
 }
 
 function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
@@ -96,7 +101,6 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
         if (selectedBrush.name !== key) {
             selectedBrush.name = key;
             asideCard.updateBrushInfo();
-            // updateDetectedHexListView();
         }
     }
 
