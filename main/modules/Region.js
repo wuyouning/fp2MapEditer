@@ -1,5 +1,6 @@
 import { mainView } from "../../index.js";
 import { initRegionsCard } from "../../Component/regionInfoCard.js";
+import { superSumCard } from "../../index.js";
 
 export class Region {
     constructor(name, hexes, type) {
@@ -74,6 +75,7 @@ export class Region {
         newRegion.drawRegionLabel(hexGrid.labelCtx);
         // TODO: 更新传导数据给其他区域和枢纽
     }
+
     // 创建与拓展 新建区域 重要主程
     static createRegion(hexGrid, selectedBrush) {
         // 获取待扩展的集合
@@ -150,7 +152,11 @@ export class Region {
     
         // 更新 selectedBrush 中的待扩展 hexes 为一个新的 Set，以避免共享引用
         selectedBrush.pedingHexes = new Set(pedingHexes);
+        mainView.hexGrid.hubs.forEach(hub => {
+            hub.updateEffectedRegions();
+        });
         initRegionsCard(hexGrid);
+        superSumCard.updateCard();
         hexGrid.saveLocal();
 
     }
@@ -780,7 +786,7 @@ export class Region {
 
         // 在路径的中心绘制文字
         this._drawCenteredText(ctx, path, this.name);
-        console.log('单个区域绘制完毕!')
+        
     }
 
     // 判断是否到达路径的尽头

@@ -1,6 +1,8 @@
 import { brushMap } from "../module.js";
 import { mainView } from "../../index.js";
 import {initRegionsCard} from "../../Component/regionInfoCard.js"
+import { superSumCard } from "../../index.js";
+
 export class Hex {
     constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size) {
         this.q = q;
@@ -152,6 +154,7 @@ export class Hex {
         this.regionBelond = newName;
         this.type = "枢纽";
         hubs.add(this); 
+        superSumCard.updateCard();
     }
     //清理格子
     clearHex(selectedBrush) {
@@ -279,15 +282,15 @@ export class Hex {
         if (hexGrid.showID) {
             this.drawId(hexGrid.IdCtx, hexGrid.layout, this.polygonCorners(hexGrid.layout));
         }
-                
+        if (this.type === '属地') {
+            this.drawHexEdges(hexGrid.edgeCtx, hexGrid.layout);
+        }
         // 判断是否绘制边缘或区域标签
         if (hexGrid.showLabel) {
             this.drawHexLabel(hexGrid.labelCtx, hexGrid.layout, hexGrid.showLabel);
-        }
-
-        if (this.type === '属地') {
-            this.drawHexEdges(hexGrid.edgeCtx, hexGrid.layout);
         } 
+
+
     }
 
     drawHoverHex(ctx, IdCtx, layout, alpha = 0.5) {
@@ -489,26 +492,30 @@ export class Hex {
     drawHexLabel(labelCtx, layout, isShowLabel) {
         // 计算六边形的中心位置
         const center = this.hexToPixel(layout);
-        
+
         // 清除当前六边形区域
-        this.clearPolygon(labelCtx, layout);
-        
-    
+
+
+
+        if (this.type === '属地') {
+            this.clearPolygon(labelCtx, layout);
+        }
         // 如果 type 是空白，则不显示任何文本
         if (this.type === '空白' || this.type === '属地') {
             return;
-        }
-    
+        } 
+
         // 如果 isShowLabel 为 true，绘制文本
         if (isShowLabel) {
             labelCtx.fillStyle = "rgb(74, 81, 57)";
             labelCtx.font = `${Math.max(10, this.size / 3)}px Arial`; // 根据 size 调整字体大小
             labelCtx.textAlign = "center";
             labelCtx.textBaseline = "middle";
-    
+            
             // 如果 region 为 null，显示 "自由"，否则显示 region 信息
             const text = this.regionBelond === null ? "自由" : this.regionBelond;
             labelCtx.fillText(text, center.x, center.y);
+
         }
     }
 

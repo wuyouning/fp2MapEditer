@@ -202,6 +202,9 @@ class UserManager {
         localStorage.removeItem('userId');
         localStorage.removeItem('uuid');
         localStorage.removeItem('hexGridId');
+        localStorage.removeItem('hexgrid_data');
+        localStorage.removeItem('hexes_data');
+        localStorage.setItem('isNewGrid', true);
         if(!all){
             this.displayMessage('已成功退出登录。');
         }

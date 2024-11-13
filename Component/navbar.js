@@ -20,6 +20,14 @@ export function initializeNavBarButtons() {
             buttonText: '区域数据',
         },
         {
+            id: 'superSumButton',
+            cardId: 'superSumCard',
+            iconSrc: '/images/抽象计算.png',
+            altText: '冰汽时代地图编辑器 - 抽象计算',
+            buttonText: '抽象数据',
+            isVisible: true,
+        },
+        {
             id: 'toggleButton',
             cardId: 'announcement',
             iconSrc: '/images/提示说明.png',

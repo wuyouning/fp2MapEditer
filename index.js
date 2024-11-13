@@ -7,6 +7,7 @@ import { userLoginView } from "./Component/loginView.js"
 import { saveModelView } from "./Component/saveModelView.js";
 import { LoadingSpinner } from "./Component/loadingSpinner.js";
 import { hexGrid } from "./main/module.js";
+import { SuperSumCard } from "./Component/superSumCard.js";
 //画布组
 export let mainView;
 
@@ -25,6 +26,7 @@ export let testDashboardView = new TestDashboardView(mainView);
 
 // 返回中心
 
+export const superSumCard = new SuperSumCard(hexGrid);
 
 
 //窗口调整会被拉回画布中心
@@ -33,6 +35,9 @@ window.onload = () => {
     mainView.scrollToCenter(); // 确保视窗显示在绘制原点位置
 
     hexGrid.initializeHexGrid();
+    superSumCard.regions = hexGrid.regions;
+    superSumCard.hubs = hexGrid.hubs;
+    superSumCard.updateCard();
 
 };
 
