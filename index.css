@@ -1,6 +1,6 @@
 @import './variables.css';
 
-.header, .sidebar, .footer, .main {
+.header, .sidebar, .main {
     background-color: var(--background-color);
 }
 
@@ -134,22 +134,27 @@ aside {
     overflow: auto;    /* 修改 overflow 以允许滚动条显示 */
     background-color: radial-gradient(#303f5d44 80%,#46535d 20%); /* 背景颜色可以让扩展的区域更加可见 */
 }
-
+.main-heading-font{
+    color: rgba(223, 228, 240, 1);
+    text-shadow:none;
+}
 footer {
     z-index: var(--z-index-footer);
     position: fixed;
-    top: 95%;
+    bottom: 0%;
     width: 100%;
     border-bottom: var(--border-color);
     box-shadow: 5px 5px 1px var(--border-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    background-color: rgba(248, 249, 250, 0.1);
+    padding: 10px;
+    background-color: rgba(223, 228, 240, 0.405);
     width: 100%;
     text-align: center;
     text-shadow: none;
+    height: 25px;
+    margin-bottom: 5px;
 }
 
 
@@ -158,6 +163,7 @@ footer {
     align-items: center;
     justify-content: center;
     text-align: center;
+    height: 25px;
 }
 
 .beian-icon {
