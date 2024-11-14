@@ -310,7 +310,11 @@ export class MainView {
             this.infoCard.style.display = 'none'; // 隐藏信息卡片
         });
 
-        buttonArea.append(expandBtn, deleteBtn, closeBtn);
+        if ( hex.type === '属地') {
+            buttonArea.append(expandBtn, deleteBtn, closeBtn);
+        } else {
+            buttonArea.append(closeBtn);
+        }
         this.infoCard.appendChild(buttonArea);
 
             // 获取原点位置

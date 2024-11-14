@@ -4,22 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="吴佑宁">
+    <meta name="description" content="冰汽时代2区域规划器，帮助玩家进行区域的规划和策略布局，提升游戏体验。">
+
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-
     <link rel="stylesheet" href="index.css">
-
     <title>冰汽时代2-区域规划器</title>
+    <script src="index.js" type="module" defer></script>
 
-
-    <script src="index.js" type="module"></script>
+    <!-- 百度统计模块 -->
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a7c414cc098de1cd7235a9238bf6ab95";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+        
 </head>
 <body>
-    <header>
+    <header aria-label="网站头部">
         <!-- 头部导航栏内容 -->
         <h1>冰汽时代 2 - 区域规划器</h1>
     </header>
 
-    <nav id="navBar" class="nav-bar">
+    <nav id="navBar" class="nav-bar" aria-label="主导航">
         <!-- 侧边栏内容 -->
     </nav>
 
@@ -27,20 +37,17 @@
     <link rel="stylesheet" href="/Component/regionInfoCard.css">
 
 
-    <div id="sliderGroup">
-        
-    </div>
+    <div id="sliderGroup"></div>
 
     <link rel="stylesheet" href="/Component/aside.css">
 
     <aside id="asideCard">
         <!-- 状态显示栏内容 -->
-
     </aside>
 
-
-
-    <main id="main" class="main">
+    <main id="main" class="main" aria-labelledby="main-heading" aria-describedby="content-description">
+        <h2 id="main-heading" class="main-heading-font">区域规划器</h2>
+        <p id="content-description" class="main-heading-font">使用此工具可以进行冰汽时代2游戏中的区域规划和资源管理。</p>
         <!-- 画布区域内容 -->
     </main>
 

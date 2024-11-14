@@ -5,7 +5,7 @@ import { superSumCard } from "../../index.js";
 export class Region {
     constructor(name, hexes, type) {
         this.hexes = new Set(hexes || []); // 使用 Set 来存储 hexes
-        this.type = type;
+        this.type = type; //就是笔刷brush
 
         // 如果没有传入 name，自动生成一个默认名称
         if (!name) {
