@@ -109,6 +109,7 @@ class SaveModelView {
         buttonArea.classList.add('savemodel-button-area');
 
         const saveBtn = document.createElement('button');
+        saveBtn.id = 'saveBtn-saveMode'
         saveBtn.textContent = "保存";
         // 添加保存按钮的点击事件，更新属性后保存 HexGrid
         saveBtn.addEventListener('click', () => this.handleSaveClick(true));
@@ -130,6 +131,7 @@ class SaveModelView {
         buttonArea.classList.add('savemodel-button-area');
     
         const saveBtn = document.createElement('button');
+        saveAsBtn.id = 'saveBtnUpdate-saveMode'
         saveBtn.textContent = "保存";
     
         // 添加保存按钮的点击事件，负责更新现有的 HexGrid
@@ -138,7 +140,8 @@ class SaveModelView {
         // 创建 "另存为" 按钮
         const saveAsBtn = document.createElement('button');
         saveAsBtn.textContent = "另存为";
-    
+        saveAsBtn.id = 'saveBtnAsNew-saveMode'
+
         // 添加另存为按钮的点击事件，负责创建一个新的 HexGrid 并上传到服务器
         saveAsBtn.addEventListener('click', async () => this.handleSaveClick(true));
     

@@ -205,6 +205,7 @@ export class AsideCard {
     
         // 设置 selectedBrush.autoBuildRegion 为按钮状态
         selectedBrush.selectMode = toggleState;
+        
     }
 
     handleAutoBuildRegioToggle(autoBuildRegionMode) {

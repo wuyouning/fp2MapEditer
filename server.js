@@ -266,7 +266,7 @@ app.post('/api/save-hex', (req, res) => {
     const { hexgrid_id, q, r, s, brush, region, type } = req.body;
 
     // 调试日志 - 打印接收到的字段
-    console.log('Received Data:', { hexgrid_id, q, r, s, brush, region, type });
+    // console.log('Received Data:', { hexgrid_id, q, r, s, brush, region, type });
 
     // 参数校验
     if (!hexgrid_id || q === undefined || r === undefined || s === undefined || !brush) {

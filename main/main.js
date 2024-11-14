@@ -44,6 +44,8 @@ export class MainView {
         this.highlightCtx = this.layers.getLayer('highlightLayer').getContext();
 
         this.infoCard = null;
+        
+        this.blandClick = 0;
     }
 
     updateCanvasOrigin() {
@@ -179,6 +181,15 @@ export class MainView {
 
                 if (selectedBrush.selectMode) {
                     this.showInfoCard(hex);
+                    console.log('我现在点了多少次空格', this.blandClick)
+                    if(hex.type === '空白'){
+                        console.log('点到空白了',hex.id)
+                        this.blandClick ++;
+                    }
+                    if (this.blandClick > 3) {
+                        this.showAlertPopup();
+                        console.log('开窗提醒', this.blandClick);
+                    }
                 } else {
                     if (hex) {
                         hex.setBrush(this.selectedBrush, hexGrid);
@@ -218,7 +229,6 @@ export class MainView {
     
         // 检查是否为逐个增加的情况 新建区域 
         if ([6, 9, 12].includes(count) && count === lastCount + 1) {
-            console.log('可以执行的');
             this.popup.show(
                 '到达建造数,是否建造区域',
                 'info',
@@ -232,16 +242,33 @@ export class MainView {
             );
         } else {
             // 不符合条件时，确保弹窗已关闭
-            if (this.popup.popup.style.display !== 'none') {
-                console.log('关闭popup');
+            if (this.popup.popup.style.display !== 'none' && this.blandClick !== 3) {
+                console.log('关闭popup', this.blandClick);
                 this.popup.close();
             }
         }
+        if (this.blandClick === 3 ) {
+            this.blandClick = 0;
+        } 
         // 更新 lastCount
         selectedBrush.lastCount = count;
-        console.log('更新了吗', selectedBrush.lastCount);
     }
     
+    showAlertPopup() {
+        const popup = new Popup();
+        
+        popup.show(
+            '你是否想要上色，请切换掉选择模式',
+            'warnning',
+            0,
+            '是的',
+            () => {
+                selectedBrush.selectMode = false;
+                asideCard.updateBrushInfo();
+            }
+        )
+        
+    }
 
     highlightRegion(hex, ctx, hexline, edgeline) {
         const region = [...hexGrid.regions].find(r => r.name === hex.regionBelond);
@@ -289,9 +316,9 @@ export class MainView {
         const expandBtn = document.createElement('button');
         expandBtn.textContent = "拓展区域";
         expandBtn.addEventListener('click', () => {
-           selectedBrush.expandMode(region);
-           asideCard.brushModeButton.toggle();
-           asideCard.updateBrushInfo();
+            asideCard.brushModeButton.toggle();
+            selectedBrush.expandMode(region);
+            asideCard.updateBrushInfo();
            this.infoCard.style.display = 'none';
         });
 

@@ -271,17 +271,14 @@ class Brush {
     }
 
     expandMode(region) {
+        console.log("region是不是集合",region);
         this.name = region.type;
-    
-        region.hexes.forEach(hex => {
-            this.pedingHexes.add(hex);
-        });
         this.selectMode = false;
+
         asideCard.updateBrushInfo();
     
         // 使用 data-key 来找到对应的按钮
         const buttonElement = document.querySelector(`.square-button[data-key="${region.type}"]`);
-        console.log('笔刷元素:', buttonElement);
     
         // 如果找到对应的按钮元素，则调用 handleBrushSelection
         if (buttonElement) {
@@ -291,6 +288,10 @@ class Brush {
             });
         } else {
             console.error(`未找到与类型 "${region.type}" 匹配的按钮`);
+        }
+        for (let hex of region.hexes) {
+            this.pedingHexes.add(hex);
+            console.log('看看都有谁被加进去了',hex.id)
         }
     }
 
@@ -823,8 +824,6 @@ export class HexGrid {
                 if (hex.brush === '擦除') {
                     continue;
                 }
-                console.log('我是被保存的格子', hex)
-                console.log('难道没有id', hexgrid_id)
                 const hexResponse = await this.sendRequest('POST', 'save-hex', {
                     hexgrid_id: hexgrid_id,
                     q: hex.q,
@@ -848,7 +847,7 @@ export class HexGrid {
     }
 
     async sendRequest(method, endpoint, body) {
-        console.log('床送的数据:', method, endpoint, body); // 用于调试
+        // console.log('床送的数据:', method, endpoint, body); // 用于调试
         const response = await fetch(`http://127.0.0.1:3000/api/${endpoint}`, {
             method: method,
             headers: {
@@ -933,7 +932,7 @@ export class HexGrid {
             }));
             localStorage.setItem('hexes_data', JSON.stringify(hexesData));
 
-            console.log('HexGrid 和 Hexes 数据已成功保存到本地存储。');
+            // console.log('HexGrid 和 Hexes 数据已成功保存到本地存储。');
         } catch (error) {
             console.error('保存到本地存储时出错:', error);
         }
