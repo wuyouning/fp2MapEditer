@@ -164,7 +164,7 @@ class SaveModelView {
                 }, 6000);
             }
         } catch (error) {
-            const errorMessage = isSaveAsNew ? '另存为 HexGrid 数据时出错：' : '保存 HexGrid 数据时出错：';
+            const errorMessage = isSaveAsNew ? '另存为规划图时出错：' : '保存 规划图时出错：';
             console.error(errorMessage, error);
             this.showError(`${errorMessage}${error}`);
         } finally {

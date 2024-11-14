@@ -60,32 +60,29 @@ class UserManager {
         this.apiUrl = 'http://127.0.0.1:3000/api';
     }
 
-    login(username, password) {
+    async login(username, password) {
         // 验证输入
-        if (!this.validateInputs(username, password)) return Promise.reject("输入验证失败");
+        if (!this.validateInputs(username, password)) return Promise.reject("输入验证失败,请不要超过32个字符");
     
         // 发送登录请求到服务器并返回 Promise
-        return fetch(`${this.apiUrl}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        })
-        .then(response => {
+        try {
+            const response = await fetch(`${this.apiUrl}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
             if (!response.ok) {
                 throw new Error('网络连接失败');
             }
-            return response.json();  // 解析 JSON 格式的响应
-        })
-        .then(data => {
+            const data = await response.json();
             this.handleLoginResponse(data, username);
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error:', error);
             this.displayMessage('服务器请求失败，请稍后再试。');
-            throw error;  // 抛出错误以便上层捕获
-        });
+            throw error; // 抛出错误以便上层捕获
+        }
     }
 
     // 处理登录响应
@@ -244,11 +241,11 @@ class UserManager {
             this.displayMessage('请填写所有字段。');
             return false;
         }
-        if (username.length > 16) {
+        if (username.length > 32) {
             this.displayMessage('用户名不得超过16位。');
             return false;
         }
-        if (password.length > 16) {
+        if (password.length > 32) {
             this.displayMessage('密码不得超过16位。');
             return false;
         }

@@ -743,13 +743,14 @@ export class HexGrid {
             });
 
             if (response.ok) {
-                saveModelView.showError('HexGrid 数据更新成功', true);
+                saveModelView.showError('更新成功', true);
+
             } else {
                 const result = await response.json();
-                saveModelView.showError(`更新 HexGrid 数据时出错：${result.message}`);
+                saveModelView.showError(`更新时出错：${result.message}`);
             }
         } catch (error) {
-            saveModelView.showError(`更新 HexGrid 数据时出错：${error}`);
+            saveModelView.showError(`更新规划图时出错：${error}`);
         }
     }
 
@@ -797,14 +798,15 @@ export class HexGrid {
                     this.updateLocalStorageInfo(this.name, this.description, hexgrid_id);
                     // 保存所有 Hexes 到新的 HexGrid
                     await this.saveHexes(hexgrid_id);
-                    saveModelView.showError('HexGrid 数据另存为成功', true);
+                    saveModelView.showError('成功另存为！！', true);
+                    console.log('HexGrid 数据另存为成功')
                 } else {
                     this.updateLocalStorageInfo(this.name, this.description, this.hexgrid_id);
                     saveModelView.showError('HexGrid 数据更新成功', true);
                 }
             } else {
                 const result = await response.json();
-                saveModelView.showError(`保存 HexGrid 数据时出错：${result.message}`);
+                saveModelView.showError(`保存时出错：${result.message}`);
             }
             return true;
         } catch (error) {
