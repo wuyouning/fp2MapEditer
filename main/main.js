@@ -239,7 +239,6 @@ export class MainView {
         }
         // 更新 lastCount
         selectedBrush.lastCount = count;
-        console.log('更新了吗', selectedBrush.lastCount);
     }
     
 

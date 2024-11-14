@@ -823,8 +823,6 @@ export class HexGrid {
                 if (hex.brush === '擦除') {
                     continue;
                 }
-                console.log('我是被保存的格子', hex)
-                console.log('难道没有id', hexgrid_id)
                 const hexResponse = await this.sendRequest('POST', 'save-hex', {
                     hexgrid_id: hexgrid_id,
                     q: hex.q,
@@ -848,7 +846,7 @@ export class HexGrid {
     }
 
     async sendRequest(method, endpoint, body) {
-        console.log('床送的数据:', method, endpoint, body); // 用于调试
+        // console.log('床送的数据:', method, endpoint, body); // 用于调试
         const response = await fetch(`http://127.0.0.1:3000/api/${endpoint}`, {
             method: method,
             headers: {
@@ -933,7 +931,7 @@ export class HexGrid {
             }));
             localStorage.setItem('hexes_data', JSON.stringify(hexesData));
 
-            console.log('HexGrid 和 Hexes 数据已成功保存到本地存储。');
+            // console.log('HexGrid 和 Hexes 数据已成功保存到本地存储。');
         } catch (error) {
             console.error('保存到本地存储时出错:', error);
         }

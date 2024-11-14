@@ -113,7 +113,7 @@ export class Hex {
             default:
                 console.warn(`未知的 selectedBrush.type: ${selectedBrush.type}`);
         }
-        console.log('现在的笔刷',this.brush)
+        // console.log('现在的笔刷',this.brush)
     
     }
     
