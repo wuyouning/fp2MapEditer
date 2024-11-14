@@ -271,17 +271,14 @@ class Brush {
     }
 
     expandMode(region) {
+        console.log("region是不是集合",region);
         this.name = region.type;
-    
-        region.hexes.forEach(hex => {
-            this.pedingHexes.add(hex);
-        });
         this.selectMode = false;
+
         asideCard.updateBrushInfo();
     
         // 使用 data-key 来找到对应的按钮
         const buttonElement = document.querySelector(`.square-button[data-key="${region.type}"]`);
-        console.log('笔刷元素:', buttonElement);
     
         // 如果找到对应的按钮元素，则调用 handleBrushSelection
         if (buttonElement) {
@@ -291,6 +288,10 @@ class Brush {
             });
         } else {
             console.error(`未找到与类型 "${region.type}" 匹配的按钮`);
+        }
+        for (let hex of region.hexes) {
+            this.pedingHexes.add(hex);
+            console.log('看看都有谁被加进去了',hex.id)
         }
     }
 
