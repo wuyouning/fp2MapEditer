@@ -45,7 +45,7 @@ app.get('/api/generate-uuid', (req, res) => {
 
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
-
+    console.log('登录中..')
     if (!username || !password ) {
         return res.status(400).json({ message: '请填写所有字段。'});
     }
@@ -220,14 +220,14 @@ app.put('/api/update-hexgrid', (req, res) => {
     pool.query(updateQuery, updateParams, (err, result) => {  
         if (err) {
             console.error('更新 HexGrid 数据时出错：', err);
-            return res.status(500).json({ message: '更新 HexGrid 数据时出错' });
+            return res.status(500).json({ message: '更新规划图时出错' });
         }
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: '未找到要更新的 HexGrid' });
+            return res.status(404).json({ message: '未找到要更新的规划图' });
         }
 
-        return res.status(200).json({ message: 'HexGrid 更新成功' });
+        return res.status(200).json({ message: '规划图更新成功' });
     });
 });
 
@@ -339,7 +339,7 @@ app.get('/api/get-private-hexgrids', (req, res) => {
     pool.query(query, [ownerId, limit, offset], (err, results) => {
         if (err) {
             console.error('获取私有 HexGrid 数据时出错:', err);
-            return res.status(500).json({ message: '获取私有 HexGrid 数据时出错' });
+            return res.status(500).json({ message: '获取私有 规划图时出错' });
         }
 
         res.status(200).json(results);

@@ -1,11 +1,11 @@
 {
-  "name": "fp2MapEditer",
+  "name": "fp2mapediter",
   "version": "1.0.0",
   "description": "A Node.js application for hex grid management",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "start:pm2": "pm2 start server.js --name fp2MapEditer --watch"
+    "start:pm2": "pm2 start server.js --name fp2mapediter --watch"
   },
   "author": "Your Name",
   "license": "ISC",
