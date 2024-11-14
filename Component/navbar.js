@@ -70,7 +70,7 @@ export function initializeNavBarButtons() {
             iconSrc: '/images/我的.png',
             altText: '冰汽时代地图编辑器 - 测试',
             buttonText: '测试信息',
-            isVisible: true,
+            isVisible: false,
         },
     ];
 
