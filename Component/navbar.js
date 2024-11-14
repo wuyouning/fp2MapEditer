@@ -32,7 +32,7 @@ export function initializeNavBarButtons() {
             cardId: 'announcement',
             iconSrc: '/images/提示说明.png',
             altText: '冰汽时代地图编辑器 - 关于与支持图标',
-            buttonText: '学院公告',
+            buttonText: '公告',
         },
         {
             id: 'publicHexGridsButton',
