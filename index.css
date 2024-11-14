@@ -177,6 +177,10 @@ footer {
     color: #333;
 }
 
+.beian span {
+    margin-right: 15px;
+}
+
 .back-center-button {
     position: absolute;
     z-index: calc(var(--z-index-main) + 1);
