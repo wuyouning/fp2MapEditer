@@ -8,7 +8,7 @@ import { asideCard } from "../index.js";
 // import { Popup } from "../Component/loadingSpinner.js";
 import { initRegionsCard } from "../Component/regionInfoCard.js";
 import { handleBrushSelection } from "../Component/buttonComponent.js";
-import { apiUrl } from "../index.js";
+import { apiUrl } from "../controllers/user.js";
 
 export const brushMap = {
     '居住区': {

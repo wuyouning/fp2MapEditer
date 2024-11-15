@@ -1,4 +1,5 @@
 import { userinfoView } from "../Component/userinfoView.js";
+export const apiUrl = 'http://127.0.0.1:3000/api';
 class User {
     constructor(userId, uuid, username, password, createdAt = new Date(), last_login = new Date()) {
         this.userId = userId;            // 用户的唯一标识符 (数据库的自增 ID)
@@ -51,7 +52,6 @@ class User {
     }
 }
 
-import { apiUrl } from "../index.js";
 
 class UserManager {
     constructor() {

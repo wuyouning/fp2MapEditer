@@ -8,7 +8,7 @@ import { Popup } from "./loadingSpinner.js";
 import { closeNavBarWithSlider } from "./buttonComponent.js";
 import { SliderToggleButton } from "./buttonComponent.js";
 import { hexGrid } from "../main/module.js";
-import { apiUrl } from "../index.js";
+import { apiUrl } from "../controllers/user.js";
 
 class HexGridCard {
 

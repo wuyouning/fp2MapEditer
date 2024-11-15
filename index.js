@@ -10,7 +10,6 @@ import { hexGrid } from "./main/module.js";
 import { SuperSumCard } from "./Component/superSumCard.js";
 //画布组
 export let mainView;
-export const apiUrl = 'http://127.0.0.1:3000/api';
 
 initializeNavBarButtons(); //创建左侧按钮
 mainView = new MainView();
