@@ -1,5 +1,5 @@
 import { userinfoView } from "../Component/userinfoView.js";
-export const apiUrl = 'http://101.132.75.33:3000/api';
+export const apiUrl = './api';
 
 class User {
     constructor(userId, uuid, username, password, createdAt = new Date(), last_login = new Date()) {
