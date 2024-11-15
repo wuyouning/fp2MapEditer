@@ -75,7 +75,6 @@ export class Hex {
                 } else if (this.type === '属地') {
                     this.clearRegion(hexGrid, selectedBrush);
                     initRegionsCard(mainView.hexGrid);
-                    console.log("清除了区域内的格子")
                 } else if (this.type === '枢纽') {
                     this.removeHub(hexGrid);
 
@@ -170,9 +169,6 @@ export class Hex {
         const region = this.findRegion(hexGrid);
         if (region) {
             region.cleanRegion(this, hexGrid);
-            console.warn(`删除了区域: ${this.regionBelond}`);
-            console.warn(`确认regionname: ${region.name}`);
-            console.warn(`格子ID ${this.id}`)
         } else {
             console.warn(`未找到区域: ${this.regionBelond}`);
         }
@@ -180,10 +176,6 @@ export class Hex {
     }
     //TODO:  查找区域 和 下方移除和添加重复了，看看有没有必要处理呗
     findRegion(hexGrid) {
-        console.log('《《《区域名字 ', this.regionBelond)
-        console.log('<<<所有的信息', this)
-        console.log('《《《区域内容 ', hexGrid.regions)
-
         for (let r of hexGrid.regions) {
             if (r.name === this.regionBelond) {
                 return r;

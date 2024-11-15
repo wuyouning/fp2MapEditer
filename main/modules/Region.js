@@ -190,7 +190,6 @@ export class Region {
     }
 
     clearSingleHex(hex, hexGrid) {
-        console.warn(`被执行的区域是 ${this.name}`)
         for (let regionHex of this.hexes) {
             regionHex.regionBelond = null;
             if (regionHex.id === hex.id) {

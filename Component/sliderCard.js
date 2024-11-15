@@ -50,11 +50,11 @@ export function initializeSliderCard(mainView) {
         },
         {
             id: 'publicCard',
-            width: '89.5%'
+            width: 'calc(100% - var(--navbar-width))'
         },
         {
             id: 'privateCard',
-            width: '90%'
+            width: 'calc(100% - var(--navbar-width))'
         },
         {
             id: 'loginCard',
