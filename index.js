@@ -47,7 +47,7 @@ window.onresize = () => {
     }
 };
 
-
+export const apiUrl = 'http://127.0.0.1:3000/api';
 
 //用户弹窗
 userLoginView.toggleVisibility();

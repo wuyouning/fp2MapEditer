@@ -8,6 +8,7 @@ import { asideCard } from "../index.js";
 // import { Popup } from "../Component/loadingSpinner.js";
 import { initRegionsCard } from "../Component/regionInfoCard.js";
 import { handleBrushSelection } from "../Component/buttonComponent.js";
+import { apiUrl } from "../index.js";
 
 export const brushMap = {
     '居住区': {
@@ -848,7 +849,7 @@ export class HexGrid {
 
     async sendRequest(method, endpoint, body) {
         // console.log('床送的数据:', method, endpoint, body); // 用于调试
-        const response = await fetch(`http://127.0.0.1:3000/api/${endpoint}`, {
+        const response = await fetch(`${apiUrl}/${endpoint}`, {
             method: method,
             headers: {
                 'Content-Type': 'application/json'
@@ -860,7 +861,7 @@ export class HexGrid {
 
     async fetchUUID() {
         try {
-            const response = await fetch('http://localhost:3000/api/generate-uuid', {
+            const response = await fetch(`${apiUrl}/generate-uuid`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
