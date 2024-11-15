@@ -319,8 +319,7 @@ class HexGridCard {
             this.desc !== this.initialDesc ||
             this.isPublicGrid !== this.initialIsPublic
         );
-        const owner_id = localStorage.getItem('uuid');
-        console.warn('我在这里获得了owner_id',owner_id)
+
         if (!isModified) {
             this.loadingPopup.show(
                 '没有任何更改，无需更新。',
@@ -331,8 +330,10 @@ class HexGridCard {
             );
             return;
         }
-        console.warn(`${owner_id},他到底长啥样 ${this}`)
-        console.warn('整体',this)
+
+        //到底长啥样了
+        const owner_id = localStorage.getItem('uuid');
+        
         try {
             this.loadingPopup.show('更新中,请稍后', 'progress');
             const response = await fetch(`${apiUrl}/update-hexgrid`, {
@@ -342,10 +343,10 @@ class HexGridCard {
                 },
                 body: JSON.stringify({
                     hexgrid_id: this.newHexGrid.hexgrid_id,
-                    owner_id: owner_id,
+                    ownerId: this.myOwnid,
                     hexgrid_name: this.title,
                     description: this.desc,
-                    is_public: this.isPublicGrid ? 1 : 0
+                    is_public: this.isPublicGrid
                 })
             });
             if (!response.ok) {
@@ -361,7 +362,7 @@ class HexGridCard {
             this.initialDesc = this.desc;
             this.initialIsPublic = this.isPublicGrid;
         } catch (error) {
-            this.loadingPopup.show(`更新出错: ${error}`, 'success');
+            this.loadingPopup.show(`更新出错: ${error}`, 'error');
             console.error('更新出错啦', error);
         } finally {
             // 刷新私有画廊数据，确保界面显示最新内容
@@ -391,10 +392,10 @@ class HexGridCard {
                 },
                 body: JSON.stringify({
                     hexgrid_id: this.newHexGrid.hexgrid_id,
-                    owner_id: 0,  // 0 表示执行软删除，将 owner_id 设置为 -1
+                    ownerId: 0,  // 0 表示执行软删除，将 owner_id 设置为 -1
                     hexgrid_name: this.title,
                     description: this.desc,
-                    is_public: 0  // 设置为私有
+                    is_public: false  // 设置为私有
                 })
             });
 
@@ -545,7 +546,6 @@ class HexGridGalley {
 
             
             hexGrids.forEach(hexGrid => {
-                console.log('确定一下注入格式',hexGrid)
                 const gridCard = new HexGridCard(hexGrid, true);
                 galley.append(gridCard.render());
             });
@@ -580,7 +580,7 @@ class HexGridGalley {
             this.loadingPopup.show(`加载出错: ${error.message}`, 'error', 3000);
             console.error('展示私有 HexGrid 时出错啦', error);
         } finally {
-            console.log('刷新额')
+            console.log('私有画廊刷新额')
         }
     }
 

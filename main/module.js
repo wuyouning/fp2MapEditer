@@ -715,7 +715,6 @@ export class HexGrid {
         const spellNameInput = document.getElementById('savemodel-titleEdit');
         const descriptionInput = document.getElementById('saveModel-desp');
         const hexgrid_id = this.hexgrid_id;
-
         // 确保元素存在后再获取值，避免空引用错误
         if (spellNameInput) {
             this.name = spellNameInput.value.trim(); // 去除前后空格
@@ -738,8 +737,8 @@ export class HexGrid {
         try {
             const response = await this.sendRequest('PUT', 'update-hexgrid', {
                 hexgrid_id,
-                name: this.name,
                 ownerId,
+                name: this.name,
                 description: this.description,
                 isPublic: this.isPublic
             });
@@ -760,7 +759,7 @@ export class HexGrid {
     async save(isNew = false) {
         try {
             // 更新属性并保存 HexGrid
-            await this.updateProperties();
+            await this.updateProperties(isNew);
             const ownerId = this.myOwnerId;
 
             if (!ownerId) {
@@ -776,11 +775,11 @@ export class HexGrid {
             // 创建请求体
             let requestBody = {
                 ownerId,
-                name: this.name,
+                hexgrid_name: this.name,
                 hexSize: this.hexSize,
                 maxRadius: this.maxRadius,
                 description: this.description,
-                isPublic: this.isPublic
+                is_public: this.isPublic
             };
 
             // 如果不是新建操作，则需要包含 hexgrid_id

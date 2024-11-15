@@ -14,6 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 const path = require('path');
+const { timeStamp } = require('console');
+console.log('DB_HOST:', process.env.DB_HOST);
 
 // 设置静态文件目录
 app.use(express.static(path.join(__dirname)));
@@ -46,44 +48,57 @@ app.get('/api/generate-uuid', (req, res) => {
 
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
-    console.log('登录中..')
-    if (!username || !password ) {
-        return res.status(400).json({ message: '请填写所有字段。'});
+
+    // 登录日志
+    const timestamp = new Date().toISOString();
+    console.log('用户正在尝试登录, 时间:', timestamp);
+    console.log('收到的请求体内容:', req.body);
+
+    // 参数校验
+    if (!username || !password) {
+        console.error('登录失败：缺少用户名或密码');
+        return res.status(400).json({ message: '请填写所有字段。' });
     }
 
+    console.log('查找用户中，用户名:', username);
     findUser(username, (err, result) => {
         if (err) {
-            console.error('Database query error:', err);
+            console.error('数据库查询出错:', err);
             return res.status(500).json({ message: '数据库查询出错' });
         }
 
         if (result.length > 0) {
+            console.log('用户已找到，验证密码中...');
             verifyPassword(password, result[0].password, (err, isMatch) => {
                 if (err) {
-                    console.error("密码匹配失败:", err);
-                    return res.status(500).json({ message: '密码验证失败'});
+                    console.error('密码匹配失败:', err);
+                    return res.status(500).json({ message: '密码验证失败' });
                 }
                 if (isMatch) {
+                    console.log('密码验证成功，更新最后登录时间...');
                     updateLastLogin(result[0].id, (err) => {
                         if (err) {
-                            console.error('更新最后登录时间失败了', err);
-                            return res.status(500).json({ message: '更新最后登录时间失败了'});
+                            console.error('更新最后登录时间失败:', err);
+                            return res.status(500).json({ message: '更新最后登录时间失败' });
                         }
+                        console.log('登录成功，用户ID:', result[0].id);
                         return res.status(200).json({ message: '登录成功！', userId: result[0].id, uuid: result[0].uuid });
                     });
                 } else {
-                    return res.status(401).json({ message: '密码错误'});
+                    console.warn('密码错误，登录失败');
+                    return res.status(401).json({ message: '密码错误' });
                 }
             });
         } else {
+            console.log('用户不存在，开始创建新用户，用户名:', username);
             createUser(username, password, (err, newUser) => {
                 if (err) {
-                    console.error('创建用户失败', err);
-                    return res.status(500).json({ message: '创建用户时出错'});
+                    console.error('创建用户失败:', err);
+                    return res.status(500).json({ message: '创建用户时出错' });
                 }
-                return res.status(201).json({ message: '用户创建成功！', userId: newUser.userId, uuid: newUser.uuid })
-
-            })
+                console.log('用户创建成功，用户ID:', newUser.userId);
+                return res.status(201).json({ message: '用户创建成功！', userId: newUser.userId, uuid: newUser.uuid });
+            });
         }
     });
 });
@@ -183,63 +198,188 @@ app.post('/api/change-username', (req, res) => {
     );
 });
 
+
 // 更新画布信息
 app.put('/api/update-hexgrid', (req, res) => {
-    const { hexgrid_id, ownerId: ownerId, hexgrid_name, description, is_public } = req.body;
+    const { hexgrid_id, ownerId, hexgrid_name, description, is_public } = req.body;
+
+    const timestamp = new Date().toISOString();
+    console.log('更新画布了哦------>', timestamp);
 
     // 参数校验
-    if (!hexgrid_id) {
-        return res.status(400).json({ message: '缺少 hexGridId' });
-    }
-    if (ownerId === undefined) {
-        return res.status(400).json({ message: '更新画布发现，ownerId 不存在了！' });
-    }
-
-    let updateQuery = `
-        UPDATE hexgrid 
-        SET 
-            hexgrid_name = ?, 
-            description = ?, 
-            is_public = ?, 
-            lastedit_at = NOW()
-    `;
-    const updateParams = [hexgrid_name, description, is_public];
-
-    // 如果 ownerId 为 0，执行软删除逻辑（将 ownerId 设置为 -1）
-    if (ownerId === 0) {
-        updateQuery += ', owner_id = "deleted_user"';
-    } else if (ownerId !== undefined) {
-        // 如果 ownerId 不为 0 且存在，则更新 ownerId
-        updateQuery += ', owner_id = ?';
-        updateParams.push(ownerId);
+    const errors = validateParams({ hexgrid_id, ownerId, hexgrid_name, description, is_public });
+    if (errors.length > 0) {
+        console.error('参数校验失败:', errors);
+        return res.status(400).json({ message: `请求体参数有误: ${errors.join(', ')}` });
     }
 
-    // 最终通过 hexGridId 进行更新
-    updateQuery += ' WHERE hexGrid_id = ?';
-    updateParams.push(hexgrid_id);
+    console.log('参数校验通过，传入的参数:', { hexgrid_id, ownerId, hexgrid_name, description, is_public });
 
-    pool.query(updateQuery, updateParams, (err, result) => {  
+    checkDeletedUserExists((err, deletedUserExists) => {
         if (err) {
-            console.error('更新 HexGrid 数据时出错：', err);
-            return res.status(500).json({ message: '更新规划图时出错' });
+            console.error('检查 deleted_user 是否存在时出错：', err);
+            return res.status(500).json({ message: '数据库查询失败' });
         }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: '未找到要更新的规划图' });
+        if (!deletedUserExists) {
+            console.error('deleted_user 不存在，请先添加该记录。');
+            return res.status(500).json({ message: 'deleted_user 不存在，无法进行软删除' });
         }
 
-        return res.status(200).json({ message: '规划图更新成功' });
+        updateHexgrid({ hexgrid_id, ownerId, hexgrid_name, description, is_public }, res);
     });
 });
 
+function validateParams({ hexgrid_id, ownerId, hexgrid_name, description, is_public }) {
+    const errors = [];
+    if (!hexgrid_id) {
+        errors.push('缺少 hexgrid_id');
+    }
+    if (ownerId === undefined) {
+        errors.push('缺少 ownerId');
+    }
+    if (hexgrid_name === undefined) {
+        errors.push('缺少 hexgrid_name');
+    }
+    if (description === undefined) {
+        errors.push('缺少 description');
+    }
+    if (is_public === undefined) {
+        errors.push('缺少 is_public');
+    }
+    if (typeof is_public !== 'boolean') {
+        errors.push('is_public 必须是布尔值');
+    }
+    return errors;
+}
+
+function checkDeletedUserExists(callback) {
+    const query = `SELECT * FROM users WHERE uuid = 'deleted_user'`;
+    pool.query(query, (err, results) => {
+        if (err) {
+            return callback(err);
+        }
+        callback(null, results.length > 0);
+    });
+}
+
+function updateHexgrid({ hexgrid_id, ownerId, hexgrid_name, description, is_public }, res) {
+    pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('获取数据库连接时出错：', err);
+            return res.status(500).json({ message: '数据库连接失败' });
+        }
+
+        connection.beginTransaction((err) => {
+            if (err) {
+                console.error('开启事务时出错：', err);
+                connection.release();
+                return res.status(500).json({ message: '开启事务失败' });
+            }
+
+            let updateHexgridQuery = `
+                UPDATE hexgrid 
+                SET 
+                    hexgrid_name = ?, 
+                    description = ?, 
+                    is_public = ?, 
+                    lastedit_at = NOW()
+            `;
+            const updateHexgridParams = [hexgrid_name, description, is_public];
+
+            if (ownerId === 0) {
+                updateHexgridQuery += ', owner_id = "deleted_user"';
+            } else if (ownerId !== undefined) {
+                updateHexgridQuery += ', owner_id = ?';
+                updateHexgridParams.push(ownerId);
+            }
+
+            updateHexgridQuery += ' WHERE hexGrid_id = ?';
+            updateHexgridParams.push(hexgrid_id);
+
+            connection.query(updateHexgridQuery, updateHexgridParams, (err, result) => {
+                if (err) {
+                    console.error('更新 HexGrid 数据时出错：', err);
+                    return connection.rollback(() => {
+                        connection.release();
+                        res.status(500).json({ message: '更新规划图时出错' });
+                    });
+                }
+
+                if (result.affectedRows === 0) {
+                    console.error('未找到要更新的规划图');
+                    return connection.rollback(() => {
+                        connection.release();
+                        res.status(404).json({ message: '未找到要更新的规划图' });
+                    });
+                }
+
+                connection.commit((err) => {
+                    if (err) {
+                        console.error('提交事务时出错：', err);
+                        return connection.rollback(() => {
+                            connection.release();
+                            res.status(500).json({ message: '提交事务失败' });
+                        });
+                    }
+
+                    console.log('规划图更新成功');
+                    connection.release();
+                    return res.status(200).json({ message: '规划图更新成功' });
+                });
+            });
+        });
+    });
+}
+
+
+
 // 保存画布
 app.post('/api/save-hexgrid', (req, res) => {
-    const { ownerId, hexSize, maxRadius, name, description, isPublic } = req.body;
+    const { ownerId, hexSize, maxRadius, hexgrid_name, description, is_public } = req.body;
+
+    const timestamp = new Date().toISOString();
+    console.log('开始保存新画布，时间:', timestamp);
+    console.log('收到的请求体内容:', req.body);
 
     // 参数校验
-    if (!ownerId || !name || !hexSize || !maxRadius) {
-        return res.status(400).json({ message: '缺少必要的字段' });
+    const errors = [];
+    if (!ownerId) {
+        errors.push('缺少 ownerId');
     }
+    if (!hexgrid_name) {
+        errors.push('缺少 hexgrid_name');
+    }
+    if (!hexSize) {
+        errors.push('缺少 hexSize');
+    } else if (typeof hexSize !== 'number') {
+        errors.push('hexSize 必须是数字');
+    }
+    if (!maxRadius) {
+        errors.push('缺少 maxRadius');
+    } else if (typeof maxRadius !== 'number') {
+        errors.push('maxRadius 必须是数字');
+    }
+    if (is_public === undefined) {
+        errors.push('缺少 is_public');
+    } else if (typeof is_public !== 'boolean') {
+        errors.push('is_public 必须是布尔值');
+    }
+
+    // 如果有任何错误，返回 400 状态码并记录具体的错误信息
+    if (errors.length > 0) {
+        console.error('参数校验失败:', errors);
+        return res.status(400).json({ message: `请求体参数有误: ${errors.join(', ')}` });
+    }
+
+    // 打印参数值以确认它们的具体格式和内容
+    console.log('参数校验通过，传入的参数:');
+    console.log('ownerId:', ownerId);
+    console.log('hexSize:', hexSize);
+    console.log('maxRadius:', maxRadius);
+    console.log('hexgrid_name:', hexgrid_name);
+    console.log('description:', description);
+    console.log('is_public:', is_public);
 
     const createdAt = new Date();
     const lasteditAt = createdAt;
@@ -247,19 +387,26 @@ app.post('/api/save-hexgrid', (req, res) => {
     // 生成 hexGridId
     const hexgrid_id = uuidv4();
 
-    pool.query(
-        `INSERT INTO hexgrid
+    const insertQuery = `
+        INSERT INTO hexgrid
         (hexGrid_id, owner_id, hexSize, maxRadius, hexgrid_name, description, created_at, lastedit_at, is_public) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [hexgrid_id, ownerId, hexSize, maxRadius, name, description, createdAt, lasteditAt, isPublic],
-        (err, result) => {
-            if (err) {
-                console.error('保存 HexGrid 数据时出错：', err);
-                return res.status(500).json({ message: '保存 HexGrid 数据时出错' });
-            }
-            return res.status(201).json({ message: 'HexGrid 保存成功', hexgrid_id: hexgrid_id });
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const insertParams = [hexgrid_id, ownerId, hexSize, maxRadius, hexgrid_name, description, createdAt, lasteditAt, is_public];
+
+    // 打印 SQL 查询和参数用于调试
+    console.log('即将执行的 SQL 查询:', insertQuery);
+    console.log('使用的参数:', insertParams);
+
+    pool.query(insertQuery, insertParams, (err, result) => {
+        if (err) {
+            console.error('保存 HexGrid 数据时出错：', err);
+            console.log('执行的 SQL 查询:', insertQuery);
+            console.log('使用的参数:', insertParams);
+            return res.status(500).json({ message: '保存 HexGrid 数据时出错' });
         }
-    );
+        return res.status(201).json({ message: 'HexGrid 保存成功', hexgrid_id: hexgrid_id });
+    });
 });
 
 // 保存格子信息
