@@ -131,7 +131,7 @@ class SaveModelView {
         buttonArea.classList.add('savemodel-button-area');
     
         const saveBtn = document.createElement('button');
-        saveAsBtn.id = 'saveBtnUpdate-saveMode'
+        // saveAsBtn.id = 'saveBtnUpdate-saveMode'
         saveBtn.textContent = "保存";
     
         // 添加保存按钮的点击事件，负责更新现有的 HexGrid

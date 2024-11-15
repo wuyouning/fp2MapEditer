@@ -18,7 +18,7 @@ class HexGridCard {
         this.ownName = hexGridFromData.owner_name;
         this.updateTime = this.formatDate(hexGridFromData.lastedit_at);
         this.creatTime = this.formatDate(hexGridFromData.created_at);
-        this.isPrivate = isPrivate;
+        this.isPrivate = isPrivate; //私有画布还是公共画布
         this.newHexGrid = hexGridFromData;
 
         this.loadingPopup = new Popup();
@@ -331,7 +331,8 @@ class HexGridCard {
             );
             return;
         }
-
+        console.warn(`${owner_id},他到底长啥样 ${this}`)
+        console.warn('整体',this)
         try {
             this.loadingPopup.show('更新中,请稍后', 'progress');
             const response = await fetch(`${apiUrl}/update-hexgrid`, {
@@ -542,7 +543,9 @@ class HexGridGalley {
             const galley = privateCard.querySelector('.hexgrid-galley') || document.createElement('div');
             galley.classList.add('hexgrid-galley');
 
+            
             hexGrids.forEach(hexGrid => {
+                console.log('确定一下注入格式',hexGrid)
                 const gridCard = new HexGridCard(hexGrid, true);
                 galley.append(gridCard.render());
             });
