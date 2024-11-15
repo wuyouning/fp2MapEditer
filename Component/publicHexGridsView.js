@@ -8,7 +8,7 @@ import { Popup } from "./loadingSpinner.js";
 import { closeNavBarWithSlider } from "./buttonComponent.js";
 import { SliderToggleButton } from "./buttonComponent.js";
 import { hexGrid } from "../main/module.js";
-
+import { apiUrl } from "../index.js";
 
 class HexGridCard {
 
@@ -226,7 +226,7 @@ class HexGridCard {
         try {
             this.loadingPopup.show('加载小格子中...', 'progress');
 
-            const response = await fetch(`http://127.0.0.1:3000/api/hexes/${hexgrid_id}`);
+            const response = await fetch(`${apiUrl}/hexes/${hexgrid_id}`);
             if (!response.ok) {
                 throw new Error(`错误 ${response.statusText}`);
             }
@@ -334,7 +334,7 @@ class HexGridCard {
 
         try {
             this.loadingPopup.show('更新中,请稍后', 'progress');
-            const response = await fetch('http://localhost:3000/api/update-hexgrid', {
+            const response = await fetch(`${apiUrl}/update-hexgrid`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -383,7 +383,7 @@ class HexGridCard {
         try {
             this.loadingPopup.show('正在删除,请稍后...', 'progress');
 
-            const response = await fetch('http://localhost:3000/api/update-hexgrid', {
+            const response = await fetch(`${apiUrl}/update-hexgrid`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -449,7 +449,7 @@ class HexGridGalley {
                 null
             );
 
-            const response = await fetch(`http://127.0.0.1:3000/api/get-public-hexgrids?offset=${this.currentOffsetPublic}&limit=${this.limit}`, {
+            const response = await fetch(`${apiUrl}/get-public-hexgrids?offset=${this.currentOffsetPublic}&limit=${this.limit}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -522,7 +522,7 @@ class HexGridGalley {
                 throw new Error('无法获取用户的 UUID');
             }
 
-            const response = await fetch(`http://127.0.0.1:3000/api/get-private-hexgrids?owner_id=${owner_id}&offset=${this.currentOffsetPrivate}&limit=${this.limit}`, {
+            const response = await fetch(`${apiUrl}/get-private-hexgrids?owner_id=${owner_id}&offset=${this.currentOffsetPrivate}&limit=${this.limit}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

@@ -51,13 +51,15 @@ class User {
     }
 }
 
+import { apiUrl } from "../index.js";
+
 class UserManager {
     constructor() {
         this.users = []; // 存储用户对象
         this.mockUsers = [
             { username: 'testuser' }
         ];
-        this.apiUrl = 'http://127.0.0.1:3000/api';
+        this.apiUrl = apiUrl;
     }
 
     async login(username, password) {
