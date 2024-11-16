@@ -480,3 +480,24 @@ footer {
 .showInfo-button-area button:hover{
     background: var( --button-backgournd-hover);
 }
+
+.language-switcher {
+    position: relative;
+    display: flex;
+    right: 1%;
+    margin-right: 30px;
+    justify-content: baseline;
+}
+
+.language-switcher button{
+    position: relative;
+    display: flex;
+    width: 50%;
+    margin-right: 5px;
+    background: none;
+    border: none;
+}
+
+.language-switcher button:hover{
+    color: #6391e6;
+}

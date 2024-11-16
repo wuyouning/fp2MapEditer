@@ -959,7 +959,7 @@ export class Region {
                     title: detail.region,
                     items: [
                         `热能: ${detail.heat}`,
-                        `污染: ${detail.pollution || '无'}`
+                        `脏污: ${detail.pollution || '无'}`
                     ]
                 };
             });
@@ -1114,7 +1114,7 @@ export class Region {
                     title: detail.region, 
                     items: [ 
                         `热能: ${detail.heat}`, 
-                        `污染: ${detail.pollutionDirt}`, 
+                        `脏污: ${detail.pollutionDirt}`, 
                         `疾病: ${detail.pollutionDisease}`, 
                         `刷子: ${detail.brush}`
                     ] 

@@ -63,7 +63,7 @@ class UserLoginView {
         const buttonArea = this.createButtonArea();
 
         const message = document.createElement('p');
-        message.textContent = "你好";
+        message.textContent = "登录后可以存储你的规划作品";
         message.classList.add('login-message');
         message.id = ('login-message');
 
