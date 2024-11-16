@@ -1,3 +1,5 @@
+import i18next from './i18next.js';
+
 export function createNavbarButton(id, cardId, iconSrc, altText, buttonText, isVisible = true) {
     const button = document.createElement('button');
     button.id = id;
@@ -104,117 +106,128 @@ export function handleBrushSelection(buttonElement, key, onBrushSelect) {
 }
 
 export class SliderToggleButton {
-    constructor(containerIdOrElement, visibleIdText, hiddenIdText, initialState = true, callback = null, classNames = {}, id = '') {
-        // 检测传入的是字符串 ID 还是 DOM 元素
-        if (typeof containerIdOrElement === 'string') {
-            this.container = document.getElementById(containerIdOrElement);
-            if (!this.container) {
-                throw new Error(`Cannot find container with ID: ${containerIdOrElement}`);
-            }
-        } else if (containerIdOrElement instanceof HTMLElement) {
-            this.container = containerIdOrElement;
-        } else {
-            throw new Error("Invalid container parameter. Expected a string ID or DOM element.");
+    constructor(containerIdOrElement, visibleIdKey, hiddenIdKey, initialState = true, callback = null, classNames = {}, id = '') {
+      // 检测传入的是字符串 ID 还是 DOM 元素
+      if (typeof containerIdOrElement === 'string') {
+        this.container = document.getElementById(containerIdOrElement);
+        if (!this.container) {
+          throw new Error(`Cannot find container with ID: ${containerIdOrElement}`);
         }
-
-        this.visibleIdText = visibleIdText;
-        this.hiddenIdText = hiddenIdText;
-        this.isOn = initialState;  // 初始状态（on 或 off）
-        this.callback = callback;  // 保存回调函数
-        this.classNames = classNames;
-        this.id = id;
-        this.render();
+      } else if (containerIdOrElement instanceof HTMLElement) {
+        this.container = containerIdOrElement;
+      } else {
+        throw new Error("Invalid container parameter. Expected a string ID or DOM element.");
+      }
+  
+      this.visibleIdKey = visibleIdKey;
+      this.hiddenIdKey = hiddenIdKey;
+      this.visibleIdText = i18next.t(visibleIdKey);
+      this.hiddenIdText = i18next.t(hiddenIdKey);
+      this.isOn = initialState; // 初始状态（on 或 off）
+      this.callback = callback; // 保存回调函数
+      this.classNames = classNames;
+      this.id = id;
+  
+      this.render();
+  
+      // 监听语言变化，动态更新标签
+      i18next.on('languageChanged', () => {
+        this.updateLabel();
+      });
     }
-
+  
     render() {
-        // 创建组件外层容器
-        const toggleContainer = document.createElement("div");
-        toggleContainer.classList.add("slider-toggle-component-container");
-        if (this.id) {
-            toggleContainer.id = this.id; // 设置容器的 id 以便以后能获取到
-        }
-        // 如果传入了自定义的容器类名，添加到容器
-        if (this.classNames.container) {
-            toggleContainer.classList.add(this.classNames.container);
-        }
-
-        toggleContainer.addEventListener("click", () => this.toggle());
-
-        // 左侧显示ID
-        const visibleId = document.createElement("span");
-        visibleId.classList.add("slider-toggle-visible-id");
-        visibleId.textContent = this.visibleIdText;
-        if (this.classNames.visibleId) {
-            visibleId.classList.add(this.classNames.visibleId);
-        }
-
-        toggleContainer.appendChild(visibleId);
-
-        // 中间矩形和上方圆形
-        this.shapeContainer = document.createElement("div");
-        this.shapeContainer.classList.add("slider-toggle-shape-container");
-
-        this.circle = document.createElement("div");
-        this.circle.classList.add("slider-toggle-circle");
-        if (this.isOn) {
-            this.circle.classList.add("on");
-        }
-
-        if (this.classNames.circle) {
-            this.circle.classList.add(this.classNames.circle);
-        }
-
-        this.shapeContainer.appendChild(this.circle);
-        toggleContainer.appendChild(this.shapeContainer);
-
-        // 右侧隐藏ID
-        const hiddenId = document.createElement("span");
-        hiddenId.classList.add("slider-toggle-hidden-id");
-
-        if (this.classNames.hiddenId) {
-            hiddenId.classList.add(this.classNames.hiddenId);
-        }
-
-        hiddenId.textContent = this.hiddenIdText;
-        toggleContainer.appendChild(hiddenId);
-
-        // 添加到父容器
-        this.container.appendChild(toggleContainer);
+      // 创建组件外层容器
+      const toggleContainer = document.createElement("div");
+      toggleContainer.classList.add("slider-toggle-component-container");
+      if (this.id) {
+        toggleContainer.id = this.id; // 设置容器的 id 以便以后能获取到
+      }
+      // 如果传入了自定义的容器类名，添加到容器
+      if (this.classNames.container) {
+        toggleContainer.classList.add(this.classNames.container);
+      }
+  
+      toggleContainer.addEventListener("click", () => this.toggle());
+  
+      // 左侧显示ID
+      this.visibleId = document.createElement("span");
+      this.visibleId.classList.add("slider-toggle-visible-id");
+      this.visibleId.textContent = this.visibleIdText;
+      if (this.classNames.visibleId) {
+        this.visibleId.classList.add(this.classNames.visibleId);
+      }
+  
+      toggleContainer.appendChild(this.visibleId);
+  
+      // 中间矩形和上方圆形
+      this.shapeContainer = document.createElement("div");
+      this.shapeContainer.classList.add("slider-toggle-shape-container");
+  
+      this.circle = document.createElement("div");
+      this.circle.classList.add("slider-toggle-circle");
+      if (this.isOn) {
+        this.circle.classList.add("on");
+      }
+  
+      if (this.classNames.circle) {
+        this.circle.classList.add(this.classNames.circle);
+      }
+  
+      this.shapeContainer.appendChild(this.circle);
+      toggleContainer.appendChild(this.shapeContainer);
+  
+      // 右侧隐藏ID
+      this.hiddenId = document.createElement("span");
+      this.hiddenId.classList.add("slider-toggle-hidden-id");
+  
+      if (this.classNames.hiddenId) {
+        this.hiddenId.classList.add(this.classNames.hiddenId);
+      }
+  
+      this.hiddenId.textContent = this.hiddenIdText;
+      toggleContainer.appendChild(this.hiddenId);
+  
+      // 添加到父容器
+      this.container.appendChild(toggleContainer);
     }
-
+  
     toggle() {
-        // 切换状态
-        this.isOn = !this.isOn;
-
-        // 更新圆形的位置
-        if (this.isOn) {
-            this.circle.classList.add("on");
-        } else {
-            this.circle.classList.remove("on");
-        }
-
-        // 调用回调函数（如果有）
-        if (typeof this.callback === "function") {
-            this.callback(this.isOn);
-        }
+      // 切换状态
+      this.isOn = !this.isOn;
+  
+      // 更新圆形的位置
+      if (this.isOn) {
+        this.circle.classList.add("on");
+      } else {
+        this.circle.classList.remove("on");
+      }
+  
+      // 调用回调函数（如果有）
+      if (typeof this.callback === "function") {
+        this.callback(this.isOn);
+      }
     }
-
+  
+    updateLabel() {
+      // 更新可见和隐藏 ID 的文本
+      this.visibleId.textContent = i18next.t(this.visibleIdKey);
+      this.hiddenId.textContent = i18next.t(this.hiddenIdKey);
+    }
+  
     getToggleState() {
-        return this.isOn;
+      return this.isOn;
     }
 }
 
-
-
-
 export class CustomSlider {
-    constructor(containerId, label, min, max, value, step = 1, onChangeCallback = null) {
+    constructor(containerId, labelKey, min, max, value, step = 1, onChangeCallback = null) {
         this.container = document.getElementById(containerId);
         if (!this.container) {
             throw new Error(`Cannot find container with ID: ${containerId}`);
         }
 
-        this.label = label;
+        this.labelKey = labelKey;
         this.min = min;
         this.max = max;
         this.value = value;
@@ -222,6 +235,11 @@ export class CustomSlider {
         this.onChangeCallback = onChangeCallback;
 
         this.render();
+
+        // 监听语言变化，动态更新标签
+        i18next.on('languageChanged', () => {
+            this.updateLabel();
+        });
     }
 
     render() {
@@ -231,23 +249,30 @@ export class CustomSlider {
         this.container.appendChild(sliderContainer);
 
         const topArea = document.createElement("div");
-        topArea.classList.add('bottomArea')
+        topArea.classList.add('topArea');
         sliderContainer.appendChild(topArea);
 
         // 添加文字说明标签
-        const labelElement = document.createElement("div");
-        labelElement.classList.add("slider-label");
-        labelElement.textContent = this.label;
-        topArea.appendChild(labelElement);
+        this.labelElement = document.createElement("div");
+        this.labelElement.classList.add("slider-label");
+        this.labelElement.textContent = i18next.t(this.labelKey);
+        topArea.appendChild(this.labelElement);
 
         // 添加当前值显示
         this.valueDisplay = document.createElement("div");
         this.valueDisplay.classList.add("slider-value-display");
-        this.valueDisplay.textContent = `当前值: ${this.value}`;
+
+        const valueDisplayLabel = document.createElement('p');
+        valueDisplayLabel.setAttribute('data-i18n', '当前值'); // 让它也可以动态翻译
+        valueDisplayLabel.textContent = i18next.t('当前值');
+        this.valueDisplayNumber = document.createElement('p');
+        this.valueDisplayNumber.textContent = this.value;
+
+        this.valueDisplay.append(valueDisplayLabel, this.valueDisplayNumber);
         topArea.appendChild(this.valueDisplay);
 
         const bottomArea = document.createElement("div");
-        bottomArea.classList.add('bottomArea')
+        bottomArea.classList.add('bottomArea');
         sliderContainer.appendChild(bottomArea);
 
         // 左侧减小按钮
@@ -276,11 +301,17 @@ export class CustomSlider {
         bottomArea.appendChild(this.increaseButton);
     }
 
+    // 更新标签的翻译文本
+    updateLabel() {
+        this.labelElement.textContent = i18next.t(this.labelKey);
+        this.valueDisplay.querySelector('[data-i18n="当前值"]').textContent = i18next.t('当前值');
+    }
+
     // 更新值并刷新滑块和显示
     updateValue(value) {
         this.value = value;
         this.slider.value = value;  // 更新滑块值
-        this.valueDisplay.textContent = `当前值: ${this.value}`;  // 更新显示值
+        this.valueDisplayNumber.textContent = this.value;  // 更新显示值
         if (this.onChangeCallback) {
             this.onChangeCallback(this.value);
         }
@@ -309,21 +340,25 @@ export class CustomSlider {
 
 export class MainStyledButton {
     constructor(containerId, buttonText, callback = null, classNames = {}) {
-        this.container = containerId; //直接加了，不做ID查询
-        if (!this.container) {
-            throw new Error(`Cannot find container with ID: ${containerId}`);
-        }
-
-        this.buttonText = buttonText;
+        this.container = containerId;
+        this.buttonTextKey = buttonText;
         this.callback = callback;  // 保存回调函数
         this.classNames = classNames;
+
+        // 如果没有提供容器，则仅返回创建的按钮
+        if (!this.container) {
+            return this.createButtonElement();
+        }
+
+        // 否则，渲染到容器中
         this.render();
     }
 
-    render() {
+    createButtonElement() {
         // 创建按钮元素
         const button = document.createElement('button');
-        button.textContent = this.buttonText;
+        button.setAttribute('data-i18n', this.buttonTextKey);
+        button.textContent = i18next.t(this.buttonTextKey);
         button.classList.add('main-styled-button');
 
         // 如果传入了自定义的按钮类名，添加到按钮
@@ -333,6 +368,18 @@ export class MainStyledButton {
 
         // 添加点击事件
         button.addEventListener('click', () => this.handleClick());
+
+        return button;
+    }
+
+    render() {
+        // 使用 createButtonElement 创建按钮
+        const button = this.createButtonElement();
+
+        // 确保提供的父容器存在
+        if (!this.container) {
+            throw new Error('Container not provided for rendering the button.');
+        }
 
         // 添加到父容器
         this.container.appendChild(button);

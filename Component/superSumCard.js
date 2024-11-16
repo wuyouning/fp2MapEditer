@@ -1,3 +1,4 @@
+import { MainStyledButton } from "./buttonComponent.js";
 
 export class SuperSumCard {
     constructor(hexGrid) {
@@ -19,20 +20,20 @@ export class SuperSumCard {
 
         const superSumCard = document.getElementById('superSumCard');
         superSumCard.innerHTML='';
-        const refreshBtn = document.createElement('button');
-        refreshBtn.textContent = "刷新";
-        refreshBtn.classList.add('main-styled-button');
-        refreshBtn.classList.add('supersumcard-container-button')
-        refreshBtn.addEventListener('click', () => {
-            
-            this.updateCard();
-        });  // 修复事件名称
+
+        // refreshBtn.classList.add('supersumcard-container-button')
 
         if (superSumCard) {
-            superSumCard.append(hubsArea, regionsToHubsArea, regionsEffectArea, refreshBtn);
+            superSumCard.append(hubsArea, regionsToHubsArea, regionsEffectArea);
         } else {
             console.error("未找到 superSumCard 元素");
         }
+        const refreshBtn = new MainStyledButton(
+            superSumCard, 
+            '刷新', 
+            () =>  this.updateCard(),
+            { button: "supersumcard-container-button" }
+        )
     }
 
     processList(items, getValueFn) {

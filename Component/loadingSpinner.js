@@ -1,3 +1,4 @@
+import { MainStyledButton } from "./buttonComponent.js";
 export class LoadingSpinner {
     constructor() {
         // 创建加载指示器元素
@@ -85,15 +86,17 @@ export class Popup {
     }
 
     confirmBtn(callback, btnText) {
-        const confirmBtn = document.createElement('button');
-        confirmBtn.classList.add('popup-confirmBtn');
-        confirmBtn.textContent = btnText;
-        confirmBtn.addEventListener('click', () => {
-            if (callback) {
-                callback();
-            }
-            this.close();
-        });
+        const confirmBtn = new MainStyledButton(
+            null, 
+            btnText, 
+            () => {
+                if (callback) {
+                    callback();
+                }
+                this.close();
+            },
+            { button: "popup-confirmBtn" }
+        )
         return confirmBtn;
     }
 

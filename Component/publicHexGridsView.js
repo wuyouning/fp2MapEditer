@@ -9,7 +9,7 @@ import { closeNavBarWithSlider } from "./buttonComponent.js";
 import { SliderToggleButton } from "./buttonComponent.js";
 import { hexGrid } from "../main/module.js";
 import { apiUrl } from "../controllers/user.js";
-
+import { MainStyledButton } from "./buttonComponent.js"; 
 class HexGridCard {
 
     constructor(hexGridFromData, isPrivate) {
@@ -153,29 +153,33 @@ class HexGridCard {
         const container = document.createElement('div');
         container.classList.add('gridCard-buttonArea');
 
-        const importBtn = document.createElement('button');
-        importBtn.textContent = '导入';
-        importBtn.addEventListener('click', () => {
-            console.log('导入被按到了', this.newHexGrid)
-            this.importHexGrid();
-            asideCard.updateBrushInfo();
-            hexGrid.refreshMe();
-            initRegionsCard(hexGrid);
-            hexGrid.updateSliders();
-        })
+        const importBtn = new MainStyledButton(
+            null,
+            "导入",
+            () => {
+                this.importHexGrid();
+                asideCard.updateBrushInfo();
+                hexGrid.refreshMe();
+                initRegionsCard(hexGrid);
+                hexGrid.updateSliders();
+            }
+        );
 
-        const updateBtn = document.createElement('button');
-        updateBtn.textContent = '更新';
-        updateBtn.addEventListener('click', () => {
-            this.handleUpdate();
-        })
+        const updateBtn = new MainStyledButton(
+            null,
+            "更新",
+            () => {
+                this.handleUpdate();
+            }
+        );
 
-        const deletBtn = document.createElement('button');
-        deletBtn.textContent = '删除';
-        deletBtn.addEventListener('click', () => {
-            console.log('删除被按到了')
-            this.handleDelete();
-        })
+        const deletBtn = new MainStyledButton(
+            null,
+            "删除",
+            () => {
+                this.handleDelete();
+            }
+        );
 
         if (this.isPrivate) {
             container.append(importBtn, updateBtn, deletBtn);

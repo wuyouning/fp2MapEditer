@@ -8,6 +8,12 @@ import { saveModelView } from "./Component/saveModelView.js";
 import { LoadingSpinner } from "./Component/loadingSpinner.js";
 import { hexGrid } from "./main/module.js";
 import { SuperSumCard } from "./Component/superSumCard.js";
+
+import { initializeI18n } from './Component/i18next.js'; // 确保路径正确
+
+
+// 初始化 i18n
+initializeI18n();
 //画布组
 export let mainView;
 

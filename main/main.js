@@ -8,6 +8,7 @@ import { Region } from "./modules/Region.js";
 import { RegionInfoCard } from "../Component/regionInfoCard.js";
 import { HubCard } from "../Component/regionInfoCard.js";
 import { initRegionsCard } from "../Component/regionInfoCard.js";
+import { MainStyledButton } from "../Component/buttonComponent.js";
 export class MainView {
     constructor () {
         // 初始化选中的笔刷
@@ -313,29 +314,35 @@ export class MainView {
         const buttonArea = document.createElement('div');
         buttonArea.classList.add('showInfo-button-area'); // 添加样式类名
 
-        const expandBtn = document.createElement('button');
-        expandBtn.textContent = "拓展区域";
-        expandBtn.addEventListener('click', () => {
-            asideCard.brushModeButton.toggle();
-            selectedBrush.expandMode(region);
-            asideCard.updateBrushInfo();
-           this.infoCard.style.display = 'none';
-        });
+        const expandBtn = new MainStyledButton(
+            null,
+            "拓展区域",
+            () => {
+                asideCard.brushModeButton.toggle();
+                selectedBrush.expandMode(region);
+                asideCard.updateBrushInfo();
+               this.infoCard.style.display = 'none';
+            },
+        );
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = "拆除区域";
-        deleteBtn.addEventListener('click', () => {
-            region.cleanRegion(false, hexGrid);
-            selectedBrush.pedingHexes.clear();
-            asideCard.updateBrushInfo();
-            this.infoCard.style.display = 'none';
-        });
+        const deleteBtn = new MainStyledButton(
+            null,
+            "拆除区域",
+            () => {
+                region.cleanRegion(false, hexGrid);
+                selectedBrush.pedingHexes.clear();
+                asideCard.updateBrushInfo();
+                this.infoCard.style.display = 'none';
+            },
+        );
 
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = "关闭";
-        closeBtn.addEventListener('click', () => {
-            this.infoCard.style.display = 'none'; // 隐藏信息卡片
-        });
+        const closeBtn = new MainStyledButton(
+            null,
+            "关闭",
+            () => {
+                this.infoCard.style.display = 'none'; // 隐藏信息卡片
+            },
+        );
 
         if ( hex.type === '属地') {
             buttonArea.append(expandBtn, deleteBtn, closeBtn);

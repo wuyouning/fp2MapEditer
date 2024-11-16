@@ -2,7 +2,7 @@ import { SliderToggleButton } from '../Component/buttonComponent.js'
 import { hexGrid } from './../main/module.js';
 import { asideCard } from '../index.js';
 import { loadingSpinner } from '../index.js';
-
+import { MainStyledButton } from '../Component/buttonComponent.js';
 class SaveModelView {
     constructor() {
         this.messageElement = null;
@@ -108,21 +108,21 @@ class SaveModelView {
         const buttonArea = document.createElement('div');
         buttonArea.classList.add('savemodel-button-area');
 
-        const saveBtn = document.createElement('button');
+        const saveBtn = new MainStyledButton(
+            buttonArea,
+            "保存",
+            () => this.handleSaveClick(true),
+        )
         saveBtn.id = 'saveBtn-saveMode'
-        saveBtn.textContent = "保存";
-        // 添加保存按钮的点击事件，更新属性后保存 HexGrid
-        saveBtn.addEventListener('click', () => this.handleSaveClick(true));
     
+        const cancelBtn = new MainStyledButton(
+            buttonArea,
+            "取消",
+            () => this.hide(),
+        )
 
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = "取消";
-        cancelBtn.addEventListener('click', () => {
-            this.hide();
-        })
 
 
-        buttonArea.append(saveBtn, cancelBtn)
         return buttonArea;
     }
 
@@ -130,28 +130,28 @@ class SaveModelView {
         const buttonArea = document.createElement('div');
         buttonArea.classList.add('savemodel-button-area');
     
-        const saveBtn = document.createElement('button');
-        // saveAsBtn.id = 'saveBtnUpdate-saveMode'
-        saveBtn.textContent = "保存";
-    
-        // 添加保存按钮的点击事件，负责更新现有的 HexGrid
-        saveBtn.addEventListener('click', () => this.handleSaveClick(false));
-    
-        // 创建 "另存为" 按钮
-        const saveAsBtn = document.createElement('button');
-        saveAsBtn.textContent = "另存为";
-        saveAsBtn.id = 'saveBtnAsNew-saveMode'
+        const saveBtn = new MainStyledButton(
+            buttonArea,
+            "保存",
+            () => this.handleSaveClick(false),
+        )
+        saveBtn.id = 'saveBtn-saveMode'
 
         // 添加另存为按钮的点击事件，负责创建一个新的 HexGrid 并上传到服务器
-        saveAsBtn.addEventListener('click', async () => this.handleSaveClick(true));
+        const saveAsBtn = new MainStyledButton(
+            buttonArea,
+            "另存为",
+            async () => this.handleSaveClick(true),
+        )
+        saveAsBtn.id = 'saveBtnAsNew-saveMode'
+
+
+        const cancelBtn = new MainStyledButton(
+            buttonArea,
+            "取消",
+            () => this.hide(),
+        )
     
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = "取消";
-        cancelBtn.addEventListener('click', () => {
-            this.hide();
-        })
-    
-        buttonArea.append(saveBtn, saveAsBtn, cancelBtn);
         return buttonArea;
     }
 

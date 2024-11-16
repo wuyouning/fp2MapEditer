@@ -407,8 +407,7 @@ footer {
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 5px;
-    font-size: 1.5em;
+    /* font-size: 1.5em; */
     cursor: pointer;
     background: var(--button-background);
     border: var(--button-border);
@@ -416,6 +415,11 @@ footer {
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
     font-weight: bold;
     transition: background-color 1s;
+
+    /* 新增样式 */
+    white-space: nowrap; /* 防止按钮文字换行 */
+    overflow: hidden; /* 隐藏超出按钮范围的文字 */
+    text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 
 .savemodel-button-area button:hover {

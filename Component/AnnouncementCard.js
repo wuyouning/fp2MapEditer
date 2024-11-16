@@ -112,9 +112,9 @@ export function initAnnouncementCard() {
   );
 
   // 调用加载公告内容
-  loadContent('./main/context/annc.json', 'introduction-content', 'introduction');
-  loadContent('./main/context/annc.json', 'additional-content', 'additional');
-  loadContent('./main/context/annc.json', 'donation-content', 'donation');
+  loadContent('./Component/context/annc.json', 'introduction-content', 'introduction');
+  loadContent('./Component/context/annc.json', 'additional-content', 'additional');
+  loadContent('./Component/context/annc.json', 'donation-content', 'donation');
 }
 
 // 文本内容导入

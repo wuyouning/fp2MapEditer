@@ -6,6 +6,7 @@ import { asideCard } from "../index.js";
 import { initRegionsCard } from "../Component/regionInfoCard.js"
 import { initAnnouncementCard } from "../Component/AnnouncementCard.js";
 import { userinfoView } from "./userinfoView.js";
+import i18next from './i18next.js';
 
 class SliderCard {
     constructor(cardID, cardWidth) {
@@ -122,7 +123,9 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
             // 标签
             const labelElement = document.createElement('div');
             labelElement.className = 'brush-color-name';
-            labelElement.textContent = key;
+            labelElement.textContent = i18next.t(key);
+            labelElement.setAttribute('data-i18n', key);
+
             buttonWrapper.appendChild(labelElement);
 
             rowContainer.appendChild(buttonWrapper);
@@ -180,7 +183,7 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     try {
         hexGrid.hexSizeSlider = new CustomSlider(
             "brushToolCard",   // 容器ID
-            "格子尺寸:",      // 文字说明
+            "格子尺寸",      // 文字说明
             24,                   // 最小值
             80,                   // 最大值
             40,                   // 初始值
@@ -196,7 +199,7 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
     try {
         hexGrid.maxRadiusSlider = new CustomSlider(
             "brushToolCard",   // 容器ID
-            "最大半径:",      // 文字说明
+            "最大半径",      // 文字说明
             1,                   // 最小值
             36,                   // 最大值
             6,                   // 初始值

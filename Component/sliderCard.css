@@ -39,6 +39,7 @@
 }
 
 .brush-row-container {
+    max-width: 60px; /* 限制最大宽度 */
     display: flex;
     gap: 20px;
     justify-content: flex-start;
@@ -49,12 +50,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 5px;
 }
 
 .brush-color-name {
-    margin-top: 5px;
-    font-size: 14px;
     text-align: center;
+    font-size: 0.75em; /*缩小字体*/
+    white-space: 2; /* 禁止换行 */
+    overflow: hidden; /* 溢出部分隐藏 */
+    text-overflow: ellipsis; /* 添加省略号 */
 }
 
 
@@ -84,6 +88,9 @@
 .slider-value-display {
     font-size: 14px;
     margin-left: 10px; 
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
 }
 
 /* 左右按钮的样式 */
@@ -244,7 +251,10 @@
     gap: 5%;
     padding: 20px 40px 40px 40px;
 }
-
+#infoCard button {
+    width: 100%;
+    padding: 10px;
+}
 
 
 #infoCard button, #loginCard button {

@@ -1,5 +1,6 @@
 import { hexGrid } from "../main/module.js";
-
+import i18next from "./i18next.js";
+import { setTranslatedText } from "./i18next.js";
 export class RegionInfoCard { 
     constructor(region, regionsCard) { 
         this.region = region; 
@@ -19,12 +20,13 @@ export class RegionInfoCard {
     } 
 
     updateCard() { 
-
         const content = document.createElement('div'); 
         content.classList.add('regionInfoCard');
         // 标题区
         const title = document.createElement('h1'); 
-        title.textContent = this.region.name;
+        const translatedName = this.region.name.split('-')[0]; // 提取横杠之前的部分
+        const translatedValue = `- ${this.region.name.split('-')[1]}`;
+        setTranslatedText(title, translatedName, translatedValue);
         title.classList.add('regioncard-region-title')
         content.append(title); 
 
@@ -72,7 +74,7 @@ export class RegionInfoCard {
         // 创建扩展按钮（仅当 hubDetailList 和 innerEffectDetailList 有内容时显示）
         if (this.hubDetailList.length > 0 || this.innerEffectDetailList.length > 0) {
             const expandBtn = document.createElement('button'); 
-            expandBtn.textContent = `更多信息`; 
+            setTranslatedText(expandBtn, '更多信息');
             expandBtn.classList.add('region-styled-button');
 
             // 使用布尔变量管理按钮状态
@@ -80,7 +82,7 @@ export class RegionInfoCard {
             expandBtn.addEventListener('click', () => {
                 isExpanded = !isExpanded;
                 detailExpandContent.style.display = isExpanded ? 'flex' : 'none';
-                expandBtn.textContent = isExpanded ? '收起' : '更多信息';
+                setTranslatedText(expandBtn, isExpanded ? '收起' : '更多信息');
             });
 
             // 将按钮追加到内容中
@@ -97,15 +99,15 @@ export class RegionInfoCard {
         labelArea.classList.add('regionscard-label-content');
 
         const type = document.createElement('h4'); 
-        type.textContent = `类型: ${this.region.type}`; 
+        setTranslatedText(type, `类型`, `: `, this.region.type.split('-')[0]); 
         labelArea.append(type); 
 
         const count = document.createElement('h4'); 
-        count.textContent = `格数: ${this.region.hexes.size}`; 
+        setTranslatedText(count,'格数',`: ${this.region.hexes.size}`); 
         labelArea.append(count); 
 
         const neighbors = document.createElement('h4'); 
-        neighbors.textContent = `邻数: ${this.region.getNeighborHex().length}`; 
+        setTranslatedText(neighbors, '邻数', `: ${this.region.getNeighborHex().length}`)
         labelArea.append(neighbors); 
 
         return labelArea; 
@@ -115,26 +117,26 @@ export class RegionInfoCard {
         const content = document.createElement('div');
 
         const innerTitle = document.createElement('h2'); 
-        innerTitle.textContent = `内部效应`; 
+        setTranslatedText(innerTitle, '内部效应');
         content.append(innerTitle); 
 
         const countContent = document.createElement('div'); 
         content.append(countContent); 
 
         const innerRegionCount = document.createElement('h3'); 
-        innerRegionCount.textContent = `区域总数: ${this.region.innerEffectAreaCount}`; 
+        setTranslatedText(innerRegionCount,'区域总数',`: ${this.region.innerEffectAreaCount}`) 
         countContent.append(innerRegionCount); 
 
         const totalHeat = document.createElement('p'); 
-        totalHeat.textContent = `热能： ${this.innerTotalEffects.heat}`; 
+        setTranslatedText(totalHeat,'热能',`: ${this.innerTotalEffects.heat}`) 
         content.append(totalHeat); 
 
         const pollution = document.createElement('p'); 
-        pollution.textContent = `脏污： ${this.innerTotalEffects.pollution}`; 
+        setTranslatedText(pollution,'脏污',`: ${this.innerTotalEffects.pollution}`) 
         content.append(pollution); 
 
         const disease = document.createElement('p'); 
-        disease.textContent = `疾病： ${this.innerTotalEffects.disease}`; 
+        setTranslatedText(disease,'疾病',`: ${this.innerTotalEffects.disease}`) 
         content.append(disease); 
 
         return content; 
@@ -144,16 +146,16 @@ export class RegionInfoCard {
         const content = document.createElement('div');
 
         const hubsTitle = document.createElement('h2'); 
-        hubsTitle.textContent = `枢纽效应`; 
+        setTranslatedText(hubsTitle, '枢纽效应');
         content.append(hubsTitle); 
 
         const effectHubsCount = document.createElement('h3'); 
-        effectHubsCount.textContent = `枢纽总数: ${this.region.effectHubs.size}`; 
+        setTranslatedText(effectHubsCount,'枢纽总数',`: ${this.region.effectHubs.size}`)
         content.append(effectHubsCount); 
 
         this.hubsTotalList.forEach(r => {
             const title = document.createElement('p');
-            title.textContent = `${r.effect}: ${r.effectValue} `
+            setTranslatedText(title, r.effect.split('-')[0], `: ${r.effectValue}`)
             content.append(title);
         });
 
@@ -164,26 +166,28 @@ export class RegionInfoCard {
         const content = document.createElement('div');
 
         const innerTitle = document.createElement('h2'); 
-        innerTitle.textContent = `外馈效应`; 
+        setTranslatedText(innerTitle, '外馈效应');
         content.append(innerTitle); 
 
         const countContent = document.createElement('div'); 
         content.append(countContent); 
 
         const innerRegionCount = document.createElement('h3'); 
-        innerRegionCount.textContent = `区域总数: ${this.region.getOuterEffectArea().length}`; 
+        setTranslatedText(innerRegionCount,'区域总数',`: ${this.region.getOuterEffectArea().length}`)
         countContent.append(innerRegionCount); 
 
         const totalHeat = document.createElement('p'); 
-        totalHeat.textContent = `热能： ${this.outerEffectTotalList.totalHeat}`; 
+        setTranslatedText(totalHeat,'热能',`: ${this.outerEffectTotalList.totalHeat}`)
+
+        totalHeat.textContent = `${i18next.t('热能')}: ${this.outerEffectTotalList.totalHeat}`; 
         content.append(totalHeat); 
 
         const pollution = document.createElement('p'); 
-        pollution.textContent = `脏污： ${this.outerEffectTotalList.pollutionDirtCount}`; 
+        setTranslatedText(pollution, '脏污', `: ${this.outerEffectTotalList.pollutionDirtCount}`);
         content.append(pollution); 
 
         const disease = document.createElement('p'); 
-        disease.textContent = `疾病： ${this.outerEffectTotalList.pollutionDiseaseCount}`; 
+        setTranslatedText(disease, '疾病', `: ${this.outerEffectTotalList.pollutionDiseaseCount}`);
         content.append(disease); 
 
         return content; 
@@ -197,11 +201,11 @@ export class RegionInfoCard {
         acountContent.classList.add('detailExpand-side');
     
         const acount = document.createElement('h2'); 
-        acount.textContent = `对内效应分类`; 
+        setTranslatedText(acount, '对内效应分类');
         acountContent.append(acount); 
     
         this.innerEffectCountList.forEach(t => { 
-            const container = listArea(t.title, t.items, 'h3'); 
+            const container = listArea(i18next.t(t.title.split('-')[0]), t.items, 'h3'); 
             acountContent.append(container); 
         }); 
     
@@ -210,11 +214,11 @@ export class RegionInfoCard {
         detailContent.classList.add('detailExpand-side');
     
         const detail = document.createElement('h2'); 
-        detail.textContent = `对内效应明细`; 
+        setTranslatedText(detail, '对内效应明细');
         detailContent.append(detail); 
     
         this.innerEffectDetailList.forEach(detailItem => { 
-            const container = listArea(detailItem.title, detailItem.items, 'h3'); 
+            const container = listArea(i18next.t(detailItem.title.split('-')[0]), detailItem.items, 'h3'); 
             detailContent.append(container); 
         }); 
     
@@ -233,11 +237,11 @@ export class RegionInfoCard {
         acountContent.classList.add('detailExpand-side');
     
         const acount = document.createElement('h2'); 
-        acount.textContent = `枢纽分类`; 
+        setTranslatedText(acount, '枢纽分类');
         acountContent.append(acount); 
     
         this.hubAcountList.forEach(t => { 
-            const container = listArea(t.titleText, t.items, 'h3'); 
+            const container = listArea(i18next.t(t.titleText.split('-')[0]), t.items, 'h3'); 
             acountContent.append(container); 
         }); 
     
@@ -246,11 +250,11 @@ export class RegionInfoCard {
         detailContent.classList.add('detailExpand-side');
     
         const detail = document.createElement('h2'); 
-        detail.textContent = `枢纽明细`; 
+        setTranslatedText(detail, '枢纽明细');
         detailContent.append(detail); 
     
         this.hubDetailList.forEach(detailItem => { 
-            const container = listArea(detailItem.titleText, detailItem.items, 'h3'); 
+            const container = listArea(i18next.t(detailItem.titleText.split('-')[0]), detailItem.items, 'h3'); 
             detailContent.append(container); 
         }); 
     
@@ -304,7 +308,8 @@ export class HubCard {
         content.classList.add('regionInfoCard');
         // Create title
         const title = document.createElement('h1'); 
-        title.textContent = this.name;
+        const translatedName = this.name.split('-')[0]; // 提取横杠之前的部分
+        setTranslatedText(title, translatedName);
         title.classList.add('regioncard-region-title')
         content.append(title); 
 
@@ -323,17 +328,16 @@ export class HubCard {
         labelArea.classList.add('regionscard-label-content');
 
         const type = document.createElement('h4'); 
-        type.textContent = `类型: ${this.type}`; 
+        setTranslatedText(type, `类型`, `: `, `${this.type.split('-')[0]}`); 
         labelArea.append(type); 
 
         const count = document.createElement('h4'); 
-        count.textContent = `作用: ${this.effect}`; 
+        setTranslatedText(count, `作用`, `: `, `${this.effect.split('-')[0]}`); 
         labelArea.append(count); 
 
         const neighbors = document.createElement('h4'); 
-        neighbors.textContent = `效应值: ${this.effectValue}`; 
+        setTranslatedText(neighbors, '效应值', `: ${this.effectValue}`);
         labelArea.append(neighbors); 
-
         return labelArea; 
     }
 
@@ -344,13 +348,13 @@ export class HubCard {
         content.append(leftContent); 
 
         const regionEfecctedValueCount = document.createElement('h2'); 
-        regionEfecctedValueCount.textContent = `总效应： ${this.acountEffectValue}`; 
+        setTranslatedText(regionEfecctedValueCount, `总效应`,`: ${this.acountEffectValue}`); 
         leftContent.append(regionEfecctedValueCount); 
 
         const rightcontent = document.createElement('div'); 
         content.append(rightcontent); 
-            const regionList = listArea(`覆盖区域总数: ${this.effectedAreaList.length}`, this.effectedAreaList, 'h2');
-            rightcontent.append(regionList);
+        const regionList = listArea(`${i18next.t('覆盖区域总数')}: ${this.effectedAreaList.length}`, this.effectedAreaList, 'h2');
+        rightcontent.append(regionList);
         return content; 
     } 
 
@@ -390,20 +394,21 @@ class SummaryCard {
         content.classList.add('regionInfoCard');
         // 标题区
         const title = document.createElement('h1'); 
-        title.textContent = `规划总计`;
+        setTranslatedText(title, '规划总计');
         title.classList.add('regioncard-region-title')
         content.append(title); 
 
         const regionsCountText = document.createElement('h2');
-        regionsCountText.textContent = `区域总数: ${this.regionsCount}`;
+        setTranslatedText(regionsCountText, `区域总数`, `: ${this.regionsCount}`);
         const hubsCountText = document.createElement('h2');
-        hubsCountText.textContent = `枢纽总数: ${this.hubsCount}`;
+        setTranslatedText(hubsCountText, `枢纽总数`,`: ${this.hubsCount}`);
         const hexes = document.createElement('h2');
-        hexes.textContent = `绘制 / 总格子数: ${this.drawedHexes} / ${this.hexes}`;
+        setTranslatedText(hexes, `绘制 / 总格子数`,`: ${this.drawedHexes} / ${this.hexes}`);
 
         content.append(regionsCountText, hubsCountText, hexes);
 
         return content;
     }
 }
+
 

@@ -1,6 +1,6 @@
 import { userManager } from "../controllers/user.js";
 import { loadingSpinner } from "../index.js";
-
+import { MainStyledButton } from "./buttonComponent.js"; 
 class UserLoginView {
     constructor() {
         this.logined = this.getLoginStatu();
@@ -75,24 +75,39 @@ class UserLoginView {
         const buttonArea = document.createElement('div');
         buttonArea.classList.add('login-button-area');
 
-        const loginButton = document.createElement('button');
-        loginButton.textContent = '确认登录';
-        loginButton.addEventListener('click', () => this.handleLogin());
+        // const loginButton = document.createElement('button');
+        // loginButton.textContent = '确认登录';
+        // loginButton.addEventListener('click', () => this.handleLogin());
 
-        const editButton = document.createElement('button');
-        editButton.textContent = '编辑信息';
-        editButton.addEventListener('click', () => this.handleEdit());
+        // const editButton = document.createElement('button');
+        // editButton.textContent = '编辑信息';
+        // editButton.addEventListener('click', () => this.handleEdit());
 
-        const cancelButton = document.createElement('button');
-        cancelButton.textContent = '取消登录';
-        cancelButton.addEventListener('click', () => this.handleCancel());
+        // const cancelButton = document.createElement('button');
+        // cancelButton.textContent = '取消登录';
+        // cancelButton.addEventListener('click', () => this.handleCancel());
 
+        const loginButton = new MainStyledButton(
+            buttonArea, 
+            '确认登录', 
+            () =>  this.handleLogin()
+        )
         // 根据登录状态添加相应的按钮
-        if (!this.isLoggedIn) {
-            buttonArea.append(loginButton, cancelButton);
-        } else {
-            buttonArea.append(loginButton, editButton, cancelButton);
+        if (this.isLoggedIn) {
+            const editButton = new MainStyledButton(
+                buttonArea, 
+                '编辑信息', 
+                () =>  this.handleEdit()
+            )
         }
+
+        const cancelButton = new MainStyledButton(
+            buttonArea, 
+            '取消登录', 
+            () =>  this.handleCancel()
+        )
+
+
 
         return buttonArea;
     }
