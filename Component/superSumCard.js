@@ -1,5 +1,5 @@
 import { MainStyledButton } from "./buttonComponent.js";
-
+import { setTranslatedText } from "./i18next.js";
 export class SuperSumCard {
     constructor(hexGrid) {
         this.hubs = hexGrid.hubs;
@@ -53,8 +53,7 @@ export class SuperSumCard {
     numberListCard(list, titleText) {
         const container = this.createElement('div', 'supersumcard-container');
         const title = this.createElement('h1');
-        title.textContent = titleText;
-    
+        setTranslatedText(title,titleText,null,null)
         // 找到 count 最大的 entry
         const maxCount = Math.max(...list.map(info => info.count));
     

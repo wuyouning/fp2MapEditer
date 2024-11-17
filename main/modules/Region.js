@@ -959,7 +959,7 @@ export class Region {
                     title: detail.region,
                     items: [
                         `热能: ${detail.heat}`,
-                        `脏污: ${detail.pollution || '无'}`
+                        `脏污: ${detail.pollution || 0}` //这里定义一个更好的才行
                     ]
                 };
             });
@@ -1215,8 +1215,8 @@ export class Region {
         const hubAcountList = [];
         brushMap.forEach((value, key) => {
             hubAcountList.push({
-                titleText: key,
-                items: [ `数量：${value.count}`, value.effect, value.totalEffectValue]
+                titleText: `${key} X ${value.count}`,
+                items: [ value.effect, value.totalEffectValue]
             });
         });
     

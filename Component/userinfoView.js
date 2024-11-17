@@ -1,7 +1,7 @@
 import { userManager } from "../controllers/user.js";
 import { LoadingSpinner } from "./loadingSpinner.js";
 import { MainStyledButton } from "./buttonComponent.js";
-
+import { setTranslatedText } from "./i18next.js";
 
 class UserinfoView {
     constructor() {
@@ -97,13 +97,16 @@ class UserinfoView {
         const slider = document.getElementById('loginCard');
         const container = this.createElementWithClass('div');
         const title = this.createElementWithClass('h1');
-        title.textContent = '修改账号名称';
-        
+        // title.textContent = '修改账号名称';
+        setTranslatedText(title, '修改账号名称',null,null)
+
         const userName = this.createElementWithClass('div', 'username-status');
         userName.textContent = this.name;
         
         const text = this.createElementWithClass('h2');
-        text.textContent = '请输入你要修改的新名字';
+        // text.textContent = '请输入你要修改的新名字';
+        setTranslatedText(text, '请输入你要修改的新名字',null,null)
+
 
         const inputName = this.createElementWithClass('input');
         inputName.placeholder = '输入用户名';
@@ -113,6 +116,8 @@ class UserinfoView {
         inputName.required = true;
         inputName.id = 'usernameInput';
         inputName.title = '输入你的名称 (2-16 字符)';
+        setTranslatedText(inputName, '输入用户名', null, null, ['placeholder', 'title']);
+
 
         const buttonArea = this.createElementWithClass('div', 'editPage-buttonArea');
         const confirmBtn = this.createButton('确认', () => {
@@ -152,15 +157,20 @@ class UserinfoView {
         const slider = document.getElementById('loginCard');
         const container = this.createElementWithClass('div');
         const title = this.createElementWithClass('h1');
-        title.textContent = '修改密码';
+        // title.textContent = '修改密码';
+        setTranslatedText(title, '修改密码',null,null)
+
 
         const textOld = this.createElementWithClass('h2');
-        textOld.textContent = '原账户密码';
+        // textOld.textContent = '原账户密码';
+        setTranslatedText(textOld, '原账户密码',null,null)
         const inputOldpass = this.createElementWithClass('input');
         inputOldpass.type = 'password';
 
         const textNew = this.createElementWithClass('h2');
-        textNew.textContent = '输入新密码';
+        // textNew.textContent = '输入新密码';
+        setTranslatedText(textNew, '输入新密码',null,null)
+
         const inputNewpass = this.createElementWithClass('input');
         inputNewpass.type = 'password';
         inputNewpass.maxLength = 20;
@@ -170,7 +180,9 @@ class UserinfoView {
         inputNewpass.title = '输入新密码 (8-20 字符，必须包含大小写字母和数字)';
 
         const textConfirm = this.createElementWithClass('h2');
-        textConfirm.textContent = '再次确认输入';
+        // textConfirm.textContent = '再次确认输入';
+        setTranslatedText(textConfirm, '再次确认输入',null,null)
+
         const inputNewpass2 = this.createElementWithClass('input');
         inputNewpass2.type = 'password';
         inputNewpass2.maxLength = 20;
@@ -195,7 +207,8 @@ class UserinfoView {
                     userManager.changePassword(userId, inputNewpass.value, 
                         () => {
                             console.log('密码修改成功');
-                            errorMessageContainer.textContent = '密码修改成功';
+                            // errorMessageContainer.textContent = '密码修改成功';
+                            setTranslatedText(errorMessageContainer, '密码修改成功',null,null)
                             setTimeout(() => slider.classList.remove('open'), 2000);
                         },
                         (errorMessage) => {
@@ -206,7 +219,9 @@ class UserinfoView {
                 },
                 (error) => {
                     console.error('原密码验证失败:', error);
-                    errorMessageContainer.textContent = error;
+                    setTranslatedText(errorMessageContainer, '原密码验证失败',error,null)
+
+                    // errorMessageContainer.textContent = error;
                 }
             );
         });

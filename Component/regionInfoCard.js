@@ -205,7 +205,10 @@ export class RegionInfoCard {
         acountContent.append(acount); 
     
         this.innerEffectCountList.forEach(t => { 
-            const container = listArea(i18next.t(t.title.split('-')[0]), t.items, 'h3'); 
+            const tall = t.title.split('-')[0];
+            const valueText = tall.split(' X ')[0];
+            const valueNumber = tall.split(' X ')[1];
+            const container = listArea(valueText,`X ${valueNumber}`,null, t.items, 'h3'); 
             acountContent.append(container); 
         }); 
     
@@ -218,7 +221,7 @@ export class RegionInfoCard {
         detailContent.append(detail); 
     
         this.innerEffectDetailList.forEach(detailItem => { 
-            const container = listArea(i18next.t(detailItem.title.split('-')[0]), detailItem.items, 'h3'); 
+            const container = listArea(detailItem.title.split('-')[0],` - ${detailItem.title.split('-')[1]}`,null, detailItem.items, 'h3'); 
             detailContent.append(container); 
         }); 
     
@@ -241,7 +244,12 @@ export class RegionInfoCard {
         acountContent.append(acount); 
     
         this.hubAcountList.forEach(t => { 
-            const container = listArea(i18next.t(t.titleText.split('-')[0]), t.items, 'h3'); 
+            const tall = t.titleText.split('-')[0];
+            const valueText = tall.split(' X ')[0];
+            const valueNumber = tall.split(' X ')[1];
+            const container = listArea(valueText,`X ${valueNumber}`,null, t.items, 'h3'); 
+
+            // const container = listArea(t.titleText.split('-')[0],null,null, t.items, 'h3'); 
             acountContent.append(container); 
         }); 
     
@@ -254,7 +262,9 @@ export class RegionInfoCard {
         detailContent.append(detail); 
     
         this.hubDetailList.forEach(detailItem => { 
-            const container = listArea(i18next.t(detailItem.titleText.split('-')[0]), detailItem.items, 'h3'); 
+            const itemKey = detailItem.titleText.split('-')[0];
+            const itemValue = detailItem.titleText.split('-')[1];
+            const container = listArea(itemKey,` - ${itemValue}`,null, detailItem.items, 'h3'); 
             detailContent.append(container); 
         }); 
     
@@ -267,27 +277,7 @@ export class RegionInfoCard {
 
 
 } 
-//序列表
-function listArea(titleText, items, tagName) { 
-    const title = document.createElement(tagName); 
-    title.textContent = titleText; 
-    title.classList.add('regioninfo-listTitle'); 
 
-    const list = document.createElement('ul');
-    list.classList.add('regioninfo-ul')
-    items.forEach(item => { 
-        const listItem = document.createElement('li'); 
-        listItem.textContent = item; 
-        listItem.style.fontSize = '12px'; 
-        list.appendChild(listItem); 
-    }); 
-
-    const container = document.createElement('div'); 
-    container.appendChild(title); 
-    container.appendChild(list); 
-
-    return container; 
-} 
 
 export class HubCard {
     constructor(hub, regionsCard) {
@@ -353,7 +343,7 @@ export class HubCard {
 
         const rightcontent = document.createElement('div'); 
         content.append(rightcontent); 
-        const regionList = listArea(`${i18next.t('覆盖区域总数')}: ${this.effectedAreaList.length}`, this.effectedAreaList, 'h2');
+        const regionList = listArea('覆盖区域总数',`: ${this.effectedAreaList.length}`, null, this.effectedAreaList, 'h2');
         rightcontent.append(regionList);
         return content; 
     } 
@@ -412,3 +402,42 @@ class SummaryCard {
 }
 
 
+//序列表
+function listArea(key, text, extraKey, items, tagName) {
+    // 创建标题元素
+    const title = document.createElement(tagName);
+    setTranslatedText(title, key, text, extraKey); // 使用 setTranslatedText 来设置标题文本及其对应的翻译键
+    title.classList.add('regioninfo-listTitle');
+
+    // 创建列表
+    const list = document.createElement('ul');
+    list.classList.add('regioninfo-ul');
+    items.filter(item => item !== null && item !== undefined)
+    .forEach(t => {
+        const listItem = document.createElement('li');
+        const item = String(t);
+        if (item.includes('-')) {
+            // 如果字符串包含符号 '-'
+            const itemKey = item.split('-')[0];
+            const itemValue = item.split('-')[1];
+            setTranslatedText(listItem, itemKey,` - ${itemValue}`, null)
+        } else if (item.includes(':')) {
+            // 如果字符串包含符号 ':'
+            const itemKey = item.split(':')[0];
+            const itemValue = item.split(':')[1];
+            setTranslatedText(listItem, itemKey,` : ${itemValue}`,null)
+        } else {
+            // 如果字符串不包含 '-' 或 ':'
+            setTranslatedText(listItem, item,null,null)
+        }
+        listItem.style.fontSize = '12px';
+        list.appendChild(listItem);
+    });
+
+    // 创建容器并附加标题和列表
+    const container = document.createElement('div');
+    container.appendChild(title);
+    container.appendChild(list);
+
+    return container;
+}

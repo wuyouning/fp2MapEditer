@@ -10,6 +10,7 @@ import { SliderToggleButton } from "./buttonComponent.js";
 import { hexGrid } from "../main/module.js";
 import { apiUrl } from "../controllers/user.js";
 import { MainStyledButton } from "./buttonComponent.js"; 
+import { setTranslatedText } from "./i18next.js";
 class HexGridCard {
 
     constructor(hexGridFromData, isPrivate) {
@@ -117,11 +118,13 @@ class HexGridCard {
         const rightText = document.createElement('p');
 
         if (this.isPrivate) {
-            leftText.textContent = `创建日期：${this.creatTime}`;
-            rightText.textContent = `更新日期：${this.updateTime}`;
+            // leftText.textContent = `创建日期：${this.creatTime}`;
+            // rightText.textContent = `更新日期：${this.updateTime}`;
+            setTranslatedText(leftText,`创建日期`, `：${this.creatTime}`,null);
+            setTranslatedText(rightText,`更新日期`, `：${this.updateTime}`,null);
         } else {
             leftText.textContent = this.ownName;
-            rightText.textContent = `更新日期：${this.updateTime}`;
+            setTranslatedText(rightText,`更新日期`, `：${this.updateTime}`,null);
         }
 
         container.append(leftText, rightText);

@@ -6,7 +6,7 @@ import { saveModelView } from "./saveModelView.js";
 import { selectedBrush } from "../main/module.js";
 import { Popup } from "./loadingSpinner.js";
 import { mainView } from "../index.js";
-
+import { setTranslatedText } from "./i18next.js";
 export class AsideCard {
     constructor(brush, layers, hexGrid) {
         this.brush = brush;
@@ -129,7 +129,7 @@ export class AsideCard {
         asideCard.appendChild(hexGridName);
 
         const brushTextTitle = document.createElement("p");
-        brushTextTitle.textContent = "待建格子"
+        setTranslatedText(brushTextTitle,"待建格子",null,null)
         brushTextTitle.style.fontSize = "16px";
         asideCard.appendChild(brushTextTitle);
 
@@ -138,7 +138,7 @@ export class AsideCard {
         asideCard.appendChild(brushTextContent);
         
         const brushType = document.createElement("p");
-        brushType.textContent = this.brush.name;
+        setTranslatedText(brushType, this.brush.name,null,null);
         brushType.style.fontSize = "12px";
         brushTextContent.appendChild(brushType);
 
@@ -147,10 +147,11 @@ export class AsideCard {
         pendingHexesCount.style.fontSize = "14px";
         brushTextContent.appendChild(pendingHexesCount);
 
+         
         const pedingHexesContent = document.createElement("div");
         pedingHexesContent.classList.add("pedinghexes-content")
         asideCard.appendChild(pedingHexesContent);
-
+        
         const pedingHexesList = document.createElement("div");
         pedingHexesList.classList.add("pedinghexes-list");
         pedingHexesContent.appendChild(pedingHexesList);
@@ -169,7 +170,7 @@ export class AsideCard {
         
         const brushType = asideCard.querySelector("p:nth-child(1)");  // 获取待建格子数量所在的 <p>
         if (brushType) {
-            brushType.textContent = this.brush.name;
+            setTranslatedText(brushType, this.brush.name,null,null);
         }
         // 更新待建格子的数量
         const pendingHexesCount = asideCard.querySelector("p:nth-child(2)");  // 获取待建格子数量所在的 <p>
@@ -191,7 +192,13 @@ export class AsideCard {
                 pedingHexesList.appendChild(p);  // 将新的 p 元素添加到列表中
 
                 const t = document.createElement("p");
-                t.textContent = item.regionBelond || '无';
+                if(item.regionBelond){
+                    const title = item.regionBelond.split('-')[0];
+                    const value = ` - ${item.regionBelond.split('-')[1]}`;
+                    setTranslatedText(t, title, value, null);
+                } else {
+                    setTranslatedText(t, '自由', null, null);
+                }
                 pedingHexesTypeList.appendChild(t);
             });
         }
