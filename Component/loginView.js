@@ -1,6 +1,8 @@
 import { userManager } from "../controllers/user.js";
 import { loadingSpinner } from "../index.js";
 import { MainStyledButton } from "./buttonComponent.js"; 
+import { setTranslatedText } from "./i18next.js";
+
 class UserLoginView {
     constructor() {
         this.logined = this.getLoginStatu();
@@ -51,7 +53,8 @@ class UserLoginView {
 
         const loginTitle = document.createElement('h1');
         loginTitle.classList.add('loginTitle');
-        loginTitle.textContent = '欢迎 请登录';
+        // loginTitle.textContent = '欢迎 请登录';
+        setTranslatedText(loginTitle,'欢迎 请登录');
 
 
         const usernameInputArea = this.createLoginInput();
@@ -63,7 +66,8 @@ class UserLoginView {
         const buttonArea = this.createButtonArea();
 
         const message = document.createElement('p');
-        message.textContent = "登录后可以存储你的规划作品";
+        setTranslatedText(message,'登录后可以存储你的规划作品')
+        // message.textContent = "登录后可以存储你的规划作品";
         message.classList.add('login-message');
         message.id = ('login-message');
 

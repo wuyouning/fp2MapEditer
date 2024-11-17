@@ -495,7 +495,9 @@ class HexGridGalley {
             if (!loadMoreBtn) {
                 loadMoreBtn = document.createElement('button');
                 loadMoreBtn.classList.add('galley-pagenav');
-                loadMoreBtn.textContent = '更多';
+                
+                // loadMoreBtn.textContent = '更多';
+                setTranslatedText(loadMoreBtn, '加载更多');
                 loadMoreBtn.addEventListener('click', () => {
                     this.initPublic();
                 });
@@ -569,7 +571,8 @@ class HexGridGalley {
             if (!loadMoreBtn) {
                 loadMoreBtn = document.createElement('button');
                 loadMoreBtn.classList.add('galley-pagenav');
-                loadMoreBtn.textContent = '更多';
+                // loadMoreBtn.textContent = '更多';
+                setTranslatedText(loadMoreBtn, '加载更多')
                 loadMoreBtn.addEventListener('click', () => {
                     this.initPrivate();  // 加载更多私有画布数据
                 });

@@ -212,8 +212,10 @@ class UserinfoView {
                             setTimeout(() => slider.classList.remove('open'), 2000);
                         },
                         (errorMessage) => {
+                            //日志记录
                             console.error('修改密码失败:', errorMessage);
-                            errorMessageContainer.textContent = errorMessage;
+                            // errorMessageContainer.textContent = errorMessage;
+                            setTranslatedText(errorMessageContainer, errorMessage)
                         }
                     );
                 },
@@ -235,7 +237,8 @@ class UserinfoView {
     validatePasswordMatch(inputNewpass, inputNewpass2, errorMessageContainer) {
         if (inputNewpass.value !== inputNewpass2.value) {
             inputNewpass2.classList.add('input-error');
-            errorMessageContainer.textContent = '两次输入的密码不一致，请重新输入';
+            // errorMessageContainer.textContent = '两次输入的密码不一致，请重新输入';
+            setTranslatedText(errorMessageContainer, '两次输入的密码不一致，请重新输入',null,null)
         } else {
             inputNewpass2.classList.remove('input-error');
             errorMessageContainer.textContent = '';
@@ -246,7 +249,8 @@ class UserinfoView {
         const slider = document.getElementById('loginCard');
         const container = this.createElementWithClass('div');
         const title = this.createElementWithClass('h1');
-        title.textContent = '确认退出？';
+        // title.textContent = '确认退出？';
+        setTranslatedText(title, '确认退出？')
 
         const buttonArea = this.createElementWithClass('div', 'editPage-buttonArea');
         const confirmBtn = this.createButton('确认', () => {

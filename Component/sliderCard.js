@@ -6,7 +6,7 @@ import { asideCard } from "../index.js";
 import { initRegionsCard } from "../Component/regionInfoCard.js"
 import { initAnnouncementCard } from "../Component/AnnouncementCard.js";
 import { userinfoView } from "./userinfoView.js";
-import i18next from './i18next.js';
+import i18next, { setTranslatedText } from './i18next.js';
 
 class SliderCard {
     constructor(cardID, cardWidth) {
@@ -123,8 +123,9 @@ function initalzeBrushToolCard(selectedBrush, hexGrid, layers) {
             // 标签
             const labelElement = document.createElement('div');
             labelElement.className = 'brush-color-name';
-            labelElement.textContent = i18next.t(key);
-            labelElement.setAttribute('data-i18n', key);
+            // labelElement.textContent = i18next.t(key);
+            // labelElement.setAttribute('data-i18n', key);
+            setTranslatedText(labelElement, key)
 
             buttonWrapper.appendChild(labelElement);
 

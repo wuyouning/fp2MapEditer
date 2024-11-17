@@ -178,7 +178,8 @@ export class RegionInfoCard {
 
         const totalHeat = document.createElement('p'); 
         setTranslatedText(totalHeat,'热能',`: ${this.outerEffectTotalList.totalHeat}`)
-
+        
+        //FIX: 存疑
         totalHeat.textContent = `${i18next.t('热能')}: ${this.outerEffectTotalList.totalHeat}`; 
         content.append(totalHeat); 
 

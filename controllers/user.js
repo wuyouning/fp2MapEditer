@@ -1,4 +1,5 @@
 import { userinfoView } from "../Component/userinfoView.js";
+import i18next from "../Component/i18next.js";
 export const apiUrl = '/api';
 
 class User {
@@ -269,7 +270,7 @@ class UserManager {
     }
 
     displayMessage(message) {
-        document.getElementById('login-message').innerText = message;
+        document.getElementById('login-message').innerText = i18next.t(message);
     }
 
     clearInputs() {

@@ -3,6 +3,8 @@ import { hexGrid } from './../main/module.js';
 import { asideCard } from '../index.js';
 import { loadingSpinner } from '../index.js';
 import { MainStyledButton } from '../Component/buttonComponent.js';
+import { setTranslatedText } from './i18next.js';
+
 class SaveModelView {
     constructor() {
         this.messageElement = null;
@@ -20,10 +22,13 @@ class SaveModelView {
         // 创建标题等元素
         const title = document.createElement('h1');
         title.classList.add('loginTitle');
-        title.textContent = '保存法阵';
+        // title.textContent = '保存法阵';
+        setTranslatedText(title,'保存法阵');
+        
 
         const title2 = document.createElement('h2');
-        title2.textContent = '法阵名称';
+        // title2.textContent = '法阵名称';
+        setTranslatedText(title2,'法阵名称')
 
         const titleEdit = document.createElement('input');
         titleEdit.id = 'savemodel-titleEdit';
@@ -32,12 +37,14 @@ class SaveModelView {
         titleEdit.placeholder = "请输入五个字以上的名字";
 
         const title3 = document.createElement('h2');
-        title3.textContent = '法阵描述';
+        setTranslatedText(title3, '法阵描述');
+        // title3.textContent = '法阵描述';
 
         const desp = document.createElement('textarea');
         desp.id = 'saveModel-desp';
         desp.maxLength = '1000';
-        desp.placeholder = "请输入描述，可以为空";
+        // desp.placeholder = "请输入描述，可以为空";
+        setTranslatedText(desp.placeholder, '请输入描述，可以为空')
 
         // 创建按钮区域和信息提示
         // let buttonArea;
@@ -51,7 +58,8 @@ class SaveModelView {
 
         // 创建并保存 message 元素的引用
         this.messageElement = document.createElement('p');
-        this.messageElement.textContent = "保存后将自动覆盖，如果有需要可以选择另存为";
+        // this.messageElement.textContent = "保存后将自动覆盖，如果有需要可以选择另存为";
+        setTranslatedText(this.messageElement, '保存后将自动覆盖，如果有需要可以选择另存为');
         this.messageElement.classList.add('login-message');
         this.messageElement.id = 'login-message';
         
@@ -71,7 +79,6 @@ class SaveModelView {
 
             // 检查 `isNewGrid` 状态并动态创建或更新 buttonArea
             const isNewGrid = localStorage.getItem('isNewGrid');
-            console.log('现在的画布是什么状态', isNewGrid);
 
             let buttonArea = document.getElementById('button-area'); // 检查是否已有 buttonArea
 
@@ -98,7 +105,8 @@ class SaveModelView {
 
     showError(message, success = false) {
         if (this.messageElement) {
-            this.messageElement.textContent = message;
+            // this.messageElement.textContent = message;
+            setTranslatedText(this.messageElement, message)
             this.messageElement.classList.toggle('error-message', !success); // 添加错误样式
             this.messageElement.classList.toggle('success-message', success); // 添加成功样式
         }

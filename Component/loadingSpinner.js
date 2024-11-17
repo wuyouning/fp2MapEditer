@@ -1,4 +1,5 @@
 import { MainStyledButton } from "./buttonComponent.js";
+import { setTranslatedText } from "./i18next.js";
 export class LoadingSpinner {
     constructor() {
         // 创建加载指示器元素
@@ -55,7 +56,8 @@ export class Popup {
         this.content.innerHTML = ''; // 清除之前的内容
         if (message) {
             const messageElement = document.createElement('p');
-            messageElement.textContent = message;
+            // messageElement.textContent = message;
+            setTranslatedText(messageElement, message);
             this.content.appendChild(messageElement);
         }
 
