@@ -125,7 +125,31 @@ export const resources = {
             "原密码错误": "Incorrect original password",
             "确认退出？": "Confirm logout?",
             "原账户密码": "Original Account Password",
-            "输入你的名称 (2-16 字符)": "Enter your name (2-16 characters)"
+            "输入你的名称 (2-16 字符)": "Enter your name (2-16 characters)",
+            "密码必须包含8-20个字符，至少一个大写字母、一个小写字母、一个数字": "Password must contain 8-20 characters, including at least one uppercase letter, one lowercase letter, and one number.",
+            "密码": "Password",
+            "用户名": "Username",
+            "登录": "Login",
+            "注册": "Register",
+            "密码错误": "Password Error",
+            "用户名不存在": "User does not exist",
+            "用户名已存在": "User already exists",
+            "用户名不能为空": "Username cannot be empty",
+            "密码不能为空": "Password cannot be empty",
+            "用户名或密码错误": "Username or password error",
+            "请输入新密码": "Please enter a new password",
+            "请再次输入新密码": "Please re-enter the new password",
+            "请输入你的用户名": "Please enter your username",
+            "请输入你的密码": "Please enter your password",
+            "请输入你的新密码": "Please enter your new password",
+            "登录失败，请重试": "Login failed, please try again.",
+            "服务器请求失败，请稍后再试。": "Server request failed, please try again.",
+            "出现错误: 无法获取公共 HexGrid 数据": "Error: Cannot get public HexGrid data",
+            "数据加载中,请等待.....": "Data loading, please wait.....",
+            "请输入描述，可以为空": "Please enter a description, which can be empty.",
+            "新建后删除原有数据,请谨慎": " ",
+
+            
 
         }
       },

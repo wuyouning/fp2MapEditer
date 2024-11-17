@@ -221,8 +221,21 @@ class UserLoginView {
         this.init();  // 重新初始化视图
     }
 
-    displayMessage(message) {
-        document.getElementById('login-message').innerText = message;
+    displayMessage(messageKey, extraKey = null, extraText = '') {
+        const messageElement = document.getElementById('login-message');
+        
+        if (!messageElement) {
+            console.warn('Element with ID "login-message" not found.');
+            return;
+        }
+    
+        // 使用 setTranslatedText 方法设置并翻译消息
+        setTranslatedText(
+            messageElement,   // 要翻译的 DOM 元素
+            messageKey,       // 主翻译键
+            extraText,        // 附加文本，可选
+            extraKey          // 额外的翻译键，可选
+        );
     }
 
 }

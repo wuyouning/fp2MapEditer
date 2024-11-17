@@ -43,8 +43,15 @@ class SaveModelView {
         const desp = document.createElement('textarea');
         desp.id = 'saveModel-desp';
         desp.maxLength = '1000';
+        setTranslatedText(
+            desp, 
+            '请输入描述，可以为空', // 对应翻译键
+            '',                  // 附加文本，不需要可传空字符串
+            null,                // 没有额外翻译键传 null
+            ['placeholder']      // 需要翻译的属性列表
+        );
         // desp.placeholder = "请输入描述，可以为空";
-        setTranslatedText(desp.placeholder, '请输入描述，可以为空')
+        // setTranslatedText(desp.placeholder, '请输入描述，可以为空')
 
         // 创建按钮区域和信息提示
         // let buttonArea;

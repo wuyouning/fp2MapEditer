@@ -42,7 +42,7 @@ function updateTranslatedText() {
       }
       element.textContent = translatedText;
     });
-  }
+}
 
 
 
