@@ -116,6 +116,7 @@ class UserinfoView {
         inputName.required = true;
         inputName.id = 'usernameInput';
         inputName.title = '输入你的名称 (2-16 字符)';
+        inputName.placeholder = '输入用户名';
         setTranslatedText(inputName, '输入用户名', null, null, ['placeholder', 'title']);
 
 

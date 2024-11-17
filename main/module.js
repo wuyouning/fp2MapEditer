@@ -641,8 +641,6 @@ export class HexGrid {
         // this.setShowID(this.showID);
         this.drawHexagons(); //自带了清空了
         this.updateAllRegions();
-        //我有执行吗?
-        console.log('我有执行吗')
         this.updateAllRegionsLabels();
     }
 
