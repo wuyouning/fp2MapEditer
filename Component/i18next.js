@@ -1,10 +1,10 @@
 import i18next from '../node_modules/i18next/dist/esm/i18next.js';
 import { resources } from './context/translation.js';
-
+import { initAnnouncementCard } from './AnnouncementCard.js';
 // 初始化 i18next
 export function initializeI18n() {
   
-  const userLanguage = localStorage.getItem('userLanguage') || 'en'; // 默认语言为 'en'
+  const userLanguage = localStorage.getItem('userLanguage') || navigator.language.split('-')[0] || 'en';
   
   return i18next.init({
     lng: userLanguage, // 设置默认语言
@@ -28,7 +28,9 @@ export function initializeI18n() {
 // 切换语言
 function changeLanguage(lng) {
     i18next.changeLanguage(lng);
+    document.documentElement.lang = lng;
     localStorage.setItem('userLanguage', lng);
+    initAnnouncementCard();
 }
 // 更新页面上所有需要翻译的文本
 function updateTranslatedText() {

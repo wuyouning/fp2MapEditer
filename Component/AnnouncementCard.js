@@ -52,7 +52,7 @@ function createLinkSection(links) {
 
 export function initAnnouncementCard() {
   const annc = document.getElementById('announcement');
-
+  annc.innerHTML = '';
   // 创建介绍内容部分
   const introductionContent = document.createElement('div');
   introductionContent.id = 'introduction-content';
@@ -77,7 +77,8 @@ export function initAnnouncementCard() {
   donationContent.appendChild(createContentElement('p', null, 
       '维护服务器和域名不易，代码开发也是纯粹为爱发电！'));
   
-  
+  // 添加 PayPal 按钮
+  const payPalButton = createPayPalButton();
   // 创建图片部分
   const imageSection = createImageSection([
       { src: 'images/我的赞善码.jpg', alt: '冰汽时代地图编辑器支持赞赏码' },
@@ -106,15 +107,28 @@ export function initAnnouncementCard() {
           text: '冰汽时代2'
       }
   ]);
+  const userLanguage = localStorage.getItem('userLanguage') || 'zh'; // 默认中文
 
   // 将所有部分添加到工具栏容器中
-  annc.append(
-      introductionContent,
-      additionalContent,
-      donationContent,
-      imageSection,
-      linkContainer
-  );
+  if (navigator.language.split('-')[0] !== 'zh' || userLanguage !== 'zh') {
+    const payPalButton = createPayPalButton();
+    annc.append(
+        introductionContent,
+        additionalContent,
+        donationContent,
+        payPalButton, // 只有非中文语言时添加 PayPal 按钮
+        imageSection,
+        linkContainer
+    );
+} else {
+    annc.append(
+        introductionContent,
+        additionalContent,
+        donationContent,
+        imageSection,
+        linkContainer
+    );
+}
 
   // 调用加载公告内容
   loadContent('./Component/context/annc.json', 'introduction-content', 'introduction');
@@ -147,3 +161,41 @@ function loadContent(url, elementId, jsonKey) {
       });
 }
 
+function createPayPalButton() {
+  const form = document.createElement('form');
+  form.action = "https://www.paypal.com/cgi-bin/webscr";
+  form.method = "post";
+  form.target = "_top";
+  form.style.width = "100%";
+  const cmdInput = document.createElement('input');
+  cmdInput.type = "hidden";
+  cmdInput.name = "cmd";
+  cmdInput.value = "_s-xclick";
+
+  const hostedButtonIdInput = document.createElement('input');
+  hostedButtonIdInput.type = "hidden";
+  hostedButtonIdInput.name = "hosted_button_id";
+  hostedButtonIdInput.value = "M2FADHTJVY2WE";
+
+  const currencyInput = document.createElement('input');
+  currencyInput.type = "hidden";
+  currencyInput.name = "currency_code";
+  currencyInput.value = "USD";
+
+  const submitButton = document.createElement('input');
+  submitButton.type = "image";
+  submitButton.src = "../images/donate.png";
+  submitButton.style.width = "100%";
+
+  submitButton.border = "0";
+  submitButton.name = "submit";
+  submitButton.title = "有了PayPal，您可以更安全便捷地在线付款！";
+  submitButton.alt = "立即购买";
+
+  form.appendChild(cmdInput);
+  form.appendChild(hostedButtonIdInput);
+  form.appendChild(currencyInput);
+  form.appendChild(submitButton);
+
+  return form;
+}

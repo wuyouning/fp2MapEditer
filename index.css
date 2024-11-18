@@ -490,7 +490,9 @@ footer {
     display: flex;
     right: 1%;
     margin-right: 30px;
-    justify-content: baseline;
+    margin-left: 30px;
+    align-items: center;
+    width: 15%;
 }
 
 .language-switcher button{
@@ -504,4 +506,11 @@ footer {
 
 .language-switcher button:hover{
     color: #6391e6;
+}
+
+#language-switcher-span {
+    font-size: 1.5em;
+    color: #0a0d13;
+    width: 100%;
+    text-align: center;
 }
