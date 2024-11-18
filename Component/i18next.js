@@ -4,7 +4,7 @@ import { initAnnouncementCard } from './AnnouncementCard.js';
 // 初始化 i18next
 export function initializeI18n() {
   
-  const userLanguage = localStorage.getItem('userLanguage') || navigator.language.split('-')[0] || 'en';
+  const userLanguage = localStorage.getItem('userLanguage') || navigator.language.split('-')[0] || 'zh';
   
   return i18next.init({
     lng: userLanguage, // 设置默认语言

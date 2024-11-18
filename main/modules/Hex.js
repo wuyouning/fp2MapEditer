@@ -3,6 +3,7 @@ import { mainView } from "../../index.js";
 import {initRegionsCard} from "../../Component/regionInfoCard.js"
 import { superSumCard } from "../../index.js";
 import { hexGrid } from "../module.js";
+import i18next from "../../Component/i18next.js";
 export class Hex {
     constructor(q, r, s, brush = '擦除', regionName = null, type = '空白', size) {
         this.q = q;
@@ -485,7 +486,9 @@ export class Hex {
     drawHexLabel(labelCtx, layout, isShowLabel) {
         // 计算六边形的中心位置
         const center = this.hexToPixel(layout);
-    
+        // 语言变化决定
+        const userLanguage = localStorage.getItem('userLanguage')  || 'zh';
+
         // 清除当前六边形区域
         if (this.type === '属地') {
             this.clearPolygon(labelCtx, layout);
@@ -507,9 +510,19 @@ export class Hex {
             labelCtx.font = `${Math.max(10, this.size / 3)}px Arial`; // 根据 size 调整字体大小
             labelCtx.textAlign = "center";
             labelCtx.textBaseline = "middle";
-    
+            
             // 如果 region 为 null，显示 "自由"，否则显示 region 信息
-            const text = this.regionBelond === null ? "自由" : this.regionBelond;
+            let text = '';
+            if (userLanguage !== 'zh') {
+                if (this.regionBelond === null) {
+                    return;
+                }
+                labelCtx.font = `${Math.max(10, this.size / 6)}px Arial`;
+                const tranlationReion = i18next.t(this.regionBelond.split('-')[0]);
+                text = `${tranlationReion} - ${this.regionBelond.split('-')[1]}`;
+            } else {
+                text = this.regionBelond === null ? "" : this.regionBelond;
+            }
             labelCtx.fillText(text, center.x, center.y);
         }
     }
@@ -596,8 +609,6 @@ export class Hex {
         }
         return corners;
     }
-
-
 
 }
 

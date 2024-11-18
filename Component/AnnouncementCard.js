@@ -110,7 +110,7 @@ export function initAnnouncementCard() {
   const userLanguage = localStorage.getItem('userLanguage') || 'zh'; // 默认中文
 
   // 将所有部分添加到工具栏容器中
-  if (navigator.language.split('-')[0] !== 'zh' || userLanguage !== 'zh') {
+  if (userLanguage !== 'zh') {
     const payPalButton = createPayPalButton();
     annc.append(
         introductionContent,

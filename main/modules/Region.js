@@ -1,6 +1,7 @@
 import { mainView } from "../../index.js";
 import { initRegionsCard } from "../../Component/regionInfoCard.js";
 import { superSumCard } from "../../index.js";
+import i18next from "../../Component/i18next.js";
 
 export class Region {
     constructor(name, hexes, type) {
@@ -842,7 +843,11 @@ export class Region {
                 break;
             }
         }
-
+        
+        //翻译
+        const tranlationReion = i18next.t(text.split('-')[0]);
+        text = tranlationReion + '-' + text.split('-')[1];
+        
         const fontSize = Math.min(16, totalLength / text.length);
         ctx.font = `${fontSize}px Arial`;
         ctx.fillStyle = 'black';

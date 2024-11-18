@@ -179,7 +179,15 @@ export const resources = {
       "输入密码 (6-16 字符)": "Enter Password (6-16 characters)",
       "我的B站": "My Bilibili",
       "冰汽时代2-Steam": "frostpunk2 - Steam",
-      "冰汽时代2": "frostpunk2"
+      "冰汽时代2": "frostpunk2",
+      "到达建造数,是否建造区域": "Reached Build Count, Do You Want To Build Region?",
+      "建造": "Build",
+      "材料需求": "Material Require",
+      "效率提升": "Efficiency Increase",
+      "犯罪下降": "Crime Decrease",
+      "医疗上升": "Medical Increase",
+      "信任上升": "Trust Increase",
+      "紧张下降": "Tension Decrease",
     }
   },
   zh: {
