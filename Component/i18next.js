@@ -4,11 +4,12 @@ import { initAnnouncementCard } from './AnnouncementCard.js';
 // 初始化 i18next
 export function initializeI18n() {
   
-  const userLanguage = localStorage.getItem('userLanguage') || navigator.language.split('-')[0] || 'zh';
+  const browserLanguage = navigator.language || navigator.languages[0]; // 获取浏览器语言，通常为 'en-US' 或 'zh-CN'
+  const userLanguage = localStorage.getItem('userLanguage') || (browserLanguage.startsWith('zh') ? 'zh' : 'en'); // 检测本地存储或默认语言
   
   return i18next.init({
     lng: userLanguage, // 设置默认语言
-    debug: true, // 用于调试翻译过程
+    debug: false, // 用于调试翻译过程
     resources: resources
   }).then(() => {
     // 在初始化完成后进行页面的翻译更新
