@@ -1,8 +1,10 @@
+import { setTranslatedText } from "./i18next.js";
 // 创建内容元素的通用函数
 function createContentElement(tag, className, textContent) {
   const element = document.createElement(tag);
   if (className) element.className = className;
   if (textContent) element.textContent = textContent;
+  setTranslatedText(element, textContent)
   return element;
 }
 
@@ -38,6 +40,7 @@ function createLinkSection(links) {
       linkImage.alt = linkData.imgAlt;
 
       const linkText = createContentElement('p', null, linkData.text);
+      
       link.appendChild(linkImage);
       link.appendChild(linkText);
       linkSection.appendChild(link);
@@ -73,12 +76,14 @@ export function initAnnouncementCard() {
   donationContent.appendChild(createContentElement('h2', null, '支持我们的工作'));
   donationContent.appendChild(createContentElement('p', null, 
       '维护服务器和域名不易，代码开发也是纯粹为爱发电！'));
-
+  
+  
   // 创建图片部分
   const imageSection = createImageSection([
       { src: 'images/我的赞善码.jpg', alt: '冰汽时代地图编辑器支持赞赏码' },
       { src: 'images/我的收款码.jpg', alt: '冰汽时代地图编辑器收款码' }
   ]);
+  
 
   // 创建链接部分
   const linkContainer = createLinkSection([
@@ -118,22 +123,27 @@ export function initAnnouncementCard() {
 }
 
 // 文本内容导入
+// 文本内容导入
 function loadContent(url, elementId, jsonKey) {
+  const userLanguage = localStorage.getItem('userLanguage') || 'zh'; // 默认中文
   fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      const contentData = data[jsonKey];
-      if (contentData) {
-        document.getElementById(elementId).innerHTML = `
-          <h2>${contentData.title}</h2>
-          <p>${contentData.content}</p>
-        `;
-      } else {
-        document.getElementById(elementId).innerHTML = '<p>未找到指定的内容，请检查 key 是否正确。</p>';
-      }
-    })
-    .catch(error => {
-      console.error('Error loading content:', error);
-      document.getElementById(elementId).innerHTML = '<p>内容加载失败，请稍后重试。</p>';
-    });
+      .then(response => response.json())
+      .then(data => {
+          const contentData = data[jsonKey];
+          if (contentData) {
+              const title = userLanguage === 'en' ? contentData.title_en : contentData.title;
+              const content = userLanguage === 'en' ? contentData.content_en : contentData.content;
+              document.getElementById(elementId).innerHTML = `
+                  <h2>${title}</h2>
+                  <p>${content}</p>
+              `;
+          } else {
+              document.getElementById(elementId).innerHTML = '<p>未找到指定的内容，请检查 key 是否正确。</p>';
+          }
+      })
+      .catch(error => {
+          console.error('Error loading content:', error);
+          document.getElementById(elementId).innerHTML = '<p>内容加载失败，请稍后重试。</p>';
+      });
 }
+

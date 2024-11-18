@@ -3,7 +3,7 @@
     position: absolute;
     z-index: var(--z-index-sidebar);
     top: var(--header-height);
-    height: calc(100% - var(--header-height) - 42px);
+    height: calc(100% - var(--header-height) - 20px);
     background-color: var(--background-color);
     box-shadow: 5px 0px 10px rgba(30, 125, 183, 0.4);
     transition: transform 0.3s ease;
@@ -26,6 +26,7 @@
     gap: 20px;
     padding: 1% 1.5%;
     border-radius: 8px;
+    overflow-y: auto;
 }
 /* 要关掉的哦 */
 
@@ -41,7 +42,7 @@
 .brush-row-container {
     max-width: 60px; /* 限制最大宽度 */
     display: flex;
-    gap: 20px;
+    gap: 10px;
     justify-content: flex-start;
     align-items: flex-start;
 }
@@ -173,7 +174,9 @@
 }
 
 /* 公告栏的样式 */
-
+#announcement {
+    overflow-y: auto;
+}
 .annc-image-section {
     display: flex;
     justify-content: space-between;

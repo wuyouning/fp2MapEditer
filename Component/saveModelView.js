@@ -4,6 +4,7 @@ import { asideCard } from '../index.js';
 import { loadingSpinner } from '../index.js';
 import { MainStyledButton } from '../Component/buttonComponent.js';
 import { setTranslatedText } from './i18next.js';
+import i18next from './i18next.js';
 
 class SaveModelView {
     constructor() {
@@ -34,14 +35,15 @@ class SaveModelView {
         titleEdit.id = 'savemodel-titleEdit';
         titleEdit.maxLength = '60';
         titleEdit.minLength = '5';
-        // titleEdit.placeholder = "请输入五个字以上的名字";
+        titleEdit.placeholder = "请输入五个字以上的名字";
         setTranslatedText(
             titleEdit, 
             '请输入五个字以上的名字', 
-            '',                  
+            null,                  
             null,                
-            ['placeholder', 'titleEdit']   
+            ['placeholder']   
         );
+        // setTranslatedText(inputName, '输入用户名', null, null, ['placeholder', 'title']);
 
         const title3 = document.createElement('h2');
         setTranslatedText(title3, '法阵描述');
@@ -50,26 +52,9 @@ class SaveModelView {
         const desp = document.createElement('textarea');
         desp.id = 'saveModel-desp';
         desp.maxLength = '1000';
-        desp.placeholder = "请输入描述，可以为空";
-        setTranslatedText(
-            desp, 
-            '', 
-            '',                  
-            null,                
-            ['placeholder']      
-        );
-        // desp.placeholder = "请输入描述，可以为空";
-        // setTranslatedText(desp.placeholder, '请输入描述，可以为空')
-
-        // 创建按钮区域和信息提示
-        // let buttonArea;
-        // const isNewGrid = localStorage.getItem('isNewGrid');
-        // console.log('现在的画布是什么状态',isNewGrid);
-        // if (isNewGrid) {
-        //     buttonArea = this.createButtonArea();
-        // } else {
-        //     buttonArea = this.createButtonArea2();
-        // }
+        
+        const value = i18next.t('请输入描述，可以为空');
+        desp.placeholder = value;
 
         // 创建并保存 message 元素的引用
         this.messageElement = document.createElement('p');

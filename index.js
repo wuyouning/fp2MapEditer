@@ -8,7 +8,6 @@ import { saveModelView } from "./Component/saveModelView.js";
 import { LoadingSpinner } from "./Component/loadingSpinner.js";
 import { hexGrid } from "./main/module.js";
 import { SuperSumCard } from "./Component/superSumCard.js";
-
 import { initializeI18n } from './Component/i18next.js'; // 确保路径正确
 
 
@@ -66,8 +65,6 @@ document.body.appendChild(loadingSpinner.getElement());
 
 import { Popup } from "./Component/loadingSpinner.js";
 export const popup = new Popup();
-// popup.show("爱你哦",'progress',0,'default')
-
 
 
 

@@ -10,9 +10,9 @@ import i18next, { setTranslatedText } from './i18next.js';
 
 class SliderCard {
     constructor(cardID, cardWidth) {
-        this.cardID = cardID; // 卡片 ID
-        this.cardWidth = cardWidth; // 卡片宽度
-        this.cardElement = this.createCard(); // 创建卡片元素
+        this.cardID = cardID; 
+        this.cardWidth = cardWidth; 
+        this.cardElement = this.createCard(); 
     }
 
     createCard() {
@@ -20,12 +20,11 @@ class SliderCard {
         card.className = 'sliderCard';
         card.id = this.cardID;
         card.style.width = this.cardWidth;
-        // card.innerText = this.cardID; // 设置卡片的文本内容，可以根据需求修改
         return card;
     }
 
     appendTo(parent) {
-        parent.appendChild(this.cardElement); // 将卡片添加到指定的父元素
+        parent.appendChild(this.cardElement); 
     }
 }
 
@@ -35,7 +34,7 @@ export function initializeSliderCard(mainView) {
     const CardsData = [
         {
             id: 'brushToolCard',
-            width: '350px'
+            width: '400px'
         },
         {
             id: 'regionsCard',

@@ -3,8 +3,11 @@ import { resources } from './context/translation.js';
 
 // 初始化 i18next
 export function initializeI18n() {
+  
+  const userLanguage = localStorage.getItem('userLanguage') || 'en'; // 默认语言为 'en'
+  
   return i18next.init({
-    lng: 'en', // 设置默认语言
+    lng: userLanguage, // 设置默认语言
     debug: true, // 用于调试翻译过程
     resources: resources
   }).then(() => {
@@ -25,26 +28,67 @@ export function initializeI18n() {
 // 切换语言
 function changeLanguage(lng) {
     i18next.changeLanguage(lng);
+    localStorage.setItem('userLanguage', lng);
 }
 // 更新页面上所有需要翻译的文本
 function updateTranslatedText() {
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-      const key = element.getAttribute('data-i18n');
-      const extraText = element.getAttribute('data-i18n-extra');
-      const extraKey = element.getAttribute('data-i18n-extra-key');
-      
-      let translatedText = i18next.t(key);
-      if (extraKey) {
-        translatedText += ` ${i18next.t(extraKey)}`;
-      }
-      if (extraText) {
-        translatedText += ` ${extraText}`;
-      }
-      element.textContent = translatedText;
-    });
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n'); // 主翻译键
+      const extraText = element.getAttribute('data-i18n-extra'); // 附加文本
+      const extraKey = element.getAttribute('data-i18n-extra-key'); // 额外翻译键
+
+      // 获取需要翻译的属性
+      const attributes = Array.from(element.attributes)
+          .map(attr => attr.name)
+          .filter(attr => attr.startsWith('data-i18n-attr-'))
+          .map(attr => attr.replace('data-i18n-attr-', ''));
+
+      // 调用 setTranslatedText 方法进行翻译和设置
+      setTranslatedText(element, key, extraText, extraKey, attributes);
+  });
 }
 
+export function setTranslatedText(element, key, text, extraKey, attributes = []) {
+  // 如果 key 是一个纯数字字符串或者数值类型，直接使用原始值，不进行翻译处理
+  if (!isNaN(key)) {
+      element.textContent = key;
+      return element;
+  }
 
+  // 获取翻译文本
+  let translatedText = i18next.t(key);
+  element.setAttribute('data-i18n', key);
+
+  if (extraKey) {
+      translatedText += ` ${i18next.t(extraKey)}`;
+      element.setAttribute('data-i18n-extra-key', extraKey); // 保存额外的翻译键
+  } else {
+      element.removeAttribute('data-i18n-extra-key'); // 如果没有额外键，移除该属性
+  }
+
+  if (text) {
+      translatedText += ` ${text}`;
+      element.setAttribute('data-i18n-extra', text); // 保存附加文本
+  } else {
+      element.removeAttribute('data-i18n-extra'); // 如果没有附加文本，移除该属性
+  }
+
+  element.textContent = translatedText;
+
+  // 处理额外的属性翻译
+  attributes.forEach(attr => {
+    if (element.hasAttribute(attr)) {
+        const attrKey = element.getAttribute(attr);
+        if (attrKey) { // 确保attr有值
+            const translatedAttrValue = i18next.t(attrKey);
+            element.setAttribute(attr, translatedAttrValue);
+            element.setAttribute(`data-i18n-${attr}`, attrKey); // 保存翻译键
+        }
+    }
+});
+
+  return element;
+}
 
 
 // 更新页面的内容
@@ -93,107 +137,65 @@ function updateContent() {
                 break;
             }
     });
-
     
-    const allH1Elements = document.querySelectorAll('.supersumcard-container h1');
+    // const allElements = [
+    //   //抽象统计 - 初始化..好像没有作用上去
+    //   ...document.querySelectorAll('.supersumcard-container h1'),
+    //   //施工面板
+    //   document.getElementById('asideCard')?.querySelector('h1')
+    // ].filter(element => element !== null);
 
-    
-    const asideCardFirstH1 = document.getElementById('asideCard').querySelector('h1');
-    
-    const allElements = [
-      //抽象统计 - 初始化..好像没有作用上去
-      ...document.querySelectorAll('.supersumcard-container h1'),
-      //施工面板
-      document.getElementById('asideCard')?.querySelector('h1')
-    ].filter(element => element !== null);
-
-    allElements.forEach(element => {
-      const key = element.textContent.trim();
-      console.log('内部翻译',key)
-      const translatedText = i18next.t(key);
-      if (translatedText !== key) {
-        // element.textContent = setTranslatedText();
-        setTranslatedText(element,key,null,null)
-      }
-    })
-
-    //施工面板
-
+    // allElements.forEach(element => {
+    //   const key = element.textContent.trim();
+    //   console.log('内部翻译',key)
+    //   const translatedText = i18next.t(key);
+    //   if (translatedText !== key) {
+    //     // element.textContent = setTranslatedText();
+    //     setTranslatedText(element,key,null,null)
+    //   }
+    // })
 }
+
+
+  
+
+
+
+export default i18next;
+
 
 // 更新所有需要翻译的元素 性能要求高，又怕外溢，还是晚点再用吧，组件规范真的太重要了，用元素好危险的
 function updateAllTranslations() {
-    // 选择所有的 <p> 和 <p1> 元素
-    const elementsToTranslate = document.querySelectorAll('p, p1, h1, h2, h3, h4, span');
-  
-    elementsToTranslate.forEach(element => {
-        if (
-            element.closest('#announcement') ||
-            element.closest('.navBar-button-text') ||
-            element.closest('.footer') ||
-            element.closest('main-heading')
-        ) {
-            return; // 如果是卡片内的元素，跳过处理
-            }
-        const key = element.textContent.trim(); // 使用元素的文本内容作为翻译的 key
-        // 如果 key 是全英文或全中文，则不进行处理
-        if (isSingleLanguage(key)) {
-            return; // 如果 key 已经是目标语言，则跳过翻译
-        }
-        const translatedText = i18next.t(key); // 获取翻译后的文本
+  // 选择所有的 <p> 和 <p1> 元素
+  const elementsToTranslate = document.querySelectorAll('p, p1, h1, h2, h3, h4, span');
 
-        // 如果有翻译结果，更新元素的文本内容
-        if (translatedText !== key) {
-            element.textContent = translatedText;
-        }
-    });
-}
-  
-// 判断文本是否为单一语言（全英文或全中文）
-function isSingleLanguage(text) {
-    const englishRegex = /^[A-Za-z\s.,!?'"-]+$/; // 仅包含英文字母和常见符号
-    const chineseRegex = /^[\u4e00-\u9fa5\s.,!?'"-]+$/; // 仅包含中文字符和常见符号
+  elementsToTranslate.forEach(element => {
+      if (
+          element.closest('#announcement') ||
+          element.closest('.navBar-button-text') ||
+          element.closest('.footer') ||
+          element.closest('main-heading')
+      ) {
+          return; // 如果是卡片内的元素，跳过处理
+          }
+      const key = element.textContent.trim(); // 使用元素的文本内容作为翻译的 key
+      // 如果 key 是全英文或全中文，则不进行处理
+      if (isSingleLanguage(key)) {
+          return; // 如果 key 已经是目标语言，则跳过翻译
+      }
+      const translatedText = i18next.t(key); // 获取翻译后的文本
 
-    return englishRegex.test(text) || chineseRegex.test(text);
-}
-
-export function setTranslatedText(element, key, text, extraKey, attributes = []) {
-  // 如果 key 是一个纯数字字符串或者数值类型，直接使用原始值，不进行翻译处理
-  if (!isNaN(key)) {
-      element.textContent = key;
-      return element;
-  }
-
-  // 获取翻译文本
-  let translatedText = i18next.t(key);
-  element.setAttribute('data-i18n', key);
-
-  if (extraKey) {
-      translatedText += ` ${i18next.t(extraKey)}`;
-      element.setAttribute('data-i18n-extra-key', extraKey); // 保存额外的翻译键
-  } else {
-      element.removeAttribute('data-i18n-extra-key'); // 如果没有额外键，移除该属性
-  }
-
-  if (text) {
-      translatedText += ` ${text}`;
-      element.setAttribute('data-i18n-extra', text); // 保存附加文本
-  } else {
-      element.removeAttribute('data-i18n-extra'); // 如果没有附加文本，移除该属性
-  }
-
-  element.textContent = translatedText;
-
-  // 处理额外的属性翻译
-  attributes.forEach(attr => {
-      if (element.hasAttribute(attr)) {
-          const attrKey = element.getAttribute(attr);
-          const translatedAttrValue = i18next.t(attrKey);
-          element.setAttribute(attr, translatedAttrValue);
-          element.setAttribute(`data-i18n-${attr}`, attrKey); // 保存翻译键
+      // 如果有翻译结果，更新元素的文本内容
+      if (translatedText !== key) {
+          element.textContent = translatedText;
       }
   });
-
-  return element;
 }
-export default i18next;
+
+// 判断文本是否为单一语言（全英文或全中文）
+function isSingleLanguage(text) {
+  const englishRegex = /^[A-Za-z\s.,!?'"-]+$/; // 仅包含英文字母和常见符号
+  const chineseRegex = /^[\u4e00-\u9fa5\s.,!?'"-]+$/; // 仅包含中文字符和常见符号
+
+  return englishRegex.test(text) || chineseRegex.test(text);
+}

@@ -116,7 +116,7 @@ class UserinfoView {
         inputName.required = true;
         inputName.id = 'usernameInput';
         inputName.title = '输入你的名称 (2-16 字符)';
-        inputName.placeholder = '输入用户名';
+        // inputName.placeholder = '输入用户名';
         setTranslatedText(inputName, '输入用户名', null, null, ['placeholder', 'title']);
 
 
@@ -125,10 +125,12 @@ class UserinfoView {
             const newUsername = inputName.value.trim();
             if (!newUsername) {
                 alert('用户名不能为空');
+                setTranslatedText(alert, '用户名不能为空')
                 return;
             }
             if (newUsername.length < 2 || newUsername.length > 16) {
                 alert('用户名长度必须在 2 到 16 个字符之间');
+                setTranslatedText(alert, '用户名长度必须在 2 到 16 个字符之间')
                 return;
             }
 
@@ -144,6 +146,7 @@ class UserinfoView {
                 (errorMessage) => {
                     console.error('修改用户名失败:', errorMessage);
                     alert(errorMessage);
+                    setTranslatedText(alert, errorMessage)
                 }
             );
         });

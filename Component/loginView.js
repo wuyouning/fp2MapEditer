@@ -125,6 +125,8 @@ class UserLoginView {
         usernameInputArea.required = true;
         usernameInputArea.id = 'usernameInput';
         usernameInputArea.title = '输入你的名称 (6-16 字符)';
+        setTranslatedText(usernameInputArea, '输入用户名', null, null, ['placeholder', 'title']);
+
         return usernameInputArea;
     }
 
@@ -139,8 +141,8 @@ class UserLoginView {
         passwordInputArea.id = 'passwordInput';
         passwordInputArea.title = '输入密码 (6-16 字符)';
 
-        passwordInputArea.addEventListener('blur', () => this.validatePassword());
-
+        setTranslatedText(passwordInputArea, '输入密码', null, null, ['placeholder', 'title']);
+    
         const passwordContainer = document.createElement('div');
         passwordContainer.classList.add('password-container')
 

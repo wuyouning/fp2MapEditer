@@ -1,16 +1,20 @@
 {
     "introduction": {
-      "title": "亲爱的执政官",
-      "content": "欢迎你来到执政官学院使用此模拟规划工具，在这里你可以通过绘制六边形来完成冰霜荒地的初步规划。<br>在这个冰汽时代，谨慎选择和深思熟虑将为人民们获得光明温暖的未来。"
+        "title": "亲爱的执政官",
+        "content": "欢迎你来到这里使用此模拟规划工具，在这里你可以通过绘制六边形来完成冰霜荒地的初步规划。<br>在这个冰汽时代，谨慎选择和深思熟虑将为人民们获得光明温暖的未来。",
+        "title_en": "Dear Governor",
+        "content_en": "Welcome to the Governor Academy and this simulation planning tool. Here, you can create an initial plan for the Frostlands by drawing hexagons.<br>In this Frostpunk era, cautious choices and thoughtful deliberation will lead your people to a bright and warm future."
     },
-
     "donation": {
-        "title": "执政官学院的支持",
-        "content": "维护服务器和域名不易，代码开发也是纯粹为爱发电。<br>希望善良的执政官能够赞善捐助执政官学院的运行。<br>祝英勇无畏的执政官，暖气满屋，落汗冰原，徒手搏熊。"
+        "title": "执政官的支持",
+        "content": "维护服务器和域名不易，代码开发也是纯粹为爱发电。<br>希望善良的执政官能够赞善捐助此网站的运行。<br>祝英勇无畏的执政官，暖气满屋，落汗冰原，徒手搏熊。",
+        "title_en": "Support for the Governor Academy",
+        "content_en": "Maintaining servers and domains is no easy task, and code development is driven purely by passion.<br>We hope kind-hearted governors can donate to support the operation of the Governor Academy.<br>Wishing you, the brave and fearless governor, a warm house, sweat on the icy plains, and the strength to wrestle bears with bare hands."
     },
-
     "additional": {
         "title": "开发工作一览",
-        "content": "如果你喜欢这个工具并希望支持我们的持续开发，请考虑使用下方的赞赏码或收款码给予支持。<br>非常感谢你的帮助！<br> <br>已经开发:<br>· 数据存储和导入 - 能够完整地留住信息<br>· 执政官作品画廊 - 展示执政官的杰作<br>后续开发目标：<br>· 建筑物引入 - 更多样模拟方式 <br>· 泰森多边形 - 有四边形、五边形、七边形 <br>·  劳动力和材料计算 - 更加高效的算法"
+        "content": "如果你喜欢这个工具并希望支持我们的持续开发，请考虑使用下方的赞赏码或收款码给予支持。<br>非常感谢你的帮助！<br> <br>已经开发:<br>· 数据存储和导入 - 能够完整地留住信息<br>· 执政官作品画廊 - 展示执政官的杰作<br>后续开发目标：<br>· 建筑物引入 - 更多样模拟方式 <br>· 泰森多边形 - 有四边形、五边形、七边形 <br>· 劳动力和材料计算 - 更加高效的算法",
+        "title_en": "Development Overview",
+        "content_en": "If you like this tool and want to support our ongoing development, please consider using the appreciation code or payment code below to contribute.<br>Thank you very much for your support!<br><br>Features already developed:<br>· Data Storage and Import - Preserve information completely<br>· Governor Works Gallery - Showcase the masterpieces of governors<br>Future Development Goals:<br>· Building Integration - More diverse simulation methods<br>· Voronoi Diagrams - Include quadrilaterals, pentagons, and heptagons<br>· Labor and Material Calculations - More efficient algorithms"
     }
 }
